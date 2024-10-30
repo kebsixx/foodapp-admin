@@ -1,15 +1,13 @@
-import { Footer } from "@/components/footer";
-import { Header } from "@/components/header";
-import { RenderMounted } from "@/components/render-mounted";
 import { ADMIN } from "@/constants/contants";
 import { createClient } from "@/supabase/server";
 import { redirect } from "next/navigation";
+import { ReactNode } from "react";
 
-export default async function RootLayout({
+export default async function AuthLayout({
   children,
-}: {
-  children: React.ReactNode;
-}) {
+}: Readonly<{
+  children: ReactNode;
+}>) {
   const supabase = createClient();
 
   const { data: authData } = await supabase.auth.getUser();
@@ -26,14 +24,8 @@ export default async function RootLayout({
       return;
     }
 
-    if (data.type === ADMIN) return redirect("/");
+    if (data.type === ADMIN) return redirect("/admin");
   }
 
-  return (
-    <RenderMounted>
-      <Header />
-      <main className="min-h-[calc(100svh-128px)] py-3">{children}</main>
-      <Footer />
-    </RenderMounted>
-  );
+  return <>{children}</>;
 }
