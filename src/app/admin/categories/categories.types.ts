@@ -6,11 +6,12 @@ export type Product = {
     price: number;
     heroImage: string;
     category: number;
-    max_quantity: number;
+    maxQuantity: number;
 };
 
 export type CategoryWithProducts = {
     created_at: string;
+    id: number;
     imageUrl: string;
     name: string;
     products: Product[];

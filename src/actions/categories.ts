@@ -8,7 +8,7 @@ const supabase = createClient();
 export const getCategoriesWithProducts = 
     async (): Promise<CategoriesWithProductsResponse> => {
         const {data, error} = await supabase
-            .from("users")
+            .from("category")
             .select("*, products:product(*)")
             .returns<CategoriesWithProductsResponse>();
 
