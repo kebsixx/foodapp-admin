@@ -26,7 +26,6 @@ import {
 import { TableCell, TableRow } from "@/components/ui/table";
 import { CreateCategorySchema } from "@/app/admin/categories/create-category.schema";
 import { CategoryWithProducts } from "@/app/admin/categories/categories.types";
-import { promises } from "dns";
 
 export const CategoryTableRow = ({
   category,
