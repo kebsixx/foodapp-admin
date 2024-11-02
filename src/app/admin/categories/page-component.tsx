@@ -36,7 +36,12 @@ import {
 } from "@/app/admin/categories/create-category.schema";
 import { CategoriesWithProductsResponse } from "@/app/admin/categories/categories.types";
 import { CategoryForm } from "@/app/admin/categories/category-form";
-import { createCategory, imageUploadHandler } from "@/actions/categories";
+import {
+  createCategory,
+  deleteCategory,
+  imageUploadHandler,
+  updateCategory,
+} from "@/actions/categories";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -63,26 +68,64 @@ const CategoriesPageComponent: FC<Props> = ({ categories }) => {
   const submitCategoryHandler: SubmitHandler<CreateCategorySchema> = async (
     data
   ) => {
-    const uniqueId = uuid();
-    const fileName = `category/category-${uniqueId}`;
-    const file = new File([data.image[0]], fileName);
-    const formData = new FormData();
-    formData.append("file", file);
+    const { image, name, intent = "create" } = data;
 
     // Upload image to Supabase Storage
-    const imageUrl = await imageUploadHandler(formData);
+    const handleImageUpload = async () => {
+      const uniqueId = uuid();
+      const fileName = `category/category-${uniqueId}`;
+      const file = new File([data.image[0]], fileName);
+      const formData = new FormData();
+      formData.append("file", file);
 
-    if (imageUrl !== undefined) {
-      await createCategory({
-        imageUrl,
-        name: data.name,
-      });
-      form.reset();
-      router.refresh();
-      setIsCreateCategoryModalOpen(false);
-      toast.success("Category created successfully");
+      return imageUploadHandler(formData);
+    };
+
+    switch (intent) {
+      case "create": {
+        const imageUrl = await handleImageUpload();
+
+        if (imageUrl) {
+          await createCategory({
+            imageUrl,
+            name: data.name,
+          });
+          form.reset();
+          router.refresh();
+          setIsCreateCategoryModalOpen(false);
+          toast.success("Category created successfully");
+        }
+        break;
+      }
+      case "update": {
+        if (image && currentCategory?.slug) {
+          const imageUrl = await handleImageUpload();
+
+          if (imageUrl) {
+            await updateCategory({
+              imageUrl,
+              name,
+              slug: currentCategory.slug,
+            });
+            form.reset();
+            router.refresh();
+            setIsCreateCategoryModalOpen(false);
+            toast.success("Category updated successfully");
+          }
+        }
+      }
+
+      default:
+        console.log("Invalid intent");
     }
   };
+
+  const deleteCategoryHandler = async (id: number) => {
+    await deleteCategory(id);
+    router.refresh();
+    toast.success("Category deleted successfully");
+  };
+
   return (
     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
       <div className="flex items-center my-18">
@@ -146,6 +189,7 @@ const CategoriesPageComponent: FC<Props> = ({ categories }) => {
                   category={category}
                   setCurrentCategory={setCurrentCategory}
                   setIsCreateCategoryModalOpen={setIsCreateCategoryModalOpen}
+                  deleteCategoryHandler={deleteCategoryHandler}
                 />
               ))}
             </TableBody>
