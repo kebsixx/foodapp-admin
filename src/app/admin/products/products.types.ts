@@ -12,7 +12,7 @@ export type ProductWithCategory = {
   slug: string;
 };
 
-export type ProductWithCategoriesResponse = ProductWithCategory[];
+export type ProductsWithCategoriesResponse = ProductWithCategory[];
 
 export type UpdateProductSchema = {
   category: number;

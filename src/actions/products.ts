@@ -4,7 +4,7 @@ import slugify from "slugify";
 
 import { createClient } from "@/supabase/client";
 import {
-  ProductWithCategoriesResponse,
+  ProductsWithCategoriesResponse,
   UpdateProductSchema,
 } from "@/app/admin/products/products.types";
 import { CreateProductSchemaServer } from "@/app/admin/products/schema";
@@ -12,11 +12,11 @@ import { CreateProductSchemaServer } from "@/app/admin/products/schema";
 const supabase = createClient();
 
 export const getProductsWithCategories =
-  async (): Promise<ProductWithCategoriesResponse> => {
+  async (): Promise<ProductsWithCategoriesResponse> => {
     const { data, error } = await supabase
       .from("product")
       .select("*, category:category(*)")
-      .returns<ProductWithCategoriesResponse>();
+      .returns<ProductsWithCategoriesResponse>();
 
     if (error) {
       throw new Error(
