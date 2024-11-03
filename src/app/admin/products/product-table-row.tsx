@@ -54,16 +54,20 @@ export const ProductTableRow = ({
         )}
       </TableCell>
       <TableCell>
-        {product.imagesUrl.map((url, index) => (
-          <Image
-            width={40}
-            height={40}
-            key={index}
-            src={url}
-            alt={`Product ${index + 1}`}
-            className="w-10 h-10 object-cover inline-block mr-1"
-          />
-        ))}
+        {product?.imagesUrl && product.imagesUrl.length > 0 ? (
+          product.imagesUrl.map((url, index) => (
+            <Image
+              width={40}
+              height={40}
+              key={index}
+              src={url}
+              alt={`Product ${index + 1}`}
+              className="w-10 h-10 object-cover inline-block mr-1"
+            />
+          ))
+        ) : (
+          <span>No images</span>
+        )}
       </TableCell>
       <TableCell>
         <Button

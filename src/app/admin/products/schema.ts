@@ -2,12 +2,12 @@ import { z } from "zod";
 
 export const createOrUpdateProductSchema = z.object({
   title: z.string().min(1, { message: "Title is required" }),
-  price: z.number().min(1, { message: "Price is required" }),
-  maxQuantity: z.number().min(1, { message: "Max quantity is required" }),
-  category: z.number().min(1, { message: "Category is required" }),
+  price: z.string().min(1, { message: "Price is required" }),
+  maxQuantity: z.string().min(1, { message: "Max quantity is required" }),
+  category: z.string().min(1, { message: "Category is required" }),
   heroImage: z
-    .string()
-    .refine((file) => file.length === 1, { message: "Hero image is required" }),
+    .any()
+    .refine((file) => file.length === 1, "Hero image is required" ),
   images: z
     .any()
     .refine(
