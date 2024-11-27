@@ -40,7 +40,7 @@ export const createProduct = async ({
   const { data, error } = await supabase.from("product").insert({
     category,
     heroImage,
-    imageUrl: images,
+    imagesUrl: images,
     maxQuantity,
     price,
     slug,

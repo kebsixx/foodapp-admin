@@ -42,7 +42,7 @@ export type Database = {
           created_at: string
           heroImage: string
           id: number
-          imageUrl: string[]
+          imagesUrl: string[]
           maxQuantity: number
           price: number
           slug: string
@@ -53,7 +53,7 @@ export type Database = {
           created_at?: string
           heroImage: string
           id?: number
-          imageUrl: string[]
+          imagesUrl: string[]
           maxQuantity: number
           price: number
           slug: string
@@ -64,7 +64,7 @@ export type Database = {
           created_at?: string
           heroImage?: string
           id?: number
-          imageUrl?: string[]
+          imagesUrl?: string[]
           maxQuantity?: number
           price?: number
           slug?: string
