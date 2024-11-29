@@ -68,7 +68,7 @@ export const updateProduct = async ({
     .update({
       category,
       heroImage,
-      imageUrl: imagesUrl,
+      imagesUrl: imagesUrl,
       maxQuantity,
       price,
       title,
