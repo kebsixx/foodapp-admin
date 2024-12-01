@@ -1,14 +1,14 @@
 'use server';
 
-import { createClient } from "@/supabase/client";
+import { createClient } from "@/supabase/server";
 
 const supabase = createClient();
 
 export const getOrdersWithProducts = async () => {
     const {data, error} = await supabase
-    .from('order')
-    .select('*, order_item:order_item(*, product(*)), user(*)')
-    .order('created_at', {ascending: true});
+        .from('order')
+        .select('*, order_items:order_item(*, product(*)), user(*)')
+        .order('created_at', {ascending: false});
 
     if(error) throw new Error(error.message);
     
