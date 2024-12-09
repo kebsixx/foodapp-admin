@@ -2,6 +2,7 @@
 
 import { createClient } from "@/supabase/server";
 import { revalidatePath } from "next/cache";
+import { sendNotification } from "./notifications";
 
 const supabase = createClient();
 
@@ -23,6 +24,12 @@ export const updateOrderStatus = async (orderId: number, status: string) => {
         .eq('id', orderId);
 
     if (error) throw new Error(error.message);
+
+    const { data: {session}} = await supabase.auth.getSession();
+
+    const userId = session?.user.id!;
+
+    await sendNotification(userId, status + '🚀');
 
     revalidatePath('/admin/orders');
 }
