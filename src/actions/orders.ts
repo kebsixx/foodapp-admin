@@ -59,9 +59,8 @@ export const getMonthlyOrders = async () => {
             const date = new Date(order.created_at);
             const month = monthNames[date.getUTCMonth()];
 
-            if (!acc[month]) {
-                acc[month] = 0;
-            }
+            if (!acc[month]) acc[month] = 0;
+            acc[month]++;
 
             return acc;
         },
