@@ -120,7 +120,7 @@ const PageComponent = ({
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="products" fill="#8884d8" />
+                <Bar dataKey="products" fill="#00C49F" />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
