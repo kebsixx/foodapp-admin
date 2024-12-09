@@ -98,6 +98,25 @@ const PageComponent = ({
             </ResponsiveContainer>
           </CardContent>
         </Card>
+
+        {/* Category to Produccts Chart */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Products per Category</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={categoryData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="products" fill="#8884d8" />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
