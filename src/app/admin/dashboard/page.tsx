@@ -1,16 +1,19 @@
 import { getMonthlyOrders } from "@/actions/orders";
 import PageComponent from "./page-component";
-import { get } from "http";
 import { getCategoryData } from "@/actions/categories";
+import { getLatestUsers } from "@/actions/auth";
 
 const AdminDashboard = async () => {
   const monthlyOrders = await getMonthlyOrders();
   const categoryData = await getCategoryData();
-
-  console.log(categoryData);
+  const latestUsers = await getLatestUsers();
 
   return (
-    <PageComponent monthlyOrders={monthlyOrders} categoryData={categoryData} />
+    <PageComponent
+      latestUsers={latestUsers}
+      monthlyOrders={monthlyOrders}
+      categoryData={categoryData}
+    />
   );
 };
 

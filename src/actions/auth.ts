@@ -1,11 +1,11 @@
-// 'use server';
+'use server';
 
-import { createClient } from "@/supabase/client";
+import { createClient } from "@/supabase/server";
+
+const supabase = createClient();
 
 export const authenticate = async (email: string, password: string) => {
   try {
-    const supabase = createClient();
-
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -16,4 +16,22 @@ export const authenticate = async (email: string, password: string) => {
     console.log("AUTHENTICATION ERROR", error);
     throw error;
   }
+};
+
+export const getLatestUsers = async () => {
+  const { data, error } = await supabase
+    .from('users')
+    .select('id, email, create_at')
+    .order('create_at', { ascending: false })
+    .limit(5);
+
+  if (error) throw new Error(`Error fetching latest users: ${error.message}`);
+
+  return data.map(
+    (user: { id: string; email: string; create_at: string | null }) => ({
+      id: user.id,
+      email: user.email,
+      date: user.create_at,
+    })
+  );
 };

@@ -33,14 +33,22 @@ type CategoryData = {
   products: number;
 };
 
+type LatestUsers = {
+  id: string;
+  email: string;
+  date: string | null;
+};
+
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
 const PageComponent = ({
   monthlyOrders,
   categoryData,
+  latestUsers,
 }: {
   monthlyOrders: MonthlyOrderData[];
   categoryData: CategoryData[];
+  latestUsers: LatestUsers[];
 }) => {
   return (
     <div className="flex-1 p-8 overflow-auto">
@@ -115,6 +123,31 @@ const PageComponent = ({
                 <Bar dataKey="products" fill="#8884d8" />
               </BarChart>
             </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        {/* Latest Users */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Latest Users</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Date</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {latestUsers.map((user) => (
+                  <TableRow key={user.id}>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>{user.date}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
       </div>
