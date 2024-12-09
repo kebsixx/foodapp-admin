@@ -9,7 +9,9 @@ const AdminDashboard = async () => {
 
   console.log(categoryData);
 
-  return <PageComponent monthlyOrders={monthlyOrders} />;
+  return (
+    <PageComponent monthlyOrders={monthlyOrders} categoryData={categoryData} />
+  );
 };
 
 export default AdminDashboard;
