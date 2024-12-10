@@ -223,6 +223,18 @@ export default function Home() {
             ))}
           </div>
         </section>
+
+        <section className="text-center">
+          <h3 className="text-3xl font-bold mb-4">
+            Ready to Transform Your Gadget Shopping?
+          </h3>
+          <p className="text-xl  mb-8">
+            Download GadgetApp now and get 20% off your first in-app purchase!
+          </p>
+          <Button size="lg" className="bg-[#1BC464] hover:bg-[#1bc464d7]">
+            Get Started <ChevronRight className="ml-2 h-4 w-4" />
+          </Button>
+        </section>
       </main>
     </div>
   );
