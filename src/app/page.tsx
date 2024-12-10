@@ -44,11 +44,6 @@ const features = [
       "Find the perfect gadget in seconds with our powerful search engine.",
   },
   {
-    icon: ShoppingCart,
-    title: "Secure Checkout",
-    description: "Shop with confidence using our encrypted payment system.",
-  },
-  {
     icon: Gift,
     title: "Exclusive Deals",
     description: "Access app-only discounts and special offers.",
