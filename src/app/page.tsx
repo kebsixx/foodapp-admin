@@ -102,7 +102,7 @@ export default function Home() {
                 </p>
               </MotionWrapper>
               <MotionWrapper delay={0.4}>
-                <Button size="lg" className="bg-[#1BC464] hover:bg-[#1bc464d7]">
+                <Button size="lg" className="bg-[#C9DABF] hover:bg-[#A6B37D]">
                   Download Now <ChevronRight className="ml-2 h-4 w-4" />
                 </Button>
               </MotionWrapper>
@@ -127,7 +127,7 @@ export default function Home() {
                   alt="Cerita Senja App Screenshot"
                   className="rounded-3xl object-cover shadow-2xl mx-auto h-[550px] w-[270px]"
                 />
-                <Badge className="absolute top-4 right-4 bg-[#1bc464] text-white">
+                <Badge className="absolute top-4 right-4 bg-[#9bcf41] text-white">
                   New Release
                 </Badge>
               </motion.div>
@@ -155,7 +155,7 @@ export default function Home() {
         </section>
 
         <section className="mb-24">
-          <Card className="bg-[#1BC464] text-white">
+          <Card className="bg-[#C9DABF] text-white">
             <CardContent className="p-8 text-center">
               <h3 className="text-3xl font-bold mb-4">
                 Download GadgetApp Today
@@ -208,7 +208,7 @@ export default function Home() {
                       />
                       <div>
                         <h4 className="font-semibold">{testimonial.name}</h4>
-                        <div className="flex text-[#1BC464]">
+                        <div className="flex text-[#A6B37D]">
                           {[...Array(5)].map((_, i) => (
                             <Star key={i} className="h-4 w-4 fill-current" />
                           ))}
@@ -232,13 +232,13 @@ export default function Home() {
           <p className="text-xl  mb-8">
             Download GadgetApp now and get 20% off your first in-app purchase!
           </p>
-          <Button size="lg" className="bg-[#1BC464] hover:bg-[#1bc464d7]">
+          <Button size="lg" className="bg-[#B99470] hover:bg-[#a06f37]">
             Get Started <ChevronRight className="ml-2 h-4 w-4" />
           </Button>
         </section>
       </main>
 
-      <footer className="bg-[#1BC464] text-white">
+      <footer className="bg-[#B99470] text-white">
         <Link
           href={`https://www.instagram.com/ceritasenja_cafe`}
           target="_blank"
