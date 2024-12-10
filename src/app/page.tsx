@@ -70,7 +70,7 @@ const testimonials = [
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-100 to-indigo-300">
+    <div className="min-h-screen">
       <header className="container mx-auto px-4 py-6 flex justify-between items-center">
         <h1 className="text-2xl font-bold">Cerita Senja</h1>
       </header>
