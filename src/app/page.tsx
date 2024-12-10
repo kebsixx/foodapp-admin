@@ -187,6 +187,42 @@ export default function Home() {
             </CardContent>
           </Card>
         </section>
+
+        <section className="mb-24">
+          <h3 className="text-3xl font-bold mb-8 text-center">
+            What Our Users Say
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {testimonials.map((testimonial, index) => (
+              <MotionWrapper key={index} delay={index * 0.1}>
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center mb-4">
+                      <Image
+                        src={`https://images.unsplash.com/photo-1543610892-0b1f7e6d8ac1?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8YXZhdGFyfGVufDB8fDB8fHww`}
+                        alt={testimonial.name}
+                        className="w-12 h-12 rounded-full mr-4 object-cover"
+                        width={48}
+                        height={48}
+                      />
+                      <div>
+                        <h4 className="font-semibold">{testimonial.name}</h4>
+                        <div className="flex text-[#1BC464]">
+                          {[...Array(5)].map((_, i) => (
+                            <Star key={i} className="h-4 w-4 fill-current" />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <p className="italic">
+                      &quot; {testimonial.comment} &quot;
+                    </p>
+                  </CardContent>
+                </Card>
+              </MotionWrapper>
+            ))}
+          </div>
+        </section>
       </main>
     </div>
   );

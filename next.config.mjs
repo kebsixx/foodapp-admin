@@ -9,6 +9,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "ftcctrtnvcytcuuljjik.supabase.co",
       },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
     ],
   },
   webpack: (config) => {
