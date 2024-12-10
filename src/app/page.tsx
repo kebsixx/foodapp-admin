@@ -129,7 +129,7 @@ export default function Home() {
                   height={1080}
                   src="/app-pics.png"
                   alt="Cerita Senja App Screenshot"
-                  className="rounded-3xl object-cover shadow-2xl mx-auto h-[500px] w-[250px]"
+                  className="rounded-3xl object-cover shadow-2xl mx-auto h-[550px] w-[270px]"
                 />
                 <Badge className="absolute top-4 right-4 bg-[#1bc464] text-white">
                   New Release
