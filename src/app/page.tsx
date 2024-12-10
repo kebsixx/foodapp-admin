@@ -97,7 +97,8 @@ export default function Home() {
               </MotionWrapper>
               <MotionWrapper delay={0.2}>
                 <p className="text-xl  mb-6">
-                  Nikmati kelezatan Cerita Senja di mana saja, kapan saja!
+                  Pesan makanan dan minuman favoritmu dengan mudah melalui
+                  aplikasi kami.
                 </p>
               </MotionWrapper>
               <MotionWrapper delay={0.4}>
