@@ -22,14 +22,14 @@ interface MotionWrapperProps {
   delay?: number;
 }
 
-const MotionWrapper = ({ children, delay = 0 }: MotionWrapperProps) => {
+const MotionWrapper = ({ children, delay = 0 }: MotionWrapperProps) => (
   <motion.div
     initial={{ opacity: 0, y: 50 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.5, delay }}>
     {children}
-  </motion.div>;
-};
+  </motion.div>
+);
 
 const features = [
   {
@@ -69,11 +69,76 @@ const testimonials = [
 ];
 
 export default function Home() {
+  const [isHovered, setIsHovered] = useState(false);
+  const [rotate, setRotate] = useState({ rotateX: 0, rotateY: 0 });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const rotateX = -(y - centerY) / 12;
+    const rotateY = (x - centerX) / 12;
+
+    setRotate({ rotateX, rotateY });
+  };
+
   return (
     <div className="min-h-screen">
       <header className="container mx-auto px-4 py-6 flex justify-between items-center">
         <h1 className="text-2xl font-bold">Cerita Senja</h1>
       </header>
+
+      <main className="container mx-auto px-4 py-12">
+        <section className="mb-24">
+          <div className="flex flex-col justify-between md:flex-row items-center">
+            <div className="md:w-1/2 mb-8 md:mb-0">
+              <MotionWrapper>
+                <h2 className="text-4xl md:text-6xl font-bold mb-4">
+                  Nikmati kelezatan Cerita Senja di mana saja, kapan saja!
+                </h2>
+              </MotionWrapper>
+              <MotionWrapper delay={0.2}>
+                <p className="text-xl  mb-6">
+                  Nikmati kelezatan Cerita Senja di mana saja, kapan saja!
+                </p>
+              </MotionWrapper>
+              <MotionWrapper delay={0.4}>
+                <Button size="lg" className="bg-[#1BC464] hover:bg-[#1bc464d7]">
+                  Download Now <ChevronRight className="ml-2 h-4 w-4" />
+                </Button>
+              </MotionWrapper>
+            </div>
+
+            <div className="w-1/3">
+              <motion.div
+                className="relative"
+                style={{ perspective: 1000 }}
+                animate={{
+                  rotateX: isHovered ? rotate.rotateX : 0,
+                  rotateY: isHovered ? rotate.rotateY : 0,
+                }}
+                transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                onMouseMove={handleMouseMove}
+                onHoverStart={() => setIsHovered(true)}
+                onHoverEnd={() => setIsHovered(false)}>
+                <Image
+                  width={1920}
+                  height={1080}
+                  src="/app-pics.png"
+                  alt="Cerita Senja App Screenshot"
+                  className="rounded-3xl object-cover shadow-2xl mx-auto h-[500px] w-[250px]"
+                />
+                <Badge className="absolute top-4 right-4 bg-[#1bc464] text-white">
+                  New Release
+                </Badge>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+      </main>
     </div>
   );
 }
