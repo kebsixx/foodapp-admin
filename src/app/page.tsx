@@ -138,6 +138,25 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        <section className="mb-24">
+          <h3 className="text-3xl font-bold mb-8 text-center">App Features</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {features.map((feature, index) => (
+              <MotionWrapper key={index} delay={index * 0.1}>
+                <Card>
+                  <CardContent className="p-6 flex flex-col items-center text-center">
+                    <feature.icon className="h-12 w-12  mb-4" />
+                    <h4 className="text-xl font-semibold mb-2">
+                      {feature.title}
+                    </h4>
+                    <p>{feature.description}</p>
+                  </CardContent>
+                </Card>
+              </MotionWrapper>
+            ))}
+          </div>
+        </section>
       </main>
     </div>
   );
