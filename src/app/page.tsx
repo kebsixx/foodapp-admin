@@ -236,6 +236,15 @@ export default function Home() {
           </Button>
         </section>
       </main>
+
+      <footer className="bg-[#1BC464] text-white">
+        <Link
+          href={`https://www.instagram.com/ceritasenja_cafe`}
+          target="_blank"
+          className="container mx-auto px-4 text-center">
+          <p>@ceritasenja x @smkkrian1</p>
+        </Link>
+      </footer>
     </div>
   );
 }
