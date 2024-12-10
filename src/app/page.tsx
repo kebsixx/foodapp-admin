@@ -157,6 +157,41 @@ export default function Home() {
             ))}
           </div>
         </section>
+
+        <section className="mb-24">
+          <Card className="bg-[#1BC464] text-white">
+            <CardContent className="p-8 text-center">
+              <h3 className="text-3xl font-bold mb-4">
+                Download GadgetApp Today
+              </h3>
+              <p className="text-xl mb-6">
+                Experience the future of gadget shopping at your fingertips.
+              </p>
+              <div className="flex flex-wrap justify-center gap-4 md:gap-0 md:flex-nowrap md:space-x-4">
+                <Button size="lg" className="bg-white hover:bg-indigo-100">
+                  <Image
+                    src="/app-store.png"
+                    alt="App Store"
+                    className="mr-2 h-6 w-6"
+                    height={24}
+                    width={24}
+                  />
+                  App Store
+                </Button>
+                <Button size="lg" className="bg-white hover:bg-indigo-100">
+                  <Image
+                    src="/google-play.png"
+                    alt="Google Play"
+                    className="mr-2 h-6 w-6"
+                    height={24}
+                    width={24}
+                  />
+                  Google Play
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </section>
       </main>
     </div>
   );
