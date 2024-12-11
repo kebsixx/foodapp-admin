@@ -108,7 +108,7 @@ export default function Home() {
               </MotionWrapper>
             </div>
 
-            <div className="w-1/3">
+            <div className="w-full md:w-1/3">
               <motion.div
                 className="relative"
                 style={{ perspective: 1000 }}
