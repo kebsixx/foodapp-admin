@@ -102,7 +102,7 @@ export default function Home() {
                 </p>
               </MotionWrapper>
               <MotionWrapper delay={0.4}>
-                <Button size="lg" className="bg-[#C9DABF] hover:bg-[#A6B37D]">
+                <Button size="lg" className="bg-[#7FCD91] hover:bg-[#A6B37D]">
                   Download Now <ChevronRight className="ml-2 h-4 w-4" />
                 </Button>
               </MotionWrapper>
@@ -127,7 +127,7 @@ export default function Home() {
                   alt="Cerita Senja App Screenshot"
                   className="rounded-3xl object-cover shadow-2xl mx-auto h-[550px] w-[270px]"
                 />
-                <Badge className="absolute top-4 right-4 bg-[#9bcf41] text-white">
+                <Badge className="absolute top-4 right-4 bg-[#7FCD91] text-white">
                   New Release
                 </Badge>
               </motion.div>
@@ -155,7 +155,7 @@ export default function Home() {
         </section>
 
         <section className="mb-24">
-          <Card className="bg-[#C9DABF] text-white">
+          <Card className="bg-[#7FCD91] text-white">
             <CardContent className="p-8 text-center">
               <h3 className="text-3xl font-bold mb-4">
                 Download GadgetApp Today
@@ -164,17 +164,21 @@ export default function Home() {
                 Experience the future of gadget shopping at your fingertips.
               </p>
               <div className="flex flex-wrap justify-center gap-4 md:gap-0 md:flex-nowrap md:space-x-4">
-                <Button size="lg" className="bg-white hover:bg-indigo-100">
+                <Button
+                  size="lg"
+                  className="bg-white text-black hover:bg-green-100">
                   <Image
                     src="/app-store.png"
                     alt="App Store"
-                    className="mr-2 h-6 w-6"
+                    className="mr-2 h-6 w-6 "
                     height={24}
                     width={24}
                   />
                   App Store
                 </Button>
-                <Button size="lg" className="bg-white hover:bg-indigo-100">
+                <Button
+                  size="lg"
+                  className="bg-white text-black hover:bg-green-100">
                   <Image
                     src="/google-play.png"
                     alt="Google Play"
@@ -208,7 +212,7 @@ export default function Home() {
                       />
                       <div>
                         <h4 className="font-semibold">{testimonial.name}</h4>
-                        <div className="flex text-[#A6B37D]">
+                        <div className="flex text-[#7FCD91]">
                           {[...Array(5)].map((_, i) => (
                             <Star key={i} className="h-4 w-4 fill-current" />
                           ))}
@@ -232,13 +236,13 @@ export default function Home() {
           <p className="text-xl  mb-8">
             Download GadgetApp now and get 20% off your first in-app purchase!
           </p>
-          <Button size="lg" className="bg-[#B99470] hover:bg-[#a06f37]">
+          <Button size="lg" className="bg-[#7FCD91] hover:bg-[#8EB486]">
             Get Started <ChevronRight className="ml-2 h-4 w-4" />
           </Button>
         </section>
       </main>
 
-      <footer className="bg-[#B99470] text-white">
+      <footer className="bg-black text-white">
         <Link
           href={`https://www.instagram.com/ceritasenja_cafe`}
           target="_blank"
