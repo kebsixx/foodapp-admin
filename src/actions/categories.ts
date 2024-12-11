@@ -10,10 +10,10 @@ import {
 } from "@/app/admin/categories/create-category.schema";
 import { createClient } from "@/supabase/server";
 
-const supabase = createClient();
-
 export const getCategoriesWithProducts =
   async (): Promise<CategoriesWithProductsResponse> => {
+    const supabase = createClient();
+
     const { data, error } = await supabase
       .from("category")
       .select("*, products:product(*)")
@@ -25,6 +25,8 @@ export const getCategoriesWithProducts =
   };
 
 export const imageUploadHandler = async (formData: FormData) => {
+  const supabase = createClient();
+
   if (!formData) return;
 
   const fileEntry = formData.get("file");
@@ -61,6 +63,8 @@ export const createCategory = async ({
   imageUrl,
   name,
 }: CreateCategorySchemaServer) => {
+  const supabase = createClient();
+
   const slug = slugify(name, { lower: true });
 
   const { data, error } = await supabase.from("category").insert({
@@ -79,6 +83,7 @@ export const updateCategory = async ({
   name,
   slug,
 }: UpdateCategorySchema) => {
+  const supabase = createClient();
   const { data, error } = await supabase
     .from("category")
     .update({
@@ -93,12 +98,14 @@ export const updateCategory = async ({
 };
 
 export const deleteCategory = async (id: number) => {
+  const supabase = createClient();
   const { error } = await supabase.from("category").delete().match({ id });
 
   if (error) throw new Error(`Error deleting category: ${error.message}`);
 };
 
 export const getCategoryData = async () => {
+  const supabase = createClient();
   const { data, error } = await supabase.from("category").select("name, products:product(id)");
 
   if (error) throw new Error(`Error fetching category data: ${error.message}`);

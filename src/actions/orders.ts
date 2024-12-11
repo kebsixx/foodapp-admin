@@ -4,9 +4,8 @@ import { createClient } from "@/supabase/server";
 import { revalidatePath } from "next/cache";
 import { sendNotification } from "./notifications";
 
-const supabase = createClient();
-
 export const getOrdersWithProducts = async () => {
+    const supabase = createClient();
     const {data, error} = await supabase
         .from('order')
         .select('*, order_items:order_item(*, product(*)), user(*)')
@@ -18,6 +17,7 @@ export const getOrdersWithProducts = async () => {
 }
 
 export const updateOrderStatus = async (orderId: number, status: string) => {
+    const supabase = createClient();
     const {error} = await supabase
         .from('order')
         .update({status})
@@ -35,6 +35,7 @@ export const updateOrderStatus = async (orderId: number, status: string) => {
 };
 
 export const getMonthlyOrders = async () => {
+    const supabase = createClient();
     const {data, error} = await supabase.from('order').select('created_at');
 
     if (error) throw new Error(error.message);

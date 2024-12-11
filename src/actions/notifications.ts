@@ -2,8 +2,6 @@
 
 import { createClient } from "@/supabase/server";
 
-const supabase = createClient();
-
 async function sendPushNotification({
   expoPushToken, title, body
 }: {
@@ -31,6 +29,7 @@ async function sendPushNotification({
 }
 
 export const getUserNotificationToken = async (userId: string) => {
+    const supabase = createClient();  
     const {data, error} = await supabase
         .from('users')
         .select('expo_notification_token')

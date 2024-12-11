@@ -9,10 +9,9 @@ import {
 } from "@/app/admin/products/products.types";
 import { CreateProductSchemaServer } from "@/app/admin/products/schema";
 
-const supabase = createClient();
-
 export const getProductsWithCategories =
   async (): Promise<ProductsWithCategoriesResponse> => {
+    const supabase = createClient();
     const { data, error } = await supabase
       .from("product")
       .select("*, category:category(*)")
@@ -35,6 +34,7 @@ export const createProduct = async ({
   price,
   title,
 }: CreateProductSchemaServer) => {
+  const supabase = createClient();
   const slug = slugify(title, { lower: true });
 
   const { data, error } = await supabase.from("product").insert({
@@ -63,6 +63,7 @@ export const updateProduct = async ({
   slug,
   title,
 }: UpdateProductSchema) => {
+  const supabase = createClient();
   const { data, error } = await supabase
     .from("product")
     .update({
@@ -85,6 +86,7 @@ export const updateProduct = async ({
 };
 
 export const deleteProduct = async (slug: string) => {
+  const supabase = createClient();
   const { data, error } = await supabase.from("product").delete().match({
     slug,
   });
