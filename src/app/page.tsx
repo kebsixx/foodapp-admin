@@ -17,6 +17,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
+import "keen-slider/keen-slider.min.css";
+import { useKeenSlider } from "keen-slider/react";
+
 interface MotionWrapperProps {
   children: ReactNode;
   delay?: number;
@@ -52,20 +55,57 @@ const features = [
 
 const testimonials = [
   {
-    name: "John Doe",
+    date: "seminggu lalu",
+    name: "Ocsa Berinda",
     comment:
-      "GadgetApp has revolutionized how I shop for tech. It's so convenient!",
+      "cafe ter baik dan ter nyaman di krian besttt pokoknya, makanan dan minuman wajib di coba",
   },
   {
-    name: "Jane Doe",
+    date: "seminggu lalu",
+    name: "Putri Oktaviani",
     comment:
-      "The exclusive deals on this app are unbeatable. I've saved so much!",
+      "Beberapa kali kesini dan selalu ngajak temen2. Sangat worth it buat kumpul2, tempatnya adem, luas, pelayanannya juga bagus",
+  },
+  {
+    date: "seminggu lalu",
+    name: "Selvi Diana kamal",
+    comment:
+      "Tempatnya bagus, beberapa kali kesini ternyata sekarang lebih luas. Macam menunya lebih banyak recomended. Harga murah cocok buat nongkrong anak sekolah anak muda sampek dewasa",
+  },
+  {
+    date: "seminggu lalu",
+    name: "Kiki Hardhini",
+    comment:
+      "Makanan enak, thai tea jg enak, cirengnya juga. Enak semua makanannya. Tempatnya jg asyik.",
   },
 ];
 
 export default function Home() {
   const [isHovered, setIsHovered] = useState(false);
   const [rotate, setRotate] = useState({ rotateX: 0, rotateY: 0 });
+
+  const [sliderRef, instanceRef] = useKeenSlider(
+    {
+      loop: true,
+      slides: {
+        origin: "center",
+        perView: 1.25,
+        spacing: 16,
+      },
+      breakpoints: {
+        "(min-width: 1024px)": {
+          slides: {
+            origin: "auto",
+            perView: 2.5,
+            spacing: 32,
+          },
+        },
+      },
+    },
+    [
+      // add plugins here
+    ]
+  );
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -193,39 +233,120 @@ export default function Home() {
           </Card>
         </section>
 
-        <section className="mb-24">
-          <h3 className="text-3xl font-bold mb-8 text-center">
-            What Our Users Say
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <MotionWrapper key={index} delay={index * 0.1}>
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="flex items-center mb-4">
-                      <Image
-                        src={`https://images.unsplash.com/photo-1543610892-0b1f7e6d8ac1?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8YXZhdGFyfGVufDB8fDB8fHww`}
-                        alt={testimonial.name}
-                        className="w-12 h-12 rounded-full mr-4 object-cover"
-                        width={48}
-                        height={48}
-                      />
+        <section className="bg-gray-50 mb-24">
+          <div className="mx-auto max-w-[1340px] px-4 py-12 sm:px-6 lg:me-0 lg:py-16 lg:pe-0 xl:py-24">
+            <div className="max-w-7xl items-end justify-between sm:flex sm:pe-6 lg:pe-8">
+              <h2 className="max-w-xl text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+                Baca ulasan tepercaya dari pelanggan kami
+              </h2>
+
+              <div className="mt-8 flex gap-4 lg:mt-0">
+                <button
+                  aria-label="Previous slide"
+                  className="rounded-full border border-rose-600 p-3 text-rose-600 transition hover:bg-rose-600 hover:text-white">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="size-5 rtl:rotate-180">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15.75 19.5L8.25 12l7.5-7.5"
+                    />
+                  </svg>
+                </button>
+
+                <button
+                  aria-label="Next slide"
+                  id="keen-slider-next"
+                  className="rounded-full border border-rose-600 p-3 text-rose-600 transition hover:bg-rose-600 hover:text-white">
+                  <svg
+                    className="size-5 rtl:rotate-180"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M9 5l7 7-7 7"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div className="-mx-6 mt-8 lg:col-span-2 lg:mx-0">
+              <div ref={sliderRef} className="keen-slider">
+                {testimonials.map((testimonial, index) => (
+                  <div key={index} className="keen-slider__slide">
+                    <blockquote className="flex h-full flex-col justify-between bg-white p-6 shadow-sm sm:p-8 lg:p-12">
                       <div>
-                        <h4 className="font-semibold">{testimonial.name}</h4>
-                        <div className="flex text-[#7FCD91]">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} className="h-4 w-4 fill-current" />
-                          ))}
+                        <div className="flex gap-0.5 text-green-500">
+                          <svg
+                            className="size-5"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                          </svg>
+
+                          <svg
+                            className="size-5"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                          </svg>
+
+                          <svg
+                            className="size-5"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                          </svg>
+
+                          <svg
+                            className="size-5"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                          </svg>
+
+                          <svg
+                            className="size-5"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                          </svg>
+                        </div>
+
+                        <div className="mt-4">
+                          <p className="text-2xl font-bold text-rose-600 sm:text-3xl">
+                            {testimonial.name}
+                          </p>
+
+                          <p className="mt-4 leading-relaxed text-gray-700">
+                            {testimonial.comment}
+                          </p>
                         </div>
                       </div>
-                    </div>
-                    <p className="italic">
-                      &quot; {testimonial.comment} &quot;
-                    </p>
-                  </CardContent>
-                </Card>
-              </MotionWrapper>
-            ))}
+
+                      <footer className="mt-4 text-sm font-medium text-gray-700 sm:mt-6">
+                        &mdash; {testimonial.date}
+                      </footer>
+                    </blockquote>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
 
