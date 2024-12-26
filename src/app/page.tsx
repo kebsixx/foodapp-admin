@@ -10,6 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 import { useKeenSlider } from "keen-slider/react";
+import "keen-slider/keen-slider.min.css";
 
 interface MotionWrapperProps {
   children: ReactNode;
