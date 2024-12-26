@@ -17,8 +17,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-import "keen-slider/keen-slider.min.css";
 import { useKeenSlider } from "keen-slider/react";
+import "keen-slider/keen-slider.min.css";
 
 interface MotionWrapperProps {
   children: ReactNode;
@@ -84,28 +84,23 @@ export default function Home() {
   const [isHovered, setIsHovered] = useState(false);
   const [rotate, setRotate] = useState({ rotateX: 0, rotateY: 0 });
 
-  const [sliderRef, instanceRef] = useKeenSlider(
-    {
-      loop: true,
-      slides: {
-        origin: "center",
-        perView: 1.25,
-        spacing: 16,
-      },
-      breakpoints: {
-        "(min-width: 1024px)": {
-          slides: {
-            origin: "auto",
-            perView: 2.5,
-            spacing: 32,
-          },
+  const [sliderRef, instanceRef] = useKeenSlider({
+    loop: true,
+    slides: {
+      origin: "center",
+      perView: 1.25,
+      spacing: 16,
+    },
+    breakpoints: {
+      "(min-width: 1024px)": {
+        slides: {
+          origin: "auto",
+          perView: 2.5,
+          spacing: 32,
         },
       },
     },
-    [
-      // add plugins here
-    ]
-  );
+  });
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -238,7 +233,7 @@ export default function Home() {
         </section>
 
         <section className="bg-gray-50 mb-24">
-          <div className="mx-auto max-w-[1340px] px-4 py-12 sm:px-6 lg:me-0 lg:py-16 lg:pe-0 xl:py-24">
+          <div className="mx-auto max-w-screen-2xl px-4 py-12 sm:px-6 lg:me-0 lg:py-16 lg:pe-0 lg:ps-32 xl:py-24">
             <div className="max-w-7xl items-end justify-between sm:flex sm:pe-6 lg:pe-8">
               <h2 className="max-w-xl text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
                 Baca ulasan tepercaya dari pelanggan kami
@@ -246,6 +241,7 @@ export default function Home() {
 
               <div className="mt-8 flex gap-4 lg:mt-0">
                 <button
+                  onClick={() => instanceRef.current?.prev()}
                   aria-label="Previous slide"
                   className="rounded-full border border-rose-600 p-3 text-rose-600 transition hover:bg-rose-600 hover:text-white">
                   <svg
@@ -264,8 +260,8 @@ export default function Home() {
                 </button>
 
                 <button
+                  onClick={() => instanceRef.current?.next()}
                   aria-label="Next slide"
-                  id="keen-slider-next"
                   className="rounded-full border border-rose-600 p-3 text-rose-600 transition hover:bg-rose-600 hover:text-white">
                   <svg
                     className="size-5 rtl:rotate-180"
