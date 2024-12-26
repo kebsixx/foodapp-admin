@@ -2,23 +2,14 @@
 
 import { ReactNode, useState } from "react";
 import { motion } from "framer-motion";
-import Link from "next/link";
 import Image from "next/image";
-import {
-  ChevronRight,
-  Star,
-  Smartphone,
-  Zap,
-  ShoppingCart,
-  Gift,
-} from "lucide-react";
+import { ChevronRight, Smartphone, Zap, Gift } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 import { useKeenSlider } from "keen-slider/react";
-import "keen-slider/keen-slider.min.css";
 
 interface MotionWrapperProps {
   children: ReactNode;
