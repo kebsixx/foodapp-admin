@@ -36,12 +36,14 @@ export const ProductList = ({ products }: Props) => {
               key={product.id}
               className="hover:shadow-lg transition-shadow"
               isPressable>
-              <CardBody className="p-0">
+              <CardBody className="overflow-visible p-0">
                 <Image
                   src={product.heroImage}
                   alt={product.title}
-                  className="w-full h-48 object-fill"
-                  radius="none"
+                  className="w-full h-48 object-cover"
+                  radius="lg"
+                  shadow="sm"
+                  width="100%"
                 />
               </CardBody>
               <CardFooter className="flex justify-between items-center p-4">
