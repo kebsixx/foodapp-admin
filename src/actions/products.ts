@@ -9,6 +9,20 @@ import {
 } from "@/app/admin/products/products.types";
 import { CreateProductSchemaServer } from "@/app/admin/products/schema";
 
+export const getProducts = async () => {
+  const supabase = createClient();
+  
+  const { data, error } = await supabase
+    .from("product")
+    .select("*");
+
+  if (error) {
+    throw new Error(`Error Fetching products: ${error.message}`);
+  }
+
+  return data || [];
+};
+
 export const getProductsWithCategories =
   async (): Promise<ProductsWithCategoriesResponse> => {
     const supabase = createClient();

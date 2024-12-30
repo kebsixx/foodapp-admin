@@ -1,220 +1,38 @@
-"use client";
-
-import { ReactNode, useState } from "react";
-import { motion } from "framer-motion";
 import Image from "next/image";
-import { useTheme } from "next-themes";
-import { ChevronRight, Smartphone, Zap, Gift, Moon, Sun } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
-import { useKeenSlider } from "keen-slider/react";
-import "keen-slider/keen-slider.min.css";
+import { ProductList } from "@/components/product-list";
+import { getProductsWithCategories } from "@/actions/products";
 
-interface MotionWrapperProps {
-  children: ReactNode;
-  delay?: number;
-}
+import Hero from "@/components/hero";
+import Feature from "@/components/feature";
+import Testimonial from "@/components/testimonial";
+import ThemeToggle from "@/components/theme-toggle";
 
-const MotionWrapper = ({ children, delay = 0 }: MotionWrapperProps) => (
-  <motion.div
-    initial={{ opacity: 0, y: 50 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.5, delay }}>
-    {children}
-  </motion.div>
-);
-
-const features = [
-  {
-    icon: Smartphone,
-    title: "User-Friendly Interface",
-    description: "Intuitive design for effortless navigation and shopping.",
-  },
-  {
-    icon: Zap,
-    title: "Lightning-Fast Search",
-    description:
-      "Find the perfect gadget in seconds with our powerful search engine.",
-  },
-  {
-    icon: Gift,
-    title: "Exclusive Deals",
-    description: "Access app-only discounts and special offers.",
-  },
-];
-
-const testimonials = [
-  {
-    date: "seminggu lalu",
-    name: "Ocsa Berinda",
-    comment:
-      "cafe ter baik dan ter nyaman di krian besttt pokoknya, makanan dan minuman wajib di coba",
-  },
-  {
-    date: "seminggu lalu",
-    name: "Putri Oktaviani",
-    comment:
-      "Beberapa kali kesini dan selalu ngajak temen2. Sangat worth it buat kumpul2, tempatnya adem, luas, pelayanannya juga bagus",
-  },
-  {
-    date: "seminggu lalu",
-    name: "Selvi Diana kamal",
-    comment:
-      "Tempatnya bagus, beberapa kali kesini ternyata sekarang lebih luas. Macam menunya lebih banyak recomended. Harga murah cocok buat nongkrong anak sekolah anak muda sampek dewasa",
-  },
-  {
-    date: "seminggu lalu",
-    name: "Kiki Hardhini",
-    comment:
-      "Makanan enak, thai tea jg enak, cirengnya juga. Enak semua makanannya. Tempatnya jg asyik.",
-  },
-];
-
-export default function Home() {
-  const { setTheme } = useTheme();
-
-  const [isHovered, setIsHovered] = useState(false);
-  const [rotate, setRotate] = useState({ rotateX: 0, rotateY: 0 });
-
-  const [sliderRef, instanceRef] = useKeenSlider({
-    loop: true,
-    slides: {
-      origin: "center",
-      perView: 1.25,
-      spacing: 16,
-    },
-    breakpoints: {
-      "(min-width: 1024px)": {
-        slides: {
-          origin: "auto",
-          perView: 2.5,
-          spacing: 32,
-        },
-      },
-    },
-  });
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-
-    const rotateX = -(y - centerY) / 12;
-    const rotateY = (x - centerX) / 12;
-
-    setRotate({ rotateX, rotateY });
-  };
+export default async function Home() {
+  const products = await getProductsWithCategories();
+  console.log(products);
 
   return (
     <div className="min-h-screen">
       <header className="container mx-auto px-4 py-6 flex justify-between items-center">
         <h1 className="text-2xl font-bold">Cerita Senja</h1>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="icon">
-              <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-              <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-              <span className="sr-only">Toggle theme</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => setTheme("light")}>
-              Light
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setTheme("dark")}>
-              Dark
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setTheme("system")}>
-              System
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <ThemeToggle />
       </header>
 
       <main className="container mx-auto px-4 py-12">
         {/* Hero Section */}
         <section className="mb-24">
-          <div className="flex flex-col justify-between md:flex-row items-center">
-            <div className="md:w-1/2 mb-8 md:mb-0">
-              <MotionWrapper>
-                <h2 className="text-4xl md:text-6xl font-bold mb-4">
-                  Nikmati kelezatan Cerita Senja di mana saja, kapan saja!
-                </h2>
-              </MotionWrapper>
-              <MotionWrapper delay={0.2}>
-                <p className="text-xl  mb-6">
-                  Pesan makanan dan minuman favoritmu dengan mudah melalui
-                  aplikasi kami.
-                </p>
-              </MotionWrapper>
-              <MotionWrapper delay={0.4}>
-                <a className="group relative inline-block focus:outline-none focus:ring">
-                  <span className="absolute inset-0 translate-x-1.5 translate-y-1.5 bg-[#7FCD91] transition-transform group-hover:translate-x-0 group-hover:translate-y-0"></span>
-
-                  <span className="relative inline-block border-2 border-current px-8 py-3 text-sm font-bold uppercase tracking-widest text-black group-active:text-opacity-75 dark:text-white">
-                    Download
-                  </span>
-                </a>
-              </MotionWrapper>
-            </div>
-
-            <div className="w-full md:w-1/3">
-              <motion.div
-                className="relative"
-                style={{ perspective: 1000 }}
-                animate={{
-                  rotateX: isHovered ? rotate.rotateX : 0,
-                  rotateY: isHovered ? rotate.rotateY : 0,
-                }}
-                transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                onMouseMove={handleMouseMove}
-                onHoverStart={() => setIsHovered(true)}
-                onHoverEnd={() => setIsHovered(false)}>
-                <Image
-                  width={1920}
-                  height={1080}
-                  src="/app-pics.png"
-                  alt="Cerita Senja App Screenshot"
-                  className="rounded-3xl object-cover shadow-2xl mx-auto h-[550px] w-[270px]"
-                />
-                <Badge className="absolute top-4 right-4 bg-[#7FCD91] text-white">
-                  New Release
-                </Badge>
-              </motion.div>
-            </div>
-          </div>
+          <Hero />
         </section>
 
         {/* Features Section */}
-        <section className="mb-24">
-          <h3 className="text-3xl font-bold mb-8 text-center">App Features</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {features.map((feature, index) => (
-              <MotionWrapper key={index} delay={index * 0.1}>
-                <Card>
-                  <CardContent className="p-6 flex flex-col items-center text-center">
-                    <feature.icon className="h-12 w-12  mb-4" />
-                    <h4 className="text-xl font-semibold mb-2">
-                      {feature.title}
-                    </h4>
-                    <p>{feature.description}</p>
-                  </CardContent>
-                </Card>
-              </MotionWrapper>
-            ))}
-          </div>
-        </section>
+        <Feature />
+
+        {/* Product Showcase Section */}
+        <ProductList products={products} />
 
         {/* Promotion Application Section */}
         <section className="mb-24">
@@ -257,124 +75,7 @@ export default function Home() {
         </section>
 
         {/* Testimonial Section */}
-        <section className="bg-gray-50 mb-24 rounded-sm dark:bg-gray-700">
-          <div className="mx-auto max-w-screen-2xl px-4 py-12 sm:px-6 lg:me-0 lg:py-16 lg:pe-0 lg:ps-32 xl:py-24">
-            <div className="max-w-7xl items-end justify-between sm:flex sm:pe-6 lg:pe-8">
-              <h2 className="max-w-xl text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl dark:text-white">
-                Baca ulasan tepercaya dari pelanggan kami
-              </h2>
-
-              <div className="mt-8 flex gap-4 lg:mt-0">
-                <button
-                  onClick={() => instanceRef.current?.prev()}
-                  aria-label="Previous slide"
-                  className="rounded-full border border-rose-600 p-3 text-rose-600 transition hover:bg-rose-600 hover:text-white">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth="1.5"
-                    stroke="currentColor"
-                    className="size-5 rtl:rotate-180">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M15.75 19.5L8.25 12l7.5-7.5"
-                    />
-                  </svg>
-                </button>
-
-                <button
-                  onClick={() => instanceRef.current?.next()}
-                  aria-label="Next slide"
-                  className="rounded-full border border-rose-600 p-3 text-rose-600 transition hover:bg-rose-600 hover:text-white">
-                  <svg
-                    className="size-5 rtl:rotate-180"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      d="M9 5l7 7-7 7"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
-
-            {/* Testimonial Slider */}
-            <div className="-mx-6 mt-8 lg:col-span-2 lg:mx-0">
-              <div ref={sliderRef} className="keen-slider">
-                {testimonials.map((testimonial, index) => (
-                  <div key={index} className="keen-slider__slide">
-                    <blockquote className="flex h-full flex-col justify-between bg-white rounded-md p-6 sm:p-8 lg:p-12">
-                      <div>
-                        <div className="flex gap-0.5 text-green-500">
-                          <svg
-                            className="size-5"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                          </svg>
-
-                          <svg
-                            className="size-5"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                          </svg>
-
-                          <svg
-                            className="size-5"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                          </svg>
-
-                          <svg
-                            className="size-5"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                          </svg>
-
-                          <svg
-                            className="size-5"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                          </svg>
-                        </div>
-
-                        <div className="mt-4">
-                          <p className="text-2xl font-bold text-rose-600 sm:text-3xl">
-                            {testimonial.name}
-                          </p>
-
-                          <p className="mt-4 leading-relaxed text-gray-700">
-                            {testimonial.comment}
-                          </p>
-                        </div>
-                      </div>
-
-                      <footer className="mt-4 text-sm font-medium text-gray-700 sm:mt-6">
-                        &mdash; {testimonial.date}
-                      </footer>
-                    </blockquote>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
+        <Testimonial />
 
         {/* Download App */}
         <section className="text-center">

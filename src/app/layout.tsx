@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
+import { Providers } from "./providers";
 
 import "@/styles/globals.css";
 import { ThemeProvider } from "@/providers/theme-provider";
@@ -25,7 +26,9 @@ export default function RootLayout({
           defaultTheme="ligth"
           enableSystem
           disableTransitionOnChange>
-          <main>{children}</main>
+          <Providers>
+            <main>{children}</main>
+          </Providers>
           <Toaster richColors />
         </ThemeProvider>
       </body>
