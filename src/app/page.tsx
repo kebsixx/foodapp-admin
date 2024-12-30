@@ -162,7 +162,7 @@ export default function Home() {
                 <a className="group relative inline-block focus:outline-none focus:ring">
                   <span className="absolute inset-0 translate-x-1.5 translate-y-1.5 bg-[#7FCD91] transition-transform group-hover:translate-x-0 group-hover:translate-y-0"></span>
 
-                  <span className="relative inline-block border-2 border-current px-8 py-3 text-sm font-bold uppercase tracking-widest text-black group-active:text-opacity-75">
+                  <span className="relative inline-block border-2 border-current px-8 py-3 text-sm font-bold uppercase tracking-widest text-black group-active:text-opacity-75 dark:text-white">
                     Download
                   </span>
                 </a>
@@ -257,10 +257,10 @@ export default function Home() {
         </section>
 
         {/* Testimonial Section */}
-        <section className="bg-gray-50 mb-24">
+        <section className="bg-gray-50 mb-24 rounded-sm dark:bg-gray-700">
           <div className="mx-auto max-w-screen-2xl px-4 py-12 sm:px-6 lg:me-0 lg:py-16 lg:pe-0 lg:ps-32 xl:py-24">
             <div className="max-w-7xl items-end justify-between sm:flex sm:pe-6 lg:pe-8">
-              <h2 className="max-w-xl text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+              <h2 className="max-w-xl text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl dark:text-white">
                 Baca ulasan tepercaya dari pelanggan kami
               </h2>
 
@@ -310,7 +310,7 @@ export default function Home() {
               <div ref={sliderRef} className="keen-slider">
                 {testimonials.map((testimonial, index) => (
                   <div key={index} className="keen-slider__slide">
-                    <blockquote className="flex h-full flex-col justify-between bg-white p-6 shadow-sm sm:p-8 lg:p-12">
+                    <blockquote className="flex h-full flex-col justify-between bg-white rounded-md p-6 sm:p-8 lg:p-12">
                       <div>
                         <div className="flex gap-0.5 text-green-500">
                           <svg
@@ -385,11 +385,30 @@ export default function Home() {
             Dari kopi spesial hingga hidangan utama yang menggugah selera, kami
             punya semuanya.
           </p>
-          <Button
-            size="lg"
-            className="bg-white rounded-full border border-[#7FCD91] px-12 py-3 text-sm font-medium text-[#7FCD91] hover:bg-[#7FCD91] hover:text-white focus:outline-none focus:ring active:bg-[#7FCD91]">
-            Get Started <ChevronRight className="ml-2 h-4 w-4" />
-          </Button>
+          <a
+            className="group relative inline-flex w-56 justify-center items-center overflow-hidden rounded-full bg-transparent border-2 border-[#7FCD91] px-8 py-3 text-[#7FCD91] focus:outline-none focus:ring active:bg-[#7FCD91] hover:bg-[#7FCD91] hover:text-white"
+            href="#">
+            <span className="absolute -end-full transition-all group-hover:end-4">
+              <svg
+                className="size-5 rtl:rotate-180"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M17 8l4 4m0 0l-4 4m4-4H3"
+                />
+              </svg>
+            </span>
+
+            <span className="text-sm font-medium transition-all group-hover:me-4">
+              {" "}
+              Download{" "}
+            </span>
+          </a>
         </section>
       </main>
 
