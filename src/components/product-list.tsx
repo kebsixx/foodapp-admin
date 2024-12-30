@@ -14,13 +14,12 @@ export const ProductList = ({ products }: Props) => {
       <div className="mx-auto max-w-full px-4 py-8 sm:px-6 sm:py-12">
         <header>
           <h2 className="text-xl font-bold text-gray-900 sm:text-3xl">
-            Product Collection
+            Menu kami untuk Anda
           </h2>
 
           <p className="mt-4 max-w-md text-gray-500">
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Itaque
-            praesentium cumque iure dicta incidunt est ipsam, officia dolor
-            fugit natus?
+            Rasakan nikmatnya makanan dan minuman yang kami sajikan untuk Anda.
+            Pilih menu favorit Anda dan nikmati kelezatannya.
           </p>
         </header>
 
@@ -48,12 +47,9 @@ export const ProductList = ({ products }: Props) => {
               </CardBody>
               <CardFooter className="flex justify-between items-center p-4">
                 <div>
-                  <h3 className="font-semibold text-lg">{product.title}</h3>
-                  <p className="text-sm text-gray-500">
-                    {product.category.name}
-                  </p>
+                  <h3 className="font-medium text-lg">{product.title}</h3>
                 </div>
-                <p className="text-lg font-bold">
+                <p className="text-default-500">
                   {new Intl.NumberFormat("id-ID", {
                     style: "currency",
                     currency: "IDR",
