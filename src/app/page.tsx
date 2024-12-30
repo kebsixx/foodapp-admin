@@ -114,6 +114,7 @@ export default function Home() {
       </header>
 
       <main className="container mx-auto px-4 py-12">
+        {/* Hero Section */}
         <section className="mb-24">
           <div className="flex flex-col justify-between md:flex-row items-center">
             <div className="md:w-1/2 mb-8 md:mb-0">
@@ -166,6 +167,7 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Features Section */}
         <section className="mb-24">
           <h3 className="text-3xl font-bold mb-8 text-center">App Features</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -185,14 +187,15 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Promotion Application Section */}
         <section className="mb-24">
           <Card className="bg-[#7FCD91] text-white">
             <CardContent className="p-8 text-center">
               <h3 className="text-3xl font-bold mb-4">
-                Download GadgetApp Today
+                Download Cerita Senja Sekarang
               </h3>
               <p className="text-xl mb-6">
-                Experience the future of gadget shopping at your fingertips.
+                Rasakan kemudahan memesan makanan dan minuman favoritmu.
               </p>
               <div className="flex flex-wrap justify-center gap-4 md:gap-0 md:flex-nowrap md:space-x-4">
                 <Button
@@ -224,6 +227,7 @@ export default function Home() {
           </Card>
         </section>
 
+        {/* Testimonial Section */}
         <section className="bg-gray-50 mb-24">
           <div className="mx-auto max-w-screen-2xl px-4 py-12 sm:px-6 lg:me-0 lg:py-16 lg:pe-0 lg:ps-32 xl:py-24">
             <div className="max-w-7xl items-end justify-between sm:flex sm:pe-6 lg:pe-8">
@@ -272,6 +276,7 @@ export default function Home() {
               </div>
             </div>
 
+            {/* Testimonial Slider */}
             <div className="-mx-6 mt-8 lg:col-span-2 lg:mx-0">
               <div ref={sliderRef} className="keen-slider">
                 {testimonials.map((testimonial, index) => (
@@ -342,6 +347,7 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Download App */}
         <section className="text-center">
           <h3 className="text-3xl font-bold mb-4">
             Nikmati beragam pilihan makanan dan minuman lezat.
