@@ -21,5 +21,12 @@ export function createClient() {
         }
       },
     },
+    db: {
+        schema: 'public'
+      },
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+      }
   });
 }

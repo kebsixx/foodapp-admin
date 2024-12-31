@@ -13,7 +13,6 @@ import { CreateProductSchemaServer } from "@/app/admin/products/schema";
 export const getProducts = async (): Promise<ProductsResponse> => {
   const supabase = createClient();
 
-  
   const { data, error } = await supabase
     .from("product")
     .select("*");
