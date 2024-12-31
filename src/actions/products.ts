@@ -12,11 +12,17 @@ import { CreateProductSchemaServer } from "@/app/admin/products/schema";
 
 export const getProducts = async (): Promise<ProductsResponse> => {
   const supabase = createClient();
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000);
   
   const { data, error } = await supabase
     .from("product")
     .select("*")
-    .returns<ProductsResponse>();
+    .returns<ProductsResponse>()
+    .abortSignal(controller.signal);
+
+  clearTimeout(timeoutId);
 
   if (error) {
     throw new Error(`Error Fetching products: ${error.message}`);
