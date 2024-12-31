@@ -2,10 +2,10 @@
 
 import React from "react";
 import { Card, CardBody, CardFooter, Image } from "@nextui-org/react";
-import { ProductsWithCategoriesResponse } from "@/app/admin/products/products.types";
+import { ProductsResponse } from "@/app/products.types";
 
 type Props = {
-  products: ProductsWithCategoriesResponse;
+  products: ProductsResponse;
 };
 
 export const Content = ({ products }: Props) => {

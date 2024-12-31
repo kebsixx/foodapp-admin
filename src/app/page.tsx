@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
-import { getProductsWithCategories } from "@/actions/products";
+import { getProducts } from "@/actions/products";
 
 import ProductList from "@/components/product-list";
 import Hero from "@/components/hero";
@@ -12,7 +12,7 @@ import Testimonial from "@/components/testimonial";
 import ThemeToggle from "@/components/theme-toggle";
 
 export default async function Home() {
-  const products = await getProductsWithCategories();
+  const products = await getProducts();
 
   return (
     <div className="min-h-screen">
