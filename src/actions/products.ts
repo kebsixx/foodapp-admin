@@ -7,22 +7,15 @@ import {
   ProductsWithCategoriesResponse,
   UpdateProductSchema,
 } from "@/app/admin/products/products.types";
-import { ProductsResponse } from "@/app/products.types";
 import { CreateProductSchemaServer } from "@/app/admin/products/schema";
 
-export const getProducts = async (): Promise<ProductsResponse> => {
+export const getProducts = async () => {
   const supabase = createClient();
-
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 10000);
   
   const { data, error } = await supabase
     .from("product")
-    .select("*")
-    .returns<ProductsResponse>()
-    .abortSignal(controller.signal);
+    .select("*");
 
-  clearTimeout(timeoutId);
 
   if (error) {
     throw new Error(`Error Fetching products: ${error.message}`);

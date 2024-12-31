@@ -12,8 +12,6 @@ import Testimonial from "@/components/testimonial";
 import ThemeToggle from "@/components/theme-toggle";
 
 export default async function Home() {
-  const products = await getProducts();
-
   return (
     <div className="min-h-screen">
       <header className="container mx-auto px-4 py-6 flex justify-between items-center">
@@ -31,7 +29,7 @@ export default async function Home() {
         <Feature />
 
         {/* Product Showcase Section */}
-        <ProductList products={products} />
+        <ProductList />
 
         {/* Promotion Application Section */}
         <section className="mb-24">

@@ -3,12 +3,11 @@
 import React from "react";
 import { Card, CardBody, CardFooter, Image } from "@nextui-org/react";
 import { ProductsResponse } from "@/app/products.types";
+import { getProducts } from "@/actions/products";
 
-type Props = {
-  products: ProductsResponse;
-};
+export const Content = async () => {
+  const products = await getProducts();
 
-export const Content = ({ products }: Props) => {
   return (
     <section className="mb-24">
       <div className="mx-auto max-w-full px-4 py-8 sm:px-6 sm:py-12">
@@ -58,6 +57,6 @@ export const Content = ({ products }: Props) => {
   );
 };
 
-export default function ProductList({ products }: Props) {
-  return <Content products={products} />;
+export default function ProductList() {
+  return <Content />;
 }
