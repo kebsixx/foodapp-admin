@@ -1,13 +1,7 @@
 "use client";
 
 import React from "react";
-import {
-  Card,
-  CardBody,
-  CardFooter,
-  Image,
-  ScrollShadow,
-} from "@nextui-org/react";
+import { Card, CardBody, CardFooter, Image } from "@nextui-org/react";
 import { ProductsWithCategoriesResponse } from "@/app/admin/products/products.types";
 
 type Props = {
@@ -65,9 +59,5 @@ export const Content = ({ products }: Props) => {
 };
 
 export default function ProductList({ products }: Props) {
-  return (
-    <ScrollShadow orientation="horizontal">
-      <Content products={products} />
-    </ScrollShadow>
-  );
+  return <Content products={products} />;
 }
