@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
@@ -11,7 +13,11 @@ import Feature from "@/components/feature";
 import Testimonial from "@/components/testimonial";
 import ThemeToggle from "@/components/theme-toggle";
 
-export default async function Home() {
+export const runtime = "edge";
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
+
+export default function Home() {
   return (
     <div className="min-h-screen">
       <header className="container mx-auto px-4 py-6 flex justify-between items-center">
