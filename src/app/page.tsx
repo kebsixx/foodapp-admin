@@ -13,7 +13,6 @@ import ThemeToggle from "@/components/theme-toggle";
 
 export default async function Home() {
   const products = await getProducts();
-  console.log(products);
 
   return (
     <div className="min-h-screen">

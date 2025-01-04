@@ -13,7 +13,7 @@ export const Content = ({ products }: Props) => {
     <section className="mb-24">
       <div className="mx-auto max-w-full px-4 py-8 sm:px-6 sm:py-12">
         <header className="text-center">
-          <h2 className="text-xl font-bold text-gray-900 sm:text-3xl">
+          <h2 className="text-xl font-bold text-gray-900 sm:text-3xl dark:text-white">
             Menu kami untuk Anda
           </h2>
 
