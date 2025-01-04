@@ -1,10 +1,8 @@
 "use client";
 
-import React from "react";
-
-import { ReactNode, useState } from "react";
+import React, { ReactNode } from "react";
 import { motion } from "framer-motion";
-import { Smartphone, Zap, Gift } from "lucide-react";
+import { UtensilsCrossed, Clock, Truck } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface MotionWrapperProps {
@@ -23,33 +21,34 @@ const MotionWrapper = ({ children, delay = 0 }: MotionWrapperProps) => (
 
 const features = [
   {
-    icon: Smartphone,
-    title: "User-Friendly Interface",
-    description: "Intuitive design for effortless navigation and shopping.",
+    icon: UtensilsCrossed,
+    title: "Menu Berkualitas",
+    description: "Nikmati hidangan lezat dengan bahan-bahan premium pilihan.",
   },
   {
-    icon: Zap,
-    title: "Lightning-Fast Search",
+    icon: Clock,
+    title: "Pelayanan Cepat",
     description:
-      "Find the perfect gadget in seconds with our powerful search engine.",
+      "Pesanan Anda akan segera disiapkan oleh tim profesional kami.",
   },
   {
-    icon: Gift,
-    title: "Exclusive Deals",
-    description: "Access app-only discounts and special offers.",
+    icon: Truck,
+    title: "Fleksibel Pengambilan",
+    description:
+      "Ambil langsung di cafe atau gunakan layanan pesan antar pihak ketiga pilihan Anda.",
   },
 ];
 
 function Feature() {
   return (
     <section className="mb-24">
-      <h3 className="text-3xl font-bold mb-8 text-center">App Features</h3>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <h3 className="text-3xl font-bold mb-8 text-center">Layanan Kami</h3>
+      <div className="flex justify-center gap-8 items-center">
         {features.map((feature, index) => (
           <MotionWrapper key={index} delay={index * 0.1}>
             <Card>
-              <CardContent className="p-6 flex flex-col items-center text-center">
-                <feature.icon className="h-12 w-12  mb-4" />
+              <CardContent className="p-6 flex flex-col items-center text-center max-w-md">
+                <feature.icon className="h-12 w-12 mb-4" />
                 <h4 className="text-xl font-semibold mb-2">{feature.title}</h4>
                 <p>{feature.description}</p>
               </CardContent>
