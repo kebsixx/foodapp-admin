@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/sonner";
 
 import "@/styles/globals.css";
 import { ThemeProvider } from "@/providers/theme-provider";
+import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,7 +26,10 @@ export default function RootLayout({
           defaultTheme="ligth"
           enableSystem
           disableTransitionOnChange>
-          <main>{children}</main>
+          <main>
+            {children}
+            <Analytics />
+          </main>
           <Toaster richColors />
         </ThemeProvider>
       </body>
