@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { CircleUser, Menu, Moon, Package2, Search, Sun } from "lucide-react";
+import { CircleUser, Menu, Moon, Package2, Sun } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -13,11 +13,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import { createClient } from "@/supabase/client";
+import { useEffect, useState } from "react";
 
 const NAV_LINKS = [
   { href: "/admin/dashboard", label: "Dashboard" },
@@ -25,6 +26,60 @@ const NAV_LINKS = [
   { href: "/admin/products", label: "Products" },
   { href: "/admin/categories", label: "Categories" },
 ];
+
+const StoreToggle = () => {
+  const [isOpen, setIsOpen] = useState(true);
+  const supabase = createClient();
+
+  useEffect(() => {
+    const getStoreStatus = async () => {
+      const { data } = await supabase
+        .from("store_settings")
+        .select("is_open")
+        .single();
+
+      console.log("Initial store status:", data);
+      if (data) setIsOpen(data.is_open!);
+    };
+    getStoreStatus();
+  }, [supabase]);
+
+  const toggleStore = async () => {
+    console.log("Toggling store to:", !isOpen);
+
+    const { data: settings } = await supabase
+      .from("store_settings")
+      .select("id")
+      .not("id", "is", null)
+      .single();
+
+    if (settings) {
+      const { error } = await supabase
+        .from("store_settings")
+        .update({ is_open: !isOpen })
+        .eq("id", settings.id) // Use the UUID instead of numeric ID
+        .select();
+
+      if (!error) setIsOpen(!isOpen);
+    }
+
+    const { data, error } = await supabase
+      .from("store_settings")
+      .update({ is_open: !isOpen })
+      .eq("id", 1)
+      .select();
+
+    console.log("Toggle response:", data, error);
+    if (!error) setIsOpen(!isOpen);
+  };
+
+  return (
+    <div className="flex items-center gap-2 ml-auto">
+      <span>{isOpen ? "Open" : "Closed"}</span>
+      <Switch checked={isOpen} onCheckedChange={toggleStore} />
+    </div>
+  );
+};
 
 export const Header = () => {
   const pathname = usePathname();
@@ -87,16 +142,7 @@ export const Header = () => {
         </SheetContent>
       </Sheet>
       <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
-        <form className="ml-auto flex-1 sm:flex-initial">
-          <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Search products..."
-              className="pl-8 sm:w-[300px] md:w-[200px] lg:w-[300px]"
-            />
-          </div>
-        </form>
+        <StoreToggle />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="secondary" size="icon" className="rounded-full">

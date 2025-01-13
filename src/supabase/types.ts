@@ -157,6 +157,36 @@ export type Database = {
           },
         ]
       }
+      store_settings: {
+        Row: {
+          close_time: string
+          created_at: string | null
+          id: string
+          is_open: boolean | null
+          manual_override: boolean | null
+          open_time: string
+          updated_at: string | null
+        }
+        Insert: {
+          close_time: string
+          created_at?: string | null
+          id?: string
+          is_open?: boolean | null
+          manual_override?: boolean | null
+          open_time: string
+          updated_at?: string | null
+        }
+        Update: {
+          close_time?: string
+          created_at?: string | null
+          id?: string
+          is_open?: boolean | null
+          manual_override?: boolean | null
+          open_time?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       users: {
         Row: {
           address: string | null
@@ -164,10 +194,10 @@ export type Database = {
           create_at: string | null
           email: string
           expo_notification_token: string | null
-          gender: string | null
+          gender: boolean | null
           id: string
           name: string | null
-          phone: number | null
+          phone: string | null
           type: string | null
         }
         Insert: {
@@ -176,10 +206,10 @@ export type Database = {
           create_at?: string | null
           email: string
           expo_notification_token?: string | null
-          gender?: string | null
+          gender?: boolean | null
           id: string
           name?: string | null
-          phone?: number | null
+          phone?: string | null
           type?: string | null
         }
         Update: {
@@ -188,10 +218,10 @@ export type Database = {
           create_at?: string | null
           email?: string
           expo_notification_token?: string | null
-          gender?: string | null
+          gender?: boolean | null
           id?: string
           name?: string | null
-          phone?: number | null
+          phone?: string | null
           type?: string | null
         }
         Relationships: []
@@ -207,6 +237,10 @@ export type Database = {
           quantity: number
         }
         Returns: undefined
+      }
+      is_store_open: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
       }
     }
     Enums: {
