@@ -75,7 +75,20 @@ const StoreToggle = () => {
 
   return (
     <div className="flex items-center gap-2 ml-auto">
-      <span>{isOpen ? "Open" : "Closed"}</span>
+      <div className="flex items-center gap-2">
+        <div className={`h-3 w-3 rounded-full ${
+          isOpen 
+            ? 'bg-green-500 animate-pulse' 
+            : 'bg-red-500 animate-pulse'
+        }`} />
+        <span className={`font-medium ${
+          isOpen 
+            ? 'text-green-500' 
+            : 'text-red-500'
+        }`}>
+          {isOpen ? "Open" : "Closed"}
+        </span>
+      </div>
       <Switch checked={isOpen} onCheckedChange={toggleStore} />
     </div>
   );
