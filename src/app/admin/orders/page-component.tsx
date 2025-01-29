@@ -118,8 +118,8 @@ export default function PageComponent({ ordersWithProducts }: Props) {
             <TableHead>Created At</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Description</TableHead>
-            <TableHead>User</TableHead>
-            <TableHead>Slug</TableHead>
+            <TableHead>Name</TableHead>
+            <TableHead>Order ID</TableHead>
             <TableHead>Total Price</TableHead>
             <TableHead>Products</TableHead>
             <TableHead>Actions</TableHead>
@@ -150,7 +150,7 @@ export default function PageComponent({ ordersWithProducts }: Props) {
               </TableCell>
               <TableCell>{order.description || `No Description`}</TableCell>
               {/* @ts-ignore */}
-              <TableCell>{order.user.email}</TableCell>
+              <TableCell>{order.user.name}</TableCell>
               <TableCell>{order.slug}</TableCell>
               <TableCell>Rp. {order.totalPrice.toFixed(3)}</TableCell>
               <TableCell>
