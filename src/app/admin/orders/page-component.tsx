@@ -28,6 +28,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 import { OrdersWithProducts } from "@/app/admin/orders/types";
 import { updateOrderStatus } from "@/actions/orders";
@@ -56,6 +65,14 @@ type OrderedProducts = {
 export default function PageComponent({ ordersWithProducts }: Props) {
   const [selectedProducts, setSelectedProducts] = useState<OrderedProducts>([]);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  const totalPages = Math.ceil(ordersWithProducts.length / itemsPerPage);
+  const currentOrders = ordersWithProducts.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   const openProductsModal = (products: OrderedProducts) => {
     setSelectedProducts(products);
   };
@@ -69,6 +86,26 @@ export default function PageComponent({ ordersWithProducts }: Props) {
 
   const handleStatusChange = async (orderId: number, status: string) => {
     await updateOrderStatus(orderId, status);
+  };
+
+  const generatePaginationItems = () => {
+    let items = [];
+    for (let i = 1; i <= totalPages; i++) {
+      items.push(
+        <PaginationItem key={i}>
+          <PaginationLink
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              setCurrentPage(i);
+            }}
+            isActive={currentPage === i}>
+            {i}
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+    return items;
   };
 
   return (
@@ -89,7 +126,7 @@ export default function PageComponent({ ordersWithProducts }: Props) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {ordersWithProducts.map((order) => (
+          {currentOrders.map((order) => (
             <TableRow key={order.id}>
               <TableCell>{order.id}</TableCell>
               <TableCell>
@@ -174,6 +211,34 @@ export default function PageComponent({ ordersWithProducts }: Props) {
           ))}
         </TableBody>
       </Table>
+
+      <div className="mt-4">
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setCurrentPage((prev) => Math.max(prev - 1, 1));
+                }}
+              />
+            </PaginationItem>
+
+            {generatePaginationItems()}
+
+            <PaginationItem>
+              <PaginationNext
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+                }}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      </div>
     </div>
   );
 }
