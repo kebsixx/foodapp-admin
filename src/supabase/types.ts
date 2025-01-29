@@ -113,6 +113,41 @@ export type Database = {
           },
         ]
       }
+      payments: {
+        Row: {
+          amount: number
+          created_at: string
+          id: number
+          order_id: number | null
+          payment_token: string | null
+          status: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: number
+          order_id?: number | null
+          payment_token?: string | null
+          status: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: number
+          order_id?: number | null
+          payment_token?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "order"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product: {
         Row: {
           category: number
@@ -199,6 +234,7 @@ export type Database = {
           name: string | null
           phone: string | null
           type: string | null
+          updated_at: string | null
         }
         Insert: {
           address?: string | null
@@ -211,6 +247,7 @@ export type Database = {
           name?: string | null
           phone?: string | null
           type?: string | null
+          updated_at?: string | null
         }
         Update: {
           address?: string | null
@@ -223,6 +260,7 @@ export type Database = {
           name?: string | null
           phone?: string | null
           type?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }
