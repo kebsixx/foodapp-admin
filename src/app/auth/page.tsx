@@ -34,16 +34,19 @@ export default function Auth() {
   });
 
   const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const router = useRouter();
 
   const onSubmit = async ({ email, password }: z.infer<typeof loginSchema>) => {
     setIsAuthenticating(true);
+    setErrorMessage(null);
 
     try {
       await authenticate(email, password);
       router.push("/admin");
     } catch (error) {
+      setErrorMessage((error as Error).message);
     } finally {
       setIsAuthenticating(false);
     }
@@ -54,6 +57,9 @@ export default function Auth() {
       <div className="mx-auto grid w-[350px] gap-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
+            {errorMessage && (
+              <div className="text-red-500 text-center">{errorMessage}</div>
+            )}
             <FormField
               control={form.control}
               name="email"
@@ -74,7 +80,7 @@ export default function Auth() {
               )}
             />
             <FormField
-              control={form.control}
+               control={form.control}
               name="password"
               render={({ field }) => (
                 <FormItem className="grid gap-2">
