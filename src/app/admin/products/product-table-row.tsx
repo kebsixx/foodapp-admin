@@ -40,7 +40,7 @@ export const ProductTableRow = ({
     <TableRow key={product.id}>
       <TableCell>{product.title}</TableCell>
       <TableCell>{product.category.name}</TableCell>
-      <TableCell>{product.price}</TableCell>
+      <TableCell> {product.price !== null ? new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(product.price) : 'N/A'}</TableCell>
       <TableCell>{product.maxQuantity}</TableCell>
       <TableCell>
         {product.heroImage && (

@@ -152,7 +152,9 @@ export default function PageComponent({ ordersWithProducts }: Props) {
               {/* @ts-ignore */}
               <TableCell>{order.user.name}</TableCell>
               <TableCell>{order.slug}</TableCell>
-              <TableCell>Rp. {order.totalPrice.toFixed(3)}</TableCell>
+              <TableCell>
+                {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(order.totalPrice)}
+              </TableCell>
               <TableCell>
                 {order.order_items.length} order
                 {order.order_items.length > 1 ? "s" : ""}
@@ -195,7 +197,7 @@ export default function PageComponent({ ordersWithProducts }: Props) {
                               {product.title}
                             </span>
                             <span className="text-gray-600">
-                              Rp. {product.price.toFixed(3)}
+                              {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(product.price)}
                             </span>
                             <span className="text-sm text-gray-500">
                               Available Quantity: {product.maxQuantity}
@@ -208,7 +210,7 @@ export default function PageComponent({ ordersWithProducts }: Props) {
                 </Dialog>
               </TableCell>
             </TableRow>
-          ))}
+          ))}        
         </TableBody>
       </Table>
 
