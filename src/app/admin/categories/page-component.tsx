@@ -54,6 +54,7 @@ const CategoriesPageComponent: FC<Props> = ({ categories }) => {
     useState(false);
   const [currentCategory, setCurrentCategory] =
     useState<CreateCategorySchema | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<CreateCategorySchema>({
     resolver: zodResolver(createCategorySchema),
@@ -68,6 +69,7 @@ const CategoriesPageComponent: FC<Props> = ({ categories }) => {
   const submitCategoryHandler: SubmitHandler<CreateCategorySchema> = async (
     data
   ) => {
+    setIsLoading(true);
     const { image, name, intent = "create" } = data;
 
     // Upload image to Supabase Storage
@@ -118,16 +120,20 @@ const CategoriesPageComponent: FC<Props> = ({ categories }) => {
       default:
         console.log("Invalid intent");
     }
+    setIsLoading(false);
   };
 
   const deleteCategoryHandler = async (id: number) => {
+    setIsLoading(true);
     await deleteCategory(id);
     router.refresh();
     toast.success("Category deleted successfully");
+    setIsLoading(false);
   };
 
   return (
     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
+      {isLoading && <div className="loading">Loading...</div>}
       <div className="flex items-center my-18">
         <div className="ml-auto flex items-center gap-2">
           <Dialog

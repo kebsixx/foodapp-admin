@@ -51,6 +51,7 @@ export const ProductPageComponent: FC<Props> = ({
     useState<CreateOrUpdateProductSchema | null>(null);
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<CreateOrUpdateProductSchema>({
     resolver: zodResolver(createOrUpdateProductSchema),
@@ -70,6 +71,7 @@ export const ProductPageComponent: FC<Props> = ({
   const productCreateUpdateHandler = async (
     data: CreateOrUpdateProductSchema
   ) => {
+    setIsLoading(true);
     const {
       title,
       category,
@@ -101,6 +103,7 @@ export const ProductPageComponent: FC<Props> = ({
       } catch (error) {
         console.error("Error uploading image:", error);
         toast.error("Error uploading image. Please try again.");
+        setIsLoading(false);
         return;
       }
     }
@@ -112,6 +115,7 @@ export const ProductPageComponent: FC<Props> = ({
       } catch (error) {
         console.error("Error uploading images:", error);
         toast.error("Error uploading images. Please try again.");
+        setIsLoading(false);
         return;
       }
     }
@@ -155,9 +159,11 @@ export const ProductPageComponent: FC<Props> = ({
       default:
         console.error("Invalid intent");
     }
+    setIsLoading(false);
   };
 
   const deleteProductHandler = async () => {
+    setIsLoading(true);
     if (currentProduct?.slug) {
       await deleteProduct(currentProduct.slug);
       router.refresh();
@@ -165,10 +171,12 @@ export const ProductPageComponent: FC<Props> = ({
       setIsDeleteModalOpen(false);
       setCurrentProduct(null);
     }
+    setIsLoading(false);
   };
 
   return (
     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
+      {isLoading && <div className="loading">Loading...</div>}
       <div className="container mx-auto p-4">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">Products Management</h1>
