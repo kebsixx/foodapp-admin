@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { CircleUser, Menu, Moon, Package2, Sun } from "lucide-react";
-
+import { CircleUser, Menu, Package2, Bell } from "lucide-react"; // Import icon Bell
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -99,6 +98,35 @@ export const Header = () => {
   const { setTheme } = useTheme();
   const router = useRouter();
   const supabase = createClient();
+  const [orderCount, setOrderCount] = useState(0);
+
+  useEffect(() => {
+    const fetchOrderCount = async () => {
+      const { data, error } = await supabase
+        .from("order")
+        .select("id", { count: "exact" })
+        .eq("status", "Pending");
+
+      if (!error && data) {
+        setOrderCount(data.length);
+      }
+    };
+
+    fetchOrderCount();
+
+    const orderChannel = supabase.channel('order-changes')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'order' }, (payload) => {
+        if (payload.new.status === "Pending") {
+          setOrderCount((prevCount) => prevCount + 1);
+          new Audio("/notification.mp3").play(); // Play notification sound
+        }
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(orderChannel);
+    };
+  }, [supabase]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -117,13 +145,19 @@ export const Header = () => {
           <Link
             key={href}
             href={href}
-            className={cn(
-              "transition-colors hover:text-foreground text-muted-foreground",
-              {
-                "text-foreground font-bold": pathname === href,
-              }
-            )}>
+            className={cn("hover:text-foreground text-muted-foreground flex items-center", {
+              "text-foreground font-bold": pathname === href,
+            })}
+          >
             {label}
+            {href === "/admin/orders" && orderCount > 0 && (
+              <div className="relative ml-6">
+                <Bell className="h-5 w-5" />
+                <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">
+                  {orderCount}
+                </span>
+              </div>
+            )}
           </Link>
         ))}
       </nav>
@@ -149,6 +183,14 @@ export const Header = () => {
                   "text-foreground font-bold": pathname === href,
                 })}>
                 {label}
+                {href === "/admin/orders" && orderCount > 0 && (
+                  <div className="relative ml-6">
+                    <Bell className="h-5 w-5" />
+                    <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">
+                      {orderCount}
+                    </span>
+                  </div>
+                )}
               </Link>
             ))}
           </nav>
@@ -160,36 +202,12 @@ export const Header = () => {
           <DropdownMenuTrigger asChild>
             <Button variant="secondary" size="icon" className="rounded-full">
               <CircleUser className="h-5 w-5" />
-              <span className="sr-only">Toggle user menu</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button className="w-full" variant="outline" size="icon">
-                    <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                    <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-                    <span className="sr-only">Toggle theme</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => setTheme("light")}>
-                    Light
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setTheme("dark")}>
-                    Dark
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setTheme("system")}>
-                    System
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
