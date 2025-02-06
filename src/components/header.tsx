@@ -66,7 +66,7 @@ const StoreToggle = () => {
     const { data, error } = await supabase
       .from("store_settings")
       .update({ is_open: !isOpen })
-      .eq("id", Number(1))
+      .eq("id", "1")
       .select();
 
     console.log("Toggle response:", data, error);
