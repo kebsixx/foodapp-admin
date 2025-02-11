@@ -114,8 +114,7 @@ export default function PageComponent({ ordersWithProducts }: Props) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>ID</TableHead>
-            <TableHead>Created At</TableHead>
+            <TableHead>Order Date</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Description</TableHead>
             <TableHead>Name</TableHead>
@@ -128,7 +127,6 @@ export default function PageComponent({ ordersWithProducts }: Props) {
         <TableBody>
           {currentOrders.map((order) => (
             <TableRow key={order.id}>
-              <TableCell>{order.id}</TableCell>
               <TableCell>
                 {format(new Date(order.created_at), "dd/MM/yyyy")}
               </TableCell>
@@ -153,7 +151,10 @@ export default function PageComponent({ ordersWithProducts }: Props) {
               <TableCell>{order.user.name}</TableCell>
               <TableCell>{order.slug}</TableCell>
               <TableCell>
-                {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(order.totalPrice)}
+                {new Intl.NumberFormat("id-ID", {
+                  style: "currency",
+                  currency: "IDR",
+                }).format(order.totalPrice)}
               </TableCell>
               <TableCell>
                 {order.order_items.length} order
@@ -197,7 +198,10 @@ export default function PageComponent({ ordersWithProducts }: Props) {
                               {product.title}
                             </span>
                             <span className="text-gray-600">
-                              {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(product.price)}
+                              {new Intl.NumberFormat("id-ID", {
+                                style: "currency",
+                                currency: "IDR",
+                              }).format(product.price)}
                             </span>
                             <span className="text-sm text-gray-500">
                               Available Quantity: {product.maxQuantity}
@@ -210,7 +214,7 @@ export default function PageComponent({ ordersWithProducts }: Props) {
                 </Dialog>
               </TableCell>
             </TableRow>
-          ))}        
+          ))}
         </TableBody>
       </Table>
 
