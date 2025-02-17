@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { format } from "date-fns";
 import Image from "next/image";
 
@@ -40,8 +40,15 @@ import {
 
 import { OrdersWithProducts } from "@/app/admin/orders/types";
 import { updateOrderStatus } from "@/actions/orders";
+import { cn } from "@/lib/utils";
 
-const statusOptions = ["Pending", "On Review", "Process", "Completed"];
+const statusOptions = [
+  "Pending",
+  "On Review",
+  "Process",
+  "Completed",
+  "Cancelled",
+];
 
 type Props = {
   ordersWithProducts: OrdersWithProducts;
@@ -61,6 +68,51 @@ type OrderedProducts = {
     title: string;
   };
 }[];
+
+const statusStyles = {
+  Process: "bg-[#81C784]",
+  Completed: "bg-[#4CAF50]",
+  "On Review": "bg-[#FFA726]",
+  Pending: "bg-[#FF5722] animate-pulse",
+  Cancelled: "bg-[#FF0000]",
+} as const;
+
+const StatusIndicator = ({ status }: { status: string }) => {
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    if (status === "Pending" && audioRef.current) {
+      const playSound = () => {
+        if (audioRef.current) {
+          audioRef.current.play().catch(() => {
+            // Handle any autoplay restrictions
+          });
+        }
+      };
+
+      const interval = setInterval(playSound, 1000); // Beep every 2 seconds
+      return () => clearInterval(interval);
+    }
+  }, [status]);
+
+  return (
+    <div className="flex items-center gap-2">
+      <div
+        className={cn(
+          "h-3 w-3 rounded-full",
+          statusStyles[status as keyof typeof statusStyles]
+        )}
+      />
+      {status === "Pending" && (
+        <audio
+          ref={audioRef}
+          src="/sounds/notification.mp3"
+          className="hidden"
+        />
+      )}
+    </div>
+  );
+};
 
 export default function PageComponent({ ordersWithProducts }: Props) {
   const [selectedProducts, setSelectedProducts] = useState<OrderedProducts>([]);
@@ -131,20 +183,25 @@ export default function PageComponent({ ordersWithProducts }: Props) {
                 {format(new Date(order.created_at), "dd/MM/yyyy")}
               </TableCell>
               <TableCell>
-                <Select
-                  onValueChange={(value) => handleStatusChange(order.id, value)}
-                  defaultValue={order.status}>
-                  <SelectTrigger className="w-[120px]">
-                    <SelectValue>{order.status}</SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {statusOptions.map((status, index) => (
-                      <SelectItem key={index} value={status}>
-                        {status}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="flex items-center gap-2">
+                  <StatusIndicator status={order.status} />
+                  <Select
+                    onValueChange={(value) =>
+                      handleStatusChange(order.id, value)
+                    }
+                    defaultValue={order.status}>
+                    <SelectTrigger className="w-[120px]">
+                      <SelectValue>{order.status}</SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {statusOptions.map((status, index) => (
+                        <SelectItem key={index} value={status}>
+                          {status}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </TableCell>
               <TableCell>{order.description || `No Description`}</TableCell>
               {/* @ts-ignore */}
