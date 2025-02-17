@@ -75,16 +75,15 @@ const StoreToggle = () => {
   return (
     <div className="flex items-center gap-2 ml-auto">
       <div className="flex items-center gap-2">
-        <div className={`h-3 w-3 rounded-full ${
-          isOpen 
-            ? 'bg-green-500 animate-pulse' 
-            : 'bg-red-500 animate-pulse'
-        }`} />
-        <span className={`font-medium ${
-          isOpen 
-            ? 'text-green-500' 
-            : 'text-red-500'
-        }`}>
+        <div
+          className={`h-3 w-3 rounded-full ${
+            isOpen ? "bg-green-500 animate-pulse" : "bg-red-500 animate-pulse"
+          }`}
+        />
+        <span
+          className={`font-medium ${
+            isOpen ? "text-green-500" : "text-red-500"
+          }`}>
           {isOpen ? "Open" : "Closed"}
         </span>
       </div>
@@ -95,7 +94,6 @@ const StoreToggle = () => {
 
 export const Header = () => {
   const pathname = usePathname();
-  const { setTheme } = useTheme();
   const router = useRouter();
   const supabase = createClient();
   const [orderCount, setOrderCount] = useState(0);
@@ -114,13 +112,18 @@ export const Header = () => {
 
     fetchOrderCount();
 
-    const orderChannel = supabase.channel('order-changes')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'order' }, (payload) => {
-        if (payload.new.status === "Pending") {
-          setOrderCount((prevCount) => prevCount + 1);
-          new Audio("/notification.mp3").play(); // Play notification sound
+    const orderChannel = supabase
+      .channel("order-changes")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "order" },
+        (payload) => {
+          if (payload.new.status === "Pending") {
+            setOrderCount((prevCount) => prevCount + 1);
+            new Audio("/notification.mp3").play(); // Play notification sound
+          }
         }
-      })
+      )
       .subscribe();
 
     return () => {
@@ -145,10 +148,12 @@ export const Header = () => {
           <Link
             key={href}
             href={href}
-            className={cn("hover:text-foreground text-muted-foreground flex items-center", {
-              "text-foreground font-bold": pathname === href,
-            })}
-          >
+            className={cn(
+              "hover:text-foreground text-muted-foreground flex items-center",
+              {
+                "text-foreground font-bold": pathname === href,
+              }
+            )}>
             {label}
             {href === "/admin/orders" && orderCount > 0 && (
               <div className="relative ml-6">

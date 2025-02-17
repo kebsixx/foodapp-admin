@@ -214,7 +214,7 @@ export default function PageComponent({ ordersWithProducts }: Props) {
                 }).format(order.totalPrice)}
               </TableCell>
               <TableCell>
-                {order.order_items.length} order
+                {order.order_items.length} Product
                 {order.order_items.length > 1 ? "s" : ""}
               </TableCell>
               <TableCell>
