@@ -43,11 +43,11 @@ function Feature() {
   return (
     <section className="mb-24">
       <h3 className="text-3xl font-bold mb-8 text-center">Layanan Kami</h3>
-      <div className="flex justify-center gap-8 items-center">
+      <div className="lg:flex flex-row justify-center gap-8 items-center">
         {features.map((feature, index) => (
           <MotionWrapper key={index} delay={index * 0.1}>
-            <Card>
-              <CardContent className="p-6 flex flex-col items-center text-center max-w-md">
+            <Card className="mb-4 flex flex-col items-center">
+              <CardContent className="p-6 flex flex-col gap items-center text-center max-w-md">
                 <feature.icon className="h-12 w-12 mb-4" />
                 <h4 className="text-xl font-semibold mb-2">{feature.title}</h4>
                 <p>{feature.description}</p>
