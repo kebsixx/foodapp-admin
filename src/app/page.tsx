@@ -48,18 +48,6 @@ export default async function Home() {
                   size="lg"
                   className="bg-white text-black hover:bg-green-100">
                   <Image
-                    src="/app-store.png"
-                    alt="App Store"
-                    className="mr-2 h-6 w-6 "
-                    height={24}
-                    width={24}
-                  />
-                  App Store
-                </Button>
-                <Button
-                  size="lg"
-                  className="bg-white text-black hover:bg-green-100">
-                  <Image
                     src="/google-play.png"
                     alt="Google Play"
                     className="mr-2 h-6 w-6"
