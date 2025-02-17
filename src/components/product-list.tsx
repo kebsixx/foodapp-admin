@@ -1,14 +1,39 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardBody, CardFooter, Image } from "@nextui-org/react";
 import { ProductsResponse } from "@/app/products.types";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 type Props = {
   products: ProductsResponse;
 };
 
 export const Content = ({ products }: Props) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
+  const totalPages = Math.ceil((products?.length || 0) / itemsPerPage);
+
+  // Calculate the current page's products
+  const indexOfLastProduct = currentPage * itemsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - itemsPerPage;
+  const currentProducts = products?.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // Menghapus window.scrollTo() agar tidak scroll ke atas saat pindah halaman
+  };
+
   return (
     <section className="mb-24">
       <div className="mx-auto max-w-full px-4 py-8 sm:px-6 sm:py-12">
@@ -24,7 +49,7 @@ export const Content = ({ products }: Props) => {
         </header>
 
         <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {products?.map((product) => (
+          {currentProducts?.map((product) => (
             <Card
               key={product.id}
               className="hover:shadow-lg transition-shadow"
@@ -53,11 +78,58 @@ export const Content = ({ products }: Props) => {
             </Card>
           ))}
         </ul>
+
+        {totalPages > 1 && (
+          <div className="mt-8 flex justify-center">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={() =>
+                      currentPage > 1
+                        ? handlePageChange(currentPage - 1)
+                        : undefined
+                    }
+                    aria-disabled={currentPage === 1}
+                    className={
+                      currentPage === 1 ? "pointer-events-none opacity-50" : ""
+                    }
+                  />
+                </PaginationItem>
+
+                {[...Array(totalPages)].map((_, index) => (
+                  <PaginationItem key={index}>
+                    <PaginationLink
+                      onClick={() => handlePageChange(index + 1)}
+                      isActive={currentPage === index + 1}>
+                      {index + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={() =>
+                      currentPage < totalPages
+                        ? handlePageChange(currentPage + 1)
+                        : undefined
+                    }
+                    aria-disabled={currentPage === totalPages}
+                    className={
+                      currentPage === totalPages
+                        ? "pointer-events-none opacity-50"
+                        : ""
+                    }
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
       </div>
     </section>
   );
 };
-
 export default function ProductList({ products }: Props) {
   return <Content products={products} />;
 }
