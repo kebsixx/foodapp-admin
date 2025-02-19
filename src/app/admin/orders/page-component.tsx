@@ -116,9 +116,8 @@ const StatusIndicator = ({ status }: { status: string }) => {
 
 export default function PageComponent({ ordersWithProducts }: Props) {
   const [selectedProducts, setSelectedProducts] = useState<OrderedProducts>([]);
-
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
   const totalPages = Math.ceil(ordersWithProducts.length / itemsPerPage);
   const currentOrders = ordersWithProducts.slice(
     (currentPage - 1) * itemsPerPage,
@@ -138,6 +137,11 @@ export default function PageComponent({ ordersWithProducts }: Props) {
 
   const handleStatusChange = async (orderId: number, status: string) => {
     await updateOrderStatus(orderId, status);
+  };
+
+  const handleItemsPerPageChange = (value: string) => {
+    setItemsPerPage(Number(value));
+    setCurrentPage(1); // Reset to first page when changing items per page
   };
 
   const generatePaginationItems = () => {
@@ -219,6 +223,8 @@ export default function PageComponent({ ordersWithProducts }: Props) {
 
     return items;
   };
+
+  const itemsPerPageOptions = ["5", "10", "20", "50"];
 
   return (
     <div className="container mx-auto p-6">
@@ -337,7 +343,25 @@ export default function PageComponent({ ordersWithProducts }: Props) {
         </TableBody>
       </Table>
 
-      <div className="mt-4">
+      <div className="flex items-center justify-between mt-4">
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-gray-500">Items per page:</span>
+          <Select
+            value={String(itemsPerPage)}
+            onValueChange={handleItemsPerPageChange}>
+            <SelectTrigger className="w-[70px]">
+              <SelectValue placeholder={itemsPerPage} />
+            </SelectTrigger>
+            <SelectContent>
+              {itemsPerPageOptions.map((value) => (
+                <SelectItem key={value} value={value}>
+                  {value}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
         <Pagination>
           <PaginationContent>
             <PaginationItem>
