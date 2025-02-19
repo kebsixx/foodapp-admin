@@ -1,23 +1,9 @@
-import Link from "next/link";
-
 export const Footer = () => (
-  <footer className="bg-background h-16 flex items-center border-t flex-wrap justify-between px-4 md:px-6">
-    <Link href="#" className="text-lg font-bold" prefetch={false}>
-      Cerita Senja
-    </Link>
-    <nav className="flex items-center flex-wrap space-x-4 text-sm">
-      <Link href="#" className="hover:underline" prefetch={false}>
-        About
-      </Link>
-      <Link href="#" className="hover:underline" prefetch={false}>
-        Contact
-      </Link>
-      <Link href="#" className="hover:underline" prefetch={false}>
-        Privacy Policy
-      </Link>
-      <Link href="#" className="hover:underline" prefetch={false}>
-        Terms
-      </Link>
-    </nav>
+  <footer className="bg-background border-t">
+    <div className="container mx-auto px-6 py-8">
+        <p className="text-center text-sm text-muted-foreground">
+          © {new Date().getFullYear()} Cerita Senja. All rights reserved.
+        </p>
+    </div>
   </footer>
 );
