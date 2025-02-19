@@ -8,13 +8,6 @@ export const createOrUpdateProductSchema = z.object({
   heroImage: z
     .any()
     .refine((file) => file.length === 1, "Hero image is required" ),
-  images: z
-    .any()
-    .refine(
-      (files: FileList | null) => files instanceof FileList && files.length > 0,
-      { message: "Images are required" }
-    )
-    .transform((files: FileList | null) => (files ? Array.from(files) : [])),
   intent: z
     .enum(["create", "update"], {
       message: "Intent must be either 'create' or 'update'",

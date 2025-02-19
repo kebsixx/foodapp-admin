@@ -29,7 +29,6 @@ export const ProductTableRow = ({
       price: product.price,
       maxQuantity: product.maxQuantity,
       heroImage: product.heroImage,
-      images: product.images,
       slug: product.slug,
       intent: "update",
     });
@@ -40,7 +39,15 @@ export const ProductTableRow = ({
     <TableRow key={product.id}>
       <TableCell>{product.title}</TableCell>
       <TableCell>{product.category.name}</TableCell>
-      <TableCell> {product.price !== null ? new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(product.price) : 'N/A'}</TableCell>
+      <TableCell>
+        {" "}
+        {product.price !== null
+          ? new Intl.NumberFormat("id-ID", {
+              style: "currency",
+              currency: "IDR",
+            }).format(product.price)
+          : "N/A"}
+      </TableCell>
       <TableCell>{product.maxQuantity}</TableCell>
       <TableCell>
         {product.heroImage && (
@@ -54,22 +61,6 @@ export const ProductTableRow = ({
         )}
       </TableCell>
       <TableCell>
-        {product?.imagesUrl && product.imagesUrl.length > 0 ? (
-          product.imagesUrl.map((url, index) => (
-            <Image
-              width={40}
-              height={40}
-              key={index}
-              src={url}
-              alt={`Product ${index + 1}`}
-              className="w-10 h-10 object-cover inline-block mr-1"
-            />
-          ))
-        ) : (
-          <span>No images</span>
-        )}
-      </TableCell>
-      <TableCell>
         <Button
           variant="ghost"
           size="icon"
@@ -79,7 +70,6 @@ export const ProductTableRow = ({
               category: product.category.id.toString(),
               price: product.price?.toString() ?? "",
               maxQuantity: product.maxQuantity.toString(),
-              images: [],
               slug: product.slug,
               intent: "update",
             })
@@ -95,7 +85,6 @@ export const ProductTableRow = ({
               category: product.category.id.toString(),
               price: product.price?.toString() ?? "",
               maxQuantity: product.maxQuantity.toString(),
-              images: [],
               slug: product.slug,
               intent: "update",
             })

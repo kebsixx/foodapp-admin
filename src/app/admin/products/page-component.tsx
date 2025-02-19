@@ -61,7 +61,6 @@ export const ProductPageComponent: FC<Props> = ({
       price: undefined,
       maxQuantity: undefined,
       heroImage: undefined,
-      images: [],
       intent: "create",
     },
   });
@@ -78,7 +77,6 @@ export const ProductPageComponent: FC<Props> = ({
       price,
       maxQuantity,
       heroImage,
-      images,
       slug,
       intent = "create",
     } = data;
@@ -108,18 +106,6 @@ export const ProductPageComponent: FC<Props> = ({
       }
     }
 
-    if (images.length > 0) {
-      const imagePromises = Array.from(images).map((file) => uploadFile(file));
-      try {
-        imagesUrls = (await Promise.all(imagePromises)) as string[];
-      } catch (error) {
-        console.error("Error uploading images:", error);
-        toast.error("Error uploading images. Please try again.");
-        setIsLoading(false);
-        return;
-      }
-    }
-
     switch (intent) {
       case "create": {
         if (heroImageUrl && imagesUrls.length > 0) {
@@ -143,7 +129,6 @@ export const ProductPageComponent: FC<Props> = ({
           await updateProduct({
             category: Number(category),
             heroImage: heroImageUrl,
-            imagesUrl: imagesUrls,
             maxQuantity: Number(maxQuantity),
             price: Number(price),
             title,
@@ -197,7 +182,6 @@ export const ProductPageComponent: FC<Props> = ({
               <TableHead>Price</TableHead>
               <TableHead>Max Quantity</TableHead>
               <TableHead>Hero Image</TableHead>
-              <TableHead>Product Images</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
