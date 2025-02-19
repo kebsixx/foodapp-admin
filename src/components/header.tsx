@@ -154,15 +154,12 @@ export const Header = () => {
                 "text-foreground font-bold": pathname === href,
               }
             )}>
-            {label}
-            {href === "/admin/orders" && orderCount > 0 && (
-              <div className="relative ml-6">
-                <Bell className="h-5 w-5" />
-                <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">
-                  {orderCount}
-                </span>
-              </div>
-            )}
+            <div className="flex items-center gap-2">
+              {label}
+              {href === "/admin/orders" && orderCount > 0 && (
+                <div className="h-2 w-2 rounded-full bg-red-600 animate-pulse" />
+              )}
+            </div>
           </Link>
         ))}
       </nav>
@@ -187,15 +184,12 @@ export const Header = () => {
                 className={cn("hover:text-foreground text-muted-foreground", {
                   "text-foreground font-bold": pathname === href,
                 })}>
-                {label}
-                {href === "/admin/orders" && orderCount > 0 && (
-                  <div className="relative ml-6">
-                    <Bell className="h-5 w-5" />
-                    <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">
-                      {orderCount}
-                    </span>
-                  </div>
-                )}
+                <div className="flex items-center gap-2">
+                  {label}
+                  {href === "/admin/orders" && orderCount > 0 && (
+                    <div className="h-2 w-2 rounded-full bg-red-600 animate-pulse" />
+                  )}
+                </div>
               </Link>
             ))}
           </nav>

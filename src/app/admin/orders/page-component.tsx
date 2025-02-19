@@ -170,6 +170,7 @@ export default function PageComponent({ ordersWithProducts }: Props) {
             <TableHead>Status</TableHead>
             <TableHead>Description</TableHead>
             <TableHead>Name</TableHead>
+            <TableHead>Phone</TableHead>
             <TableHead>Order ID</TableHead>
             <TableHead>Total Price</TableHead>
             <TableHead>Products</TableHead>
@@ -206,6 +207,7 @@ export default function PageComponent({ ordersWithProducts }: Props) {
               <TableCell>{order.description || `No Description`}</TableCell>
               {/* @ts-ignore */}
               <TableCell>{order.user.name}</TableCell>
+              <TableCell>{order.user.phone}</TableCell>
               <TableCell>{order.slug}</TableCell>
               <TableCell>
                 {new Intl.NumberFormat("id-ID", {
