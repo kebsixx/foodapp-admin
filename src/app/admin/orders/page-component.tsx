@@ -50,6 +50,11 @@ const statusOptions = [
   "Cancelled",
 ];
 
+const PICKUP_METHOD_LABELS = {
+  pickup: "Ambil ditempat",
+  delivery: "Jasa Antar",
+} as const;
+
 type Props = {
   ordersWithProducts: OrdersWithProducts;
 };
@@ -61,8 +66,9 @@ type OrderedProducts = {
     created_at: string;
     heroImage: string;
     id: number;
-    imagesUrl?: string[];
     maxQuantity: number;
+    payment_proof?: string;
+    payment_method?: string;
     price: number;
     slug: string;
     title: string;
@@ -298,42 +304,124 @@ export default function PageComponent({ ordersWithProducts }: Props) {
                           )
                         )
                       }>
-                      View Product
+                      View Details
                     </Button>
                   </DialogTrigger>
-                  <DialogContent>
+                  <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
                     <DialogHeader>
-                      <DialogTitle>Order Products</DialogTitle>
+                      <DialogTitle>Order Details</DialogTitle>
                     </DialogHeader>
 
-                    <div className="mt-4">
-                      {selectedProducts.map(({ product }, index) => (
-                        <div
-                          key={index}
-                          className="mr-2 mb-2 flex items-center space-x-2">
-                          <Image
-                            className="w-16 h-16 object-cover rounded"
-                            src={product.heroImage}
-                            alt={product.title}
-                            width={64}
-                            height={64}
-                          />
-                          <div className="flex flex-col">
-                            <span className="font-semibold">
-                              {product.title}
-                            </span>
-                            <span className="text-gray-600">
+                    <div className="mt-4 space-y-6">
+                      {/* Order Information */}
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <h3 className="font-semibold mb-2">
+                            Order Information
+                          </h3>
+                          <div className="space-y-1 text-sm">
+                            <p>
+                              <span className="font-medium">Order ID:</span>{" "}
+                              {order.slug}
+                            </p>
+                            <p>
+                              <span className="font-medium">Date:</span>{" "}
+                              {format(
+                                new Date(order.created_at),
+                                "dd/MM/yyyy HH:mm"
+                              )}
+                            </p>
+                            <p>
+                              <span className="font-medium">Status:</span>{" "}
+                              {order.status}
+                            </p>
+                            <p>
+                              <span className="font-medium">Total Amount:</span>{" "}
                               {new Intl.NumberFormat("id-ID", {
                                 style: "currency",
                                 currency: "IDR",
-                              }).format(product.price)}
-                            </span>
-                            <span className="text-sm text-gray-500">
-                              Available Quantity: {product.maxQuantity}
-                            </span>
+                              }).format(order.totalPrice)}
+                            </p>
                           </div>
                         </div>
-                      ))}
+                        <div>
+                          <h3 className="font-semibold mb-2">
+                            Customer Information
+                          </h3>
+                          <div className="space-y-1 text-sm">
+                            <p>
+                              <span className="font-medium">Name:</span>{" "}
+                              {order.user.name}
+                            </p>
+                            <p>
+                              <span className="font-medium">Phone:</span>{" "}
+                              {order.user.phone}
+                            </p>
+                            <p>
+                              <span className="font-medium">
+                                Payment Method:
+                              </span>{" "}
+                              {order.pickup_method
+                                ? PICKUP_METHOD_LABELS[
+                                    order.pickup_method as keyof typeof PICKUP_METHOD_LABELS
+                                  ]
+                                : "Not specified"}
+                            </p>
+                            <p>
+                              <span className="font-medium">Notes:</span>{" "}
+                              {order.description || "No notes"}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Payment Proof */}
+                      {order.payment_proof && (
+                        <div>
+                          <h3 className="font-semibold mb-2">Payment Proof</h3>
+                          <Image
+                            src={order.payment_proof}
+                            alt="Payment Proof"
+                            width={300}
+                            height={200}
+                            className="rounded-lg object-cover"
+                          />
+                        </div>
+                      )}
+
+                      {/* Ordered Products */}
+                      <div>
+                        <h3 className="font-semibold mb-2">Ordered Products</h3>
+                        <div className="grid gap-4">
+                          {selectedProducts.map(({ product }, index) => (
+                            <div
+                              key={index}
+                              className="flex items-center space-x-4 p-3 border rounded-lg">
+                              <Image
+                                className="w-20 h-20 object-cover rounded"
+                                src={product.heroImage}
+                                alt={product.title}
+                                width={80}
+                                height={80}
+                              />
+                              <div className="flex-1">
+                                <h4 className="font-semibold">
+                                  {product.title}
+                                </h4>
+                                <p className="text-gray-600">
+                                  {new Intl.NumberFormat("id-ID", {
+                                    style: "currency",
+                                    currency: "IDR",
+                                  }).format(product.price)}
+                                </p>
+                                <p className="text-sm text-gray-500">
+                                  Available Quantity: {product.maxQuantity}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   </DialogContent>
                 </Dialog>
