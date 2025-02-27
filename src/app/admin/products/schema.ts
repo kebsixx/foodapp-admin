@@ -26,7 +26,6 @@ export const createProductSchemaServer = z.object({
   maxQuantity: z.number().positive({ message: "Max quantity is required" }),
   category: z.number().positive({ message: "Category is required" }),
   heroImage: z.string().url({ message: "Hero image is required" }),
-  images: z.array(z.string().url({ message: "Images are required" })),
 });
 
 export type CreateProductSchemaServer = z.infer<
@@ -36,7 +35,6 @@ export type CreateProductSchemaServer = z.infer<
 export type UpdateProductSchema = {
   category: number;
   heroImage: string;
-  imagesUrl: string[];
   maxQuantity: number;
   price: number | null;
   slug: string;

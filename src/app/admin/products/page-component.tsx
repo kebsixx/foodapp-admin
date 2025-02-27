@@ -90,7 +90,6 @@ export const ProductPageComponent: FC<Props> = ({
     };
 
     let heroImageUrl: string | undefined;
-    let imagesUrls: string[] = [];
 
     if (heroImage) {
       const imagePromise = Array.from(heroImage).map((file) =>
@@ -108,10 +107,9 @@ export const ProductPageComponent: FC<Props> = ({
 
     switch (intent) {
       case "create": {
-        if (heroImageUrl && imagesUrls.length > 0) {
+        if (heroImageUrl) {
           await createProduct({
             category: Number(category),
-            images: imagesUrls,
             heroImage: heroImageUrl,
             maxQuantity: Number(maxQuantity),
             price: Number(price),
@@ -125,7 +123,7 @@ export const ProductPageComponent: FC<Props> = ({
         break;
       }
       case "update": {
-        if (heroImageUrl && imagesUrls.length > 0 && slug) {
+        if (heroImageUrl && slug) {
           await updateProduct({
             category: Number(category),
             heroImage: heroImageUrl,

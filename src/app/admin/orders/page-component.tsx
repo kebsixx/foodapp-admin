@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { format } from "date-fns";
 import Image from "next/image";
+import { Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -37,6 +38,15 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import {
+  Command,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 
 import { OrdersWithProducts } from "@/app/admin/orders/types";
 import { updateOrderStatus } from "@/actions/orders";
@@ -124,8 +134,25 @@ export default function PageComponent({ ordersWithProducts }: Props) {
   const [selectedProducts, setSelectedProducts] = useState<OrderedProducts>([]);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = Math.ceil(ordersWithProducts.length / itemsPerPage);
-  const currentOrders = ordersWithProducts.slice(
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredOrders, setFilteredOrders] = useState(ordersWithProducts);
+
+  useEffect(() => {
+    const filtered = ordersWithProducts.filter((order) => {
+      const searchLower = searchQuery.toLowerCase();
+      return (
+        order.slug.toLowerCase().includes(searchLower) ||
+        order.user.name?.toLowerCase().includes(searchLower) ||
+        order.user.phone?.toLowerCase().includes(searchLower)
+      );
+    });
+    setFilteredOrders(filtered);
+    setCurrentPage(1); // Reset to first page when searching
+  }, [searchQuery, ordersWithProducts]);
+
+  // Update the pagination calculation to use filteredOrders
+  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
+  const currentOrders = filteredOrders.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -234,7 +261,40 @@ export default function PageComponent({ ordersWithProducts }: Props) {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Orders Page</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Orders Page</h1>
+        <div className="w-96">
+          <Command className="border rounded-lg">
+            <CommandInput 
+              placeholder="Search orders..."
+              value={searchQuery}
+              onValueChange={setSearchQuery}
+            />
+            {searchQuery && (
+              <CommandList>
+                <CommandEmpty>No results found.</CommandEmpty>
+                <CommandGroup heading="Suggestions">
+                  {filteredOrders.slice(0, 5).map((order) => (
+                    <CommandItem
+                      key={order.id}
+                      value={order.slug}
+                      onSelect={() => setSearchQuery(order.slug)}
+                    >
+                      <Search className="mr-2 h-4 w-4" />
+                      <div className="flex flex-col">
+                        <span>{order.slug}</span>
+                        <span className="text-sm text-muted-foreground">
+                          {order.user.name} - {order.user.phone}
+                        </span>
+                      </div>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            )}
+          </Command>
+        </div>
+      </div>
       <Table>
         <TableHeader>
           <TableRow>
