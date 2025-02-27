@@ -179,7 +179,7 @@ export const ProductPageComponent: FC<Props> = ({
               <TableHead>Category</TableHead>
               <TableHead>Price</TableHead>
               <TableHead>Max Quantity</TableHead>
-              <TableHead>Hero Image</TableHead>
+              <TableHead>Image</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
