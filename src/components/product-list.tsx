@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Card, CardBody, CardFooter, Image } from "@nextui-org/react";
 import { ProductsResponse } from "@/app/products.types";
 import {
@@ -19,12 +19,35 @@ type Props = {
 export const Content = ({ products }: Props) => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
-  const totalPages = Math.ceil((products?.length || 0) / itemsPerPage);
 
-  // Calculate the current page's products
+  // Filter out adaptive icons and get up to 3 products per category
+  const filteredProducts = useMemo(() => {
+    const productsByCategory = products?.reduce((acc, product) => {
+      // Skip products with adaptive icons
+      if (product.heroImage.includes("adaptive-icon")) {
+        return acc;
+      }
+
+      // Group products by category
+      if (!acc[product.category]) {
+        acc[product.category] = [];
+      }
+      acc[product.category].push(product);
+      return acc;
+    }, {} as Record<number, ProductsResponse>);
+
+    // To show up to 3 products per category for example:
+    const selectedProducts = Object.values(productsByCategory || {}).flatMap(
+      (categoryProducts) => categoryProducts.slice(0, 3)
+    );
+
+    return selectedProducts;
+  }, [products]);
+
+  const totalPages = Math.ceil((filteredProducts?.length || 0) / itemsPerPage);
   const indexOfLastProduct = currentPage * itemsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - itemsPerPage;
-  const currentProducts = products?.slice(
+  const currentProducts = filteredProducts?.slice(
     indexOfFirstProduct,
     indexOfLastProduct
   );
