@@ -6,8 +6,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
-import { ProductsWithCategoriesResponse } from "@/app/admin/products/products.types";
+import {
+  ProductsWithCategoriesResponse,
+  ProductWithCategory,
+} from "@/app/admin/products/products.types";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -36,7 +40,7 @@ import {
 } from "@/actions/products";
 import { ProductForm } from "@/app/admin/products/product-form";
 import { ProductTableRow } from "@/app/admin/products/product-table-row";
-import { PlusIcon } from "lucide-react";
+import { PlusIcon, ArrowUpDown } from "lucide-react";
 import {
   Pagination,
   PaginationContent,
@@ -59,6 +63,9 @@ type Props = {
   productsWithCategories: ProductsWithCategoriesResponse;
 };
 
+type SortField = "title" | "category" | "price";
+type SortOrder = "asc" | "desc";
+
 export const ProductPageComponent: FC<Props> = ({
   categories,
   productsWithCategories,
@@ -71,6 +78,8 @@ export const ProductPageComponent: FC<Props> = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const itemsPerPageOptions = ["5", "10", "20", "50"];
+  const [sortField, setSortField] = useState<SortField>("title");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
 
   const form = useForm<CreateOrUpdateProductSchema>({
     resolver: zodResolver(createOrUpdateProductSchema),
@@ -176,10 +185,40 @@ export const ProductPageComponent: FC<Props> = ({
     setIsLoading(false);
   };
 
+  const sortProducts = (products: ProductWithCategory[]) => {
+    return [...products].sort((a, b) => {
+      let compareA, compareB;
+
+      switch (sortField) {
+        case "title":
+          compareA = a.title.toLowerCase();
+          compareB = b.title.toLowerCase();
+          break;
+        case "category":
+          compareA = a.category.name.toLowerCase();
+          compareB = b.category.name.toLowerCase();
+          break;
+        case "price":
+          compareA = a.price || 0;
+          compareB = b.price || 0;
+          break;
+        default:
+          return 0;
+      }
+
+      if (sortOrder === "asc") {
+        return compareA < compareB ? -1 : compareA > compareB ? 1 : 0;
+      } else {
+        return compareB < compareA ? -1 : compareB > compareA ? 1 : 0;
+      }
+    });
+  };
+
   const totalPages = Math.ceil(productsWithCategories.length / itemsPerPage);
   const indexOfLastProduct = currentPage * itemsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - itemsPerPage;
-  const currentProducts = productsWithCategories.slice(
+  const sortedProducts = sortProducts(productsWithCategories);
+  const currentProducts = sortedProducts.slice(
     indexOfFirstProduct,
     indexOfLastProduct
   );
@@ -265,6 +304,18 @@ export const ProductPageComponent: FC<Props> = ({
     return items;
   };
 
+  // Add this helper function near the top of your component
+  const getSortIcon = (field: SortField) => {
+    if (sortField !== field) {
+      return <ArrowUpDown className="inline h-4 w-4 ml-1 text-gray-400" />;
+    }
+    return sortOrder === "asc" ? (
+      <ArrowUpDown className="inline h-4 w-4 ml-1 text-primary rotate-180" />
+    ) : (
+      <ArrowUpDown className="inline h-4 w-4 ml-1 text-primary" />
+    );
+  };
+
   return (
     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
       <div className="container mx-auto p-4">
@@ -282,9 +333,51 @@ export const ProductPageComponent: FC<Props> = ({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Title</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Price</TableHead>
+              <TableHead
+                onClick={() => {
+                  if (sortField === "title") {
+                    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                  } else {
+                    setSortField("title");
+                    setSortOrder("asc");
+                  }
+                }}
+                className={cn(
+                  "cursor-pointer hover:bg-gray-100",
+                  sortField === "title" && "text-primary font-medium"
+                )}>
+                Title {getSortIcon("title")}
+              </TableHead>
+              <TableHead
+                onClick={() => {
+                  if (sortField === "category") {
+                    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                  } else {
+                    setSortField("category");
+                    setSortOrder("asc");
+                  }
+                }}
+                className={cn(
+                  "cursor-pointer hover:bg-gray-100",
+                  sortField === "category" && "text-primary font-medium"
+                )}>
+                Category {getSortIcon("category")}
+              </TableHead>
+              <TableHead
+                onClick={() => {
+                  if (sortField === "price") {
+                    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                  } else {
+                    setSortField("price");
+                    setSortOrder("asc");
+                  }
+                }}
+                className={cn(
+                  "cursor-pointer hover:bg-gray-100",
+                  sortField === "price" && "text-primary font-medium"
+                )}>
+                Price {getSortIcon("price")}
+              </TableHead>
               <TableHead>Max Quantity</TableHead>
               <TableHead>Image</TableHead>
               <TableHead>Actions</TableHead>
