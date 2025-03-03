@@ -190,36 +190,27 @@ export default async function Home() {
 
                 <ul className="mt-8 space-y-4 text-sm">
                   <li>
-                    <a
-                      className="text-gray-700 transition hover:text-gray-700/75"
-                      href="#">
+                    <span className="text-gray-700 cursor-default">
                       Company History
-                    </a>
+                    </span>
                   </li>
 
                   <li>
-                    <a
-                      className="text-gray-700 transition hover:text-gray-700/75"
-                      href="#">
+                    <span className="text-gray-700 cursor-default">
                       Meet the Team
-                    </a>
+                    </span>
                   </li>
 
                   <li>
-                    <a
-                      className="text-gray-700 transition hover:text-gray-700/75"
-                      href="#">
+                    <span className="text-gray-700 cursor-default">
                       Employee Handbook
-                    </a>
+                    </span>
                   </li>
 
                   <li>
-                    <a
-                      className="text-gray-700 transition hover:text-gray-700/75"
-                      href="#">
-                      {" "}
-                      Careers{" "}
-                    </a>
+                    <span className="text-gray-700 cursor-default">
+                      Careers
+                    </span>
                   </li>
                 </ul>
               </div>
@@ -231,35 +222,27 @@ export default async function Home() {
 
                 <ul className="mt-8 space-y-4 text-sm">
                   <li>
-                    <a
-                      className="text-gray-700 transition hover:text-gray-700/75"
-                      href="#">
+                    <span className="text-gray-700 cursor-default">
                       Suasana
-                    </a>
+                    </span>
                   </li>
 
                   <li>
-                    <a
-                      className="text-gray-700 transition hover:text-gray-700/75"
-                      href="#">
+                    <span className="text-gray-700 cursor-default">
                       Cita Rasa
-                    </a>
+                    </span>
                   </li>
 
                   <li>
-                    <a
-                      className="text-gray-700 transition hover:text-gray-700/75"
-                      href="#">
+                    <span className="text-gray-700 cursor-default">
                       Pesan Antar
-                    </a>
+                    </span>
                   </li>
 
                   <li>
-                    <a
-                      className="text-gray-700 transition hover:text-gray-700/75"
-                      href="#">
+                    <span className="text-gray-700 cursor-default">
                       Nail Art
-                    </a>
+                    </span>
                   </li>
                 </ul>
               </div>
@@ -349,19 +332,15 @@ export default async function Home() {
               <p className="text-sm text-gray-500">
                 <span className="block sm:inline">All rights reserved. </span>
 
-                <a
-                  className="inline-block text-black underline transition hover:text-black"
-                  href="#">
+                <span className="text-black cursor-default">
                   Terms & Conditions
-                </a>
+                </span>
 
                 <span> &middot; </span>
 
-                <a
-                  className="inline-block text-black underline transition hover:text-black"
-                  href="#">
+                <span className="text-black cursor-default">
                   Privacy Policy
-                </a>
+                </span>
               </p>
 
               <p className="mt-4 text-sm text-gray-500 sm:order-first sm:mt-0">
