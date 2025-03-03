@@ -23,6 +23,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useState } from "react";
+import { format } from "date-fns";
+import { id } from "date-fns/locale";
 
 type MonthlyOrderData = {
   name: string;
@@ -147,7 +149,17 @@ const PageComponent = ({
                 {latestUsers.map((user) => (
                   <TableRow key={user.id}>
                     <TableCell>{user.email}</TableCell>
-                    <TableCell>{user.date}</TableCell>
+                    <TableCell>
+                      {user.date
+                        ? format(
+                            new Date(user.date),
+                            "EEEE, dd MM yyyy HH:mm:ss",
+                            {
+                              locale: id,
+                            }
+                          )
+                        : "-"}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
