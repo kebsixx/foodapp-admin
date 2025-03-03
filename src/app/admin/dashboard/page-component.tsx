@@ -113,7 +113,7 @@ const PageComponent = ({
           </CardContent>
         </Card>
 
-        {/* Category to Produccts Chart */}
+        {/* Category to Products Chart */}
         <Card>
           <CardHeader>
             <CardTitle>Products per Category</CardTitle>
@@ -122,7 +122,16 @@ const PageComponent = ({
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={categoryData}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
+                <XAxis
+                  dataKey="name"
+                  angle={-45}
+                  textAnchor="end"
+                  height={70}
+                  interval={0}
+                  tick={{
+                    fontSize: 12,
+                  }}
+                />
                 <YAxis />
                 <Tooltip />
                 <Legend />
