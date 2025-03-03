@@ -27,6 +27,7 @@ import { CreateOrUpdateProductSchema } from "@/app/admin/products/schema";
 import { Input } from "@/components/ui/input";
 import { Category } from "@/app/admin/categories/categories.types";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 
 type Props = {
   form: UseFormReturn<CreateOrUpdateProductSchema>;
@@ -67,6 +68,13 @@ export const ProductForm = ({
         <DialogHeader>
           <DialogTitle>Add New Product</DialogTitle>
         </DialogHeader>
+
+        {isSubmitting && (
+          <div className="absolute top-0 left-0 w-full">
+            <Progress value={33} className="h-1" />
+          </div>
+        )}
+
         <div
           className="max-h-[calc(100svh-200px)] overflow-y-auto"
           style={{
@@ -185,7 +193,14 @@ export const ProductForm = ({
 
               <DialogFooter>
                 <Button disabled={isSubmitting} type="submit">
-                  Add Product
+                  {isSubmitting ? (
+                    <>
+                      <span className="loading loading-spinner"></span>
+                      Processing...
+                    </>
+                  ) : (
+                    "Add Product"
+                  )}
                 </Button>
               </DialogFooter>
             </form>
