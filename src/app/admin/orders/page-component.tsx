@@ -265,7 +265,7 @@ export default function PageComponent({ ordersWithProducts }: Props) {
         <h1 className="text-2xl font-bold">Orders Page</h1>
         <div className="w-96">
           <Command className="border rounded-lg">
-            <CommandInput 
+            <CommandInput
               placeholder="Search orders..."
               value={searchQuery}
               onValueChange={setSearchQuery}
@@ -278,8 +278,7 @@ export default function PageComponent({ ordersWithProducts }: Props) {
                     <CommandItem
                       key={order.id}
                       value={order.slug}
-                      onSelect={() => setSearchQuery(order.slug)}
-                    >
+                      onSelect={() => setSearchQuery(order.slug)}>
                       <Search className="mr-2 h-4 w-4" />
                       <div className="flex flex-col">
                         <span>{order.slug}</span>
