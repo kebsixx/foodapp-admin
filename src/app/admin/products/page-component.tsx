@@ -37,6 +37,22 @@ import {
 import { ProductForm } from "@/app/admin/products/product-form";
 import { ProductTableRow } from "@/app/admin/products/product-table-row";
 import { PlusIcon } from "lucide-react";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type Props = {
   categories: Category[];
@@ -52,6 +68,9 @@ export const ProductPageComponent: FC<Props> = ({
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const itemsPerPageOptions = ["5", "10", "20", "50"];
 
   const form = useForm<CreateOrUpdateProductSchema>({
     resolver: zodResolver(createOrUpdateProductSchema),
@@ -157,6 +176,95 @@ export const ProductPageComponent: FC<Props> = ({
     setIsLoading(false);
   };
 
+  const totalPages = Math.ceil(productsWithCategories.length / itemsPerPage);
+  const indexOfLastProduct = currentPage * itemsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - itemsPerPage;
+  const currentProducts = productsWithCategories.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
+
+  const handleItemsPerPageChange = (value: string) => {
+    setItemsPerPage(Number(value));
+    setCurrentPage(1);
+  };
+
+  const generatePaginationItems = () => {
+    const items = [];
+    const maxVisiblePages = 5;
+
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    if (startPage > 1) {
+      items.push(
+        <PaginationItem key={1}>
+          <PaginationLink
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              setCurrentPage(1);
+            }}
+            isActive={currentPage === 1}>
+            1
+          </PaginationLink>
+        </PaginationItem>
+      );
+      if (startPage > 2) {
+        items.push(
+          <PaginationItem key="start-ellipsis">
+            <PaginationEllipsis />
+          </PaginationItem>
+        );
+      }
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      items.push(
+        <PaginationItem key={i}>
+          <PaginationLink
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              setCurrentPage(i);
+            }}
+            isActive={currentPage === i}>
+            {i}
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) {
+        items.push(
+          <PaginationItem key="end-ellipsis">
+            <PaginationEllipsis />
+          </PaginationItem>
+        );
+      }
+      items.push(
+        <PaginationItem key={totalPages}>
+          <PaginationLink
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              setCurrentPage(totalPages);
+            }}
+            isActive={currentPage === totalPages}>
+            {totalPages}
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+
+    return items;
+  };
+
   return (
     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
       <div className="container mx-auto p-4">
@@ -183,7 +291,7 @@ export const ProductPageComponent: FC<Props> = ({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {productsWithCategories.map((product) => (
+            {currentProducts.map((product) => (
               <ProductTableRow
                 setIsProductModalOpen={setIsProductModalOpen}
                 key={product.id}
@@ -195,7 +303,73 @@ export const ProductPageComponent: FC<Props> = ({
           </TableBody>
         </Table>
 
-        {/* Product Modal */}
+        <div className="flex items-center justify-between mt-4">
+          {/* Left: Showing items count */}
+          <span className="text-sm text-gray-500">
+            Showing {indexOfFirstProduct + 1}-
+            {Math.min(indexOfLastProduct, productsWithCategories.length)} of{" "}
+            {productsWithCategories.length} items
+          </span>
+
+          {/* Center: Pagination */}
+          <div className="flex-1 flex justify-center">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setCurrentPage((prev) => Math.max(prev - 1, 1));
+                    }}
+                    aria-disabled={currentPage === 1}
+                    className={
+                      currentPage === 1 ? "pointer-events-none opacity-50" : ""
+                    }
+                  />
+                </PaginationItem>
+
+                {generatePaginationItems()}
+
+                <PaginationItem>
+                  <PaginationNext
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+                    }}
+                    aria-disabled={currentPage === totalPages}
+                    className={
+                      currentPage === totalPages
+                        ? "pointer-events-none opacity-50"
+                        : ""
+                    }
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+
+          {/* Right: Items per page selector */}
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-500">Items per page:</span>
+            <Select
+              value={String(itemsPerPage)}
+              onValueChange={handleItemsPerPageChange}>
+              <SelectTrigger className="w-[70px]">
+                <SelectValue placeholder={itemsPerPage} />
+              </SelectTrigger>
+              <SelectContent>
+                {itemsPerPageOptions.map((value) => (
+                  <SelectItem key={value} value={value}>
+                    {value}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
         <ProductForm
           form={form}
           onSubmit={productCreateUpdateHandler}
@@ -205,7 +379,6 @@ export const ProductPageComponent: FC<Props> = ({
           defaultValues={currentProduct}
         />
 
-        {/* Delete Modal */}
         <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
           <DialogContent>
             <DialogHeader>
