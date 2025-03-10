@@ -8,6 +8,11 @@ export const createOrUpdateProductSchema = z.object({
   heroImage: z
     .any()
     .refine((file) => file.length === 1, "Hero image is required" ),
+  variants: z.array(
+      z.object({
+        name: z.string().min(1, { message: "Variant name is required" }),
+      })
+    ).optional(),
   intent: z
     .enum(["create", "update"], {
       message: "Intent must be either 'create' or 'update'",

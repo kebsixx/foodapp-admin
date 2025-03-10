@@ -164,6 +164,7 @@ export type Database = {
           price: number
           slug: string
           title: string
+          variants: Json | null
         }
         Insert: {
           category: number
@@ -174,6 +175,7 @@ export type Database = {
           price: number
           slug: string
           title: string
+          variants?: Json | null
         }
         Update: {
           category?: number
@@ -184,6 +186,7 @@ export type Database = {
           price?: number
           slug?: string
           title?: string
+          variants?: Json | null
         }
         Relationships: [
           {

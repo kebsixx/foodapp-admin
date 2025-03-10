@@ -28,6 +28,8 @@ import { Input } from "@/components/ui/input";
 import { Category } from "@/app/admin/categories/categories.types";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { Plus, Trash } from "lucide-react";
+import Image from "next/image";
 
 type Props = {
   form: UseFormReturn<CreateOrUpdateProductSchema>;
@@ -36,6 +38,7 @@ type Props = {
   setIsProductModalOpen: Dispatch<SetStateAction<boolean>>;
   isProductModalOpen: boolean;
   defaultValues: CreateOrUpdateProductSchema | null;
+  name: string;
 };
 
 export const ProductForm = ({
@@ -58,6 +61,7 @@ export const ProductForm = ({
         price: "",
         maxQuantity: "",
         heroImage: undefined,
+        variants: [],
       });
     }
   }, [defaultValues, form]);
@@ -84,13 +88,13 @@ export const ProductForm = ({
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="grid gap-4 py-4">
+              className="grid gap-4 py-">
               <FormField
                 control={form.control}
                 name="title"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Title</FormLabel>
+                    <FormLabel>Name</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Enter product title"
@@ -169,6 +173,7 @@ export const ProductForm = ({
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="heroImage"
@@ -181,7 +186,9 @@ export const ProductForm = ({
                         accept="image/*"
                         {...form.register("heroImage")}
                         onChange={(event) => {
-                          field.onChange(event.target.files?.[0]);
+                          field.onChange(
+                            event.target.files?.[0] || field.value
+                          );
                         }}
                         disabled={isSubmitting}
                       />
@@ -191,6 +198,63 @@ export const ProductForm = ({
                 )}
               />
 
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <FormLabel>Variants</FormLabel>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const currentVariants = form.getValues("variants") || [];
+                      form.setValue("variants", [
+                        ...currentVariants,
+                        { name: "" },
+                      ]);
+                    }}
+                    disabled={isSubmitting}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Variant
+                  </Button>
+                </div>
+
+                {form.watch("variants")?.map((_, index) => (
+                  <div key={index} className="flex gap-2 items-start">
+                    <FormField
+                      control={form.control}
+                      name={`variants.${index}.name`}
+                      render={({ field }) => (
+                        <FormItem className="flex-1">
+                          <FormControl>
+                            <Input
+                              placeholder="Variant name"
+                              {...field}
+                              disabled={isSubmitting}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      onClick={() => {
+                        const currentVariants =
+                          form.getValues("variants") || [];
+                        form.setValue(
+                          "variants",
+                          currentVariants.filter((_, i) => i !== index)
+                        );
+                      }}
+                      disabled={isSubmitting}>
+                      <Trash className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
               <DialogFooter>
                 <Button disabled={isSubmitting} type="submit">
                   {isSubmitting ? (

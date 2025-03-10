@@ -346,7 +346,7 @@ export const ProductPageComponent: FC<Props> = ({
                   "cursor-pointer hover:bg-gray-100",
                   sortField === "title" && "text-primary font-medium"
                 )}>
-                Title {getSortIcon("title")}
+                Name {getSortIcon("title")}
               </TableHead>
               <TableHead
                 onClick={() => {
@@ -470,6 +470,7 @@ export const ProductPageComponent: FC<Props> = ({
           isProductModalOpen={isProductModalOpen}
           setIsProductModalOpen={setIsProductModalOpen}
           defaultValues={currentProduct}
+          name={""}
         />
 
         <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>

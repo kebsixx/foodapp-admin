@@ -71,6 +71,7 @@ export const ProductTableRow = ({
               price: product.price?.toString() ?? "",
               maxQuantity: product.maxQuantity.toString(),
               slug: product.slug,
+              heroImage: product.heroImage,
               intent: "update",
             })
           }>
@@ -86,6 +87,7 @@ export const ProductTableRow = ({
               price: product.price?.toString() ?? "",
               maxQuantity: product.maxQuantity.toString(),
               slug: product.slug,
+              heroImage: product.heroImage,
               intent: "update",
             })
           }>
