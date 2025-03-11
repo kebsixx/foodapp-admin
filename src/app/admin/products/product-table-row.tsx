@@ -2,6 +2,12 @@ import { Dispatch, SetStateAction } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 import Image from "next/image";
 
+import {
+  Tooltip,
+  TooltipProvider,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { TableRow, TableCell } from "@/components/ui/table";
 import { ProductWithCategory } from "@/app/admin/products/products.types";
@@ -40,13 +46,40 @@ export const ProductTableRow = ({
       <TableCell>{product.title}</TableCell>
       <TableCell>{product.category.name}</TableCell>
       <TableCell>
-        {" "}
         {product.price !== null
           ? new Intl.NumberFormat("id-ID", {
               style: "currency",
               currency: "IDR",
             }).format(product.price)
           : "N/A"}
+      </TableCell>
+      <TableCell>
+        {product.variants && product.variants.length > 0 ? (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <span className="underline cursor-pointer">
+                  {product.variants.length} variants
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>
+                <div className="space-y-1">
+                  {product.variants.map((variant, index) => (
+                    <div key={index} className="text-sm">
+                      <span className="font-medium">{variant.name}</span>:{" "}
+                      {new Intl.NumberFormat("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                      }).format(variant.price)}
+                    </div>
+                  ))}
+                </div>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        ) : (
+          <span className="text-gray-500">No variants</span>
+        )}
       </TableCell>
       <TableCell>{product.maxQuantity}</TableCell>
       <TableCell>

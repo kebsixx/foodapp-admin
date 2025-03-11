@@ -386,6 +386,7 @@ export const ProductPageComponent: FC<Props> = ({
                 )}>
                 Price {getSortIcon("price")}
               </TableHead>
+              <TableHead>Variants</TableHead>
               <TableHead>Max Quantity</TableHead>
               <TableHead>Image</TableHead>
               <TableHead>Actions</TableHead>
