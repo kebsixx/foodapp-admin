@@ -29,7 +29,6 @@ import { Category } from "@/app/admin/categories/categories.types";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Plus, Trash } from "lucide-react";
-import Image from "next/image";
 
 type Props = {
   form: UseFormReturn<CreateOrUpdateProductSchema>;
@@ -70,7 +69,9 @@ export const ProductForm = ({
     <Dialog open={isProductModalOpen} onOpenChange={setIsProductModalOpen}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add New Product</DialogTitle>
+          <DialogTitle>
+            {defaultValues ? "Update Product" : "Add New Product"}
+          </DialogTitle>
         </DialogHeader>
 
         {isSubmitting && (
@@ -88,7 +89,7 @@ export const ProductForm = ({
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="grid gap-4 py-">
+              className="grid gap-4 py-4">
               <FormField
                 control={form.control}
                 name="title"
@@ -135,17 +136,19 @@ export const ProductForm = ({
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="price"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Price</FormLabel>
+                    <FormLabel>Default Price</FormLabel>
                     <FormControl>
                       <Input
                         id="price"
                         type="number"
                         className="col-span-3"
+                        placeholder="Default price (used if no variants)"
                         {...field}
                         disabled={isSubmitting}
                       />
@@ -154,6 +157,7 @@ export const ProductForm = ({
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="maxQuantity"
@@ -200,7 +204,7 @@ export const ProductForm = ({
 
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <FormLabel>Variants</FormLabel>
+                  <FormLabel>Variants (Optional)</FormLabel>
                   <Button
                     type="button"
                     variant="outline"
@@ -209,7 +213,7 @@ export const ProductForm = ({
                       const currentVariants = form.getValues("variants") || [];
                       form.setValue("variants", [
                         ...currentVariants,
-                        { name: "" },
+                        { name: "", price: "" },
                       ]);
                     }}
                     disabled={isSubmitting}>
@@ -219,12 +223,14 @@ export const ProductForm = ({
                 </div>
 
                 {form.watch("variants")?.map((_, index) => (
-                  <div key={index} className="flex gap-2 items-start">
+                  <div
+                    key={index}
+                    className="grid grid-cols-2 gap-2 items-start">
                     <FormField
                       control={form.control}
                       name={`variants.${index}.name`}
                       render={({ field }) => (
-                        <FormItem className="flex-1">
+                        <FormItem>
                           <FormControl>
                             <Input
                               placeholder="Variant name"
@@ -237,24 +243,45 @@ export const ProductForm = ({
                       )}
                     />
 
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="icon"
-                      onClick={() => {
-                        const currentVariants =
-                          form.getValues("variants") || [];
-                        form.setValue(
-                          "variants",
-                          currentVariants.filter((_, i) => i !== index)
-                        );
-                      }}
-                      disabled={isSubmitting}>
-                      <Trash className="w-4 h-4" />
-                    </Button>
+                    <div className="flex gap-2">
+                      <FormField
+                        control={form.control}
+                        name={`variants.${index}.price`}
+                        render={({ field }) => (
+                          <FormItem className="flex-1">
+                            <FormControl>
+                              <Input
+                                type="number"
+                                placeholder="Variant price"
+                                {...field}
+                                disabled={isSubmitting}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon"
+                        onClick={() => {
+                          const currentVariants =
+                            form.getValues("variants") || [];
+                          form.setValue(
+                            "variants",
+                            currentVariants.filter((_, i) => i !== index)
+                          );
+                        }}
+                        disabled={isSubmitting}>
+                        <Trash className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>
+
               <DialogFooter>
                 <Button disabled={isSubmitting} type="submit">
                   {isSubmitting ? (
@@ -263,7 +290,7 @@ export const ProductForm = ({
                       Processing...
                     </>
                   ) : (
-                    "Add Product"
+                    (defaultValues ? "Update" : "Create") + " Product"
                   )}
                 </Button>
               </DialogFooter>

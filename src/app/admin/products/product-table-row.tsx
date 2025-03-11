@@ -72,6 +72,10 @@ export const ProductTableRow = ({
               maxQuantity: product.maxQuantity.toString(),
               slug: product.slug,
               heroImage: product.heroImage,
+              variants: product.variants?.map((v) => ({
+                name: v.name,
+                price: v.price.toString(),
+              })),
               intent: "update",
             })
           }>

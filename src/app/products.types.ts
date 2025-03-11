@@ -3,7 +3,7 @@ export type Products = {
   category: number;
   heroImage: string;
   maxQuantity: number;
-  price: number;
+  price: number | null;
   slug: string;
   title: string;
   created_at: string;

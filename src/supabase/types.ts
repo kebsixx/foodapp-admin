@@ -161,7 +161,7 @@ export type Database = {
           heroImage: string
           id: number
           maxQuantity: number
-          price: number
+          price: number | null
           slug: string
           title: string
           variants: Json | null
@@ -172,7 +172,7 @@ export type Database = {
           heroImage: string
           id?: number
           maxQuantity: number
-          price: number
+          price?: number | null
           slug: string
           title: string
           variants?: Json | null
@@ -183,7 +183,7 @@ export type Database = {
           heroImage?: string
           id?: number
           maxQuantity?: number
-          price?: number
+          price?: number | null
           slug?: string
           title?: string
           variants?: Json | null

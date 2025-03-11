@@ -80,15 +80,14 @@ export const ProductPageComponent: FC<Props> = ({
   const itemsPerPageOptions = ["5", "10", "20", "50"];
   const [sortField, setSortField] = useState<SortField>("title");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
-
   const form = useForm<CreateOrUpdateProductSchema>({
     resolver: zodResolver(createOrUpdateProductSchema),
     defaultValues: {
       title: "",
-      category: undefined,
-      price: undefined,
-      maxQuantity: undefined,
+      category: "",
+      maxQuantity: "",
       heroImage: undefined,
+      variants: [{ name: "", price: "" }],
       intent: "create",
     },
   });
@@ -107,6 +106,7 @@ export const ProductPageComponent: FC<Props> = ({
       heroImage,
       slug,
       intent = "create",
+      variants, // Ambil variants dari data
     } = data;
 
     const uploadFile = async (file: File) => {
@@ -133,6 +133,12 @@ export const ProductPageComponent: FC<Props> = ({
       }
     }
 
+    // Konversi variants.price dari string ke number
+    const formattedVariants = variants?.map((variant) => ({
+      ...variant,
+      price: Number(variant.price), // Konversi price ke number
+    }));
+
     switch (intent) {
       case "create": {
         if (heroImageUrl) {
@@ -142,6 +148,7 @@ export const ProductPageComponent: FC<Props> = ({
             maxQuantity: Number(maxQuantity),
             price: Number(price),
             title,
+            variants: formattedVariants, // Gunakan formattedVariants
           });
           form.reset();
           router.refresh();
@@ -159,6 +166,7 @@ export const ProductPageComponent: FC<Props> = ({
             price: Number(price),
             title,
             slug,
+            variants: formattedVariants, // Gunakan formattedVariants
           });
           form.reset();
           router.refresh();

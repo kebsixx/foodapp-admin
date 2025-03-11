@@ -41,60 +41,66 @@ export const getProductsWithCategories =
     return data || [];
   };
 
-export const createProduct = async ({
-  category,
-  heroImage,
-  maxQuantity,
-  price,
-  title,
-}: CreateProductSchemaServer) => {
-  const supabase = createClient();
-  const slug = slugify(title, { lower: true });
+export const createProduct = async (product: {
+    title: string;
+    category: number;
+    price: number;
+    maxQuantity: number;
+    heroImage: string;
+    variants?: { name: string; price: number }[]; // Tambahkan variants
+  }) => {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from("product")
+      .insert([
+        {
+          title: product.title,
+          category: product.category,
+          price: product.price,
+          maxQuantity: product.maxQuantity,
+          heroImage: product.heroImage,
+          slug: slugify(product.title, { lower: true }),
+          variants: product.variants || null, // Sertakan variants
+        },
+      ])
+      .select();
+  
+    if (error) {
+      throw new Error(`Error creating product: ${error.message}`);
+    }
+  
+    return data;
+  };
 
-  const { data, error } = await supabase.from("product").insert({
-    category,
-    heroImage,
-    maxQuantity,
-    price,
-    slug,
-    title,
-  });
-
-  if (error) {
-    throw new Error(`Error creating product: ${error.message}`);
-  }
-
-  return data;
-};
-
-export const updateProduct = async ({
-  category,
-  heroImage,
-  maxQuantity,
-  price,
-  slug,
-  title,
-}: UpdateProductSchema) => {
-  const supabase = createClient();
-  const { data, error } = await supabase
-    .from("product")
-    .update({
-      category,
-      heroImage,
-      maxQuantity,
-      price,
-      title,
-    })
-    .match({
-      slug,
-    });
-
-  if (error) {
-    throw new Error(`Error updating product: ${error.message}`);
-  }
-
-  return data;
-};
+export const updateProduct = async (product: {
+    title: string;
+    category: number;
+    price: number;
+    maxQuantity: number;
+    heroImage: string;
+    slug: string;
+    variants?: { name: string; price: number }[]; // Tambahkan variants
+  }) => {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from("product")
+      .update({
+        title: product.title,
+        category: product.category,
+        price: product.price,
+        maxQuantity: product.maxQuantity,
+        heroImage: product.heroImage,
+        variants: product.variants || null, // Sertakan variants
+      })
+      .eq("slug", product.slug)
+      .select();
+  
+    if (error) {
+      throw new Error(`Error updating product: ${error.message}`);
+    }
+  
+    return data;
+  };
 
 export const deleteProduct = async (slug: string) => {
   const supabase = createClient();

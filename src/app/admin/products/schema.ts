@@ -7,12 +7,15 @@ export const createOrUpdateProductSchema = z.object({
   category: z.string().min(1, { message: "Category is required" }),
   heroImage: z
     .any()
-    .refine((file) => file.length === 1, "Hero image is required" ),
-  variants: z.array(
+    .refine((file) => file.length === 1, "Hero image is required"),
+  variants: z
+    .array(
       z.object({
         name: z.string().min(1, { message: "Variant name is required" }),
+        price: z.string().min(1, { message: "Variant price is required" }), // price sebagai string
       })
-    ).optional(),
+    )
+    .optional(),
   intent: z
     .enum(["create", "update"], {
       message: "Intent must be either 'create' or 'update'",
@@ -31,6 +34,14 @@ export const createProductSchemaServer = z.object({
   maxQuantity: z.number().positive({ message: "Max quantity is required" }),
   category: z.number().positive({ message: "Category is required" }),
   heroImage: z.string().url({ message: "Hero image is required" }),
+  variants: z
+    .array(
+      z.object({
+        name: z.string().min(1, { message: "Variant name is required" }),
+        price: z.number().positive({ message: "Variant price is required" }),
+      })
+    )
+    .optional(), // Variant opsional
 });
 
 export type CreateProductSchemaServer = z.infer<

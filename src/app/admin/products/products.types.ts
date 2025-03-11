@@ -9,6 +9,11 @@ export type ProductWithCategory = {
   price: number | null;
   title: string;
   slug: string;
+  variants: {
+    id: number;
+    name: string;
+    price: number;
+  }[];
 };
 
 export type ProductsWithCategoriesResponse = ProductWithCategory[];
@@ -17,7 +22,7 @@ export type UpdateProductSchema = {
   category: number;
   heroImage: string;
   maxQuantity: number;
-  price: number;
+  price: number | null;
   slug: string;
   title: string;
 };
