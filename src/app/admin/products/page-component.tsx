@@ -351,11 +351,11 @@ export const ProductPageComponent: FC<Props> = ({
 
           <div className="flex flex-row gap-2 w-full sm:w-auto">
             <div className="relative flex-1 sm:flex-initial">
-              <SearchIcon className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+              <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
               <Input
                 type="text"
                 placeholder="Search by product name..."
-                className="w-full sm:w-[200px] pl-8"
+                className="w-full sm:w-[240px] pl-9"
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
