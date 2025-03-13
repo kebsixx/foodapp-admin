@@ -59,6 +59,30 @@ export const imageUploadHandler = async (formData: FormData) => {
   }
 };
 
+const getCategoryImagePath = async (slug: string) => {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("category")
+    .select("imageUrl")
+    .eq("slug", slug)
+    .single();
+
+  if (error) throw new Error(`Error fetching category: ${error.message}`);
+  return data?.imageUrl;
+};
+
+const deleteImageFromBucket = async (imageUrl: string) => {
+  const supabase = createClient();
+  const fileName = imageUrl.split("/").pop(); // Ambil nama file dari URL
+  if (!fileName) return;
+
+  const { error } = await supabase.storage
+    .from("app-images")
+    .remove([fileName]);
+
+  if (error) throw new Error(`Error deleting image: ${error.message}`);
+};
+
 export const createCategory = async ({
   imageUrl,
   name,
@@ -82,7 +106,11 @@ export const updateCategory = async ({
   imageUrl,
   name,
   slug,
-}: UpdateCategorySchema) => {
+}: {
+  imageUrl: string;
+  name: string;
+  slug: string;
+}) => {
   const supabase = createClient();
   const { data, error } = await supabase
     .from("category")
@@ -99,6 +127,22 @@ export const updateCategory = async ({
 
 export const deleteCategory = async (id: number) => {
   const supabase = createClient();
+
+  // Ambil path gambar sebelum menghapus kategori
+  const { data: category, error: fetchError } = await supabase
+    .from("category")
+    .select("imageUrl")
+    .eq("id", id)
+    .single();
+
+  if (fetchError) throw new Error(`Error fetching category: ${fetchError.message}`);
+
+  // Hapus gambar dari bucket jika ada
+  if (category?.imageUrl) {
+    await deleteImageFromBucket(category.imageUrl);
+  }
+
+  // Hapus kategori dari database
   const { error } = await supabase.from("category").delete().match({ id });
 
   if (error) throw new Error(`Error deleting category: ${error.message}`);

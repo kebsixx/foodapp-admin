@@ -1,19 +1,15 @@
 "use client";
 
-import { FC, useState } from "react";
+import { FC, useState, useCallback } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { PlusCircle } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { v4 as uuid } from "uuid";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -42,8 +38,7 @@ import {
   imageUploadHandler,
   updateCategory,
 } from "@/actions/categories";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import slugify from "slugify";
 
 type Props = {
   categories: CategoriesWithProductsResponse;
@@ -73,63 +68,90 @@ const CategoriesPageComponent: FC<Props> = ({ categories }) => {
     const { image, name, intent = "create" } = data;
 
     // Upload image to Supabase Storage
-    const handleImageUpload = async () => {
+    const handleImageUpload = async (): Promise<string | null> => {
+      if (!image || image.length === 0) return null; // Kembalikan null jika tidak ada file
       const uniqueId = uuid();
       const fileName = `category/category-${uniqueId}`;
-      const file = new File([data.image[0]], fileName);
+      const file = new File([image[0]], fileName);
       const formData = new FormData();
       formData.append("file", file);
 
-      return imageUploadHandler(formData);
+      try {
+        const url = await imageUploadHandler(formData);
+        return url || null; // Pastikan mengembalikan null jika url adalah undefined
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        throw new Error("Error uploading image");
+      }
     };
+
+    let imageUrl: string | null = null;
+
+    try {
+      imageUrl = await handleImageUpload();
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      toast.error("Error uploading image. Please try again.");
+      setIsLoading(false);
+      return;
+    }
 
     switch (intent) {
       case "create": {
-        const imageUrl = await handleImageUpload();
-
-        if (imageUrl) {
-          await createCategory({
-            imageUrl,
-            name: data.name,
-          });
-          form.reset();
-          router.refresh();
-          setIsCreateCategoryModalOpen(false);
-          toast.success("Category created successfully");
+        if (!imageUrl) {
+          toast.error("Image is required");
+          setIsLoading(false);
+          return;
         }
+
+        await createCategory({
+          imageUrl,
+          name,
+        });
         break;
       }
       case "update": {
-        if (image && currentCategory?.slug) {
-          const imageUrl = await handleImageUpload();
+        if (currentCategory?.slug) {
+          // Jika nama berubah, buat slug baru
+          const newSlug =
+            currentCategory.name === name
+              ? currentCategory.slug
+              : slugify(name, { lower: true });
 
-          if (imageUrl) {
-            await updateCategory({
-              imageUrl,
-              name,
-              slug: currentCategory.slug,
-            });
-            form.reset();
-            router.refresh();
-            setIsCreateCategoryModalOpen(false);
-            toast.success("Category updated successfully");
-          }
+          // Gunakan imageUrl dari currentCategory jika tidak ada gambar baru
+          const finalImageUrl = imageUrl || currentCategory.imageUrl || "";
+
+          await updateCategory({
+            imageUrl: finalImageUrl,
+            name,
+            slug: newSlug,
+          });
         }
+        break;
       }
-
       default:
         console.log("Invalid intent");
     }
+
+    form.reset();
+    router.refresh();
+    setIsCreateCategoryModalOpen(false);
+    toast.success(
+      `Category ${intent === "create" ? "created" : "updated"} successfully`
+    );
     setIsLoading(false);
   };
 
-  const deleteCategoryHandler = async (id: number) => {
-    setIsLoading(true);
-    await deleteCategory(id);
-    router.refresh();
-    toast.success("Category deleted successfully");
-    setIsLoading(false);
-  };
+  const deleteCategoryHandler = useCallback(
+    async (id: number) => {
+      setIsLoading(true);
+      await deleteCategory(id);
+      router.refresh();
+      toast.success("Category deleted successfully");
+      setIsLoading(false);
+    },
+    [router]
+  );
 
   return (
     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
@@ -138,17 +160,12 @@ const CategoriesPageComponent: FC<Props> = ({ categories }) => {
         <div className="ml-auto flex items-center gap-2">
           <Dialog
             open={isCreateCategoryModalOpen}
-            onOpenChange={() =>
-              setIsCreateCategoryModalOpen(!isCreateCategoryModalOpen)
-            }>
+            onOpenChange={setIsCreateCategoryModalOpen}>
             <DialogTrigger asChild>
               <Button
                 size="sm"
                 className="h-8 gap-1"
-                onClick={() => {
-                  setCurrentCategory(null);
-                  setIsCreateCategoryModalOpen(true);
-                }}>
+                onClick={() => setCurrentCategory(null)}>
                 <PlusCircle className="h-3.5 w-3.5" />
                 <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
                   Add Category

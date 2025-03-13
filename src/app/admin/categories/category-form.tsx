@@ -73,7 +73,14 @@ export const CategoryForm = ({
           )}
         />
         <Button disabled={isSubmitting} type="submit" variant="outline">
-          Submit
+          {isSubmitting ? (
+            <>
+              <span className="loading loading-spinner"></span>
+              Processing...
+            </>
+          ) : (
+            "Submit"
+          )}
         </Button>
       </form>
     </Form>

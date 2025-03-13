@@ -71,17 +71,16 @@ type Props = {
 
 type OrderedProducts = {
   order_id: number;
-  product: number & {
+  product: {
     category: number;
     created_at: string;
     heroImage: string;
     id: number;
     maxQuantity: number;
-    payment_proof?: string;
-    payment_method?: string;
-    price: number;
+    price: number | null;
     slug: string;
     title: string;
+    variants?: any;
   };
 }[];
 
@@ -164,7 +163,17 @@ export default function PageComponent({ ordersWithProducts }: Props) {
   const OrderedProducts = ordersWithProducts.flatMap((order) =>
     order.order_items.map((item) => ({
       order_id: order.id,
-      product: item.product,
+      product: item.product
+        ? {
+            id: item.product.id,
+            name: item.product.title,
+            price: item.product.price || 0,
+            image: item.product.heroImage,
+            category: item.product.category,
+          }
+        : {
+            price: 0,
+          },
     }))
   );
 
@@ -358,9 +367,11 @@ export default function PageComponent({ ordersWithProducts }: Props) {
                       size="sm"
                       onClick={() =>
                         openProductsModal(
-                          OrderedProducts.filter(
-                            (item) => item.order_id === order.id
-                          )
+                          order.order_items.map((item) => ({
+                            order_id: order.id,
+                            product: item.product,
+                            quantity: item.quantity,
+                          }))
                         )
                       }>
                       View Details
@@ -471,11 +482,17 @@ export default function PageComponent({ ordersWithProducts }: Props) {
                                   {new Intl.NumberFormat("id-ID", {
                                     style: "currency",
                                     currency: "IDR",
-                                  }).format(product.price)}
+                                  }).format(product.price || 0)}{" "}
+                                  {/* Handle price yang mungkin null */}
                                 </p>
                                 <p className="text-sm text-gray-500">
                                   Available Quantity: {product.maxQuantity}
                                 </p>
+                                {product.variants && (
+                                  <p className="text-sm text-gray-500">
+                                    Variants: {JSON.stringify(product.variants)}
+                                  </p>
+                                )}
                               </div>
                             </div>
                           ))}
