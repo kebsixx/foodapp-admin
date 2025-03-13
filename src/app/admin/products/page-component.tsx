@@ -40,7 +40,7 @@ import {
 } from "@/actions/products";
 import { ProductForm } from "@/app/admin/products/product-form";
 import { ProductTableRow } from "@/app/admin/products/product-table-row";
-import { PlusIcon, ArrowUpDown } from "lucide-react";
+import { PlusIcon, ArrowUpDown, SearchIcon, FilterIcon } from "lucide-react";
 import {
   Pagination,
   PaginationContent,
@@ -57,6 +57,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 
 type Props = {
   categories: Category[];
@@ -80,6 +81,9 @@ export const ProductPageComponent: FC<Props> = ({
   const itemsPerPageOptions = ["5", "10", "20", "50"];
   const [sortField, setSortField] = useState<SortField>("title");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchCategory, setSearchCategory] = useState("all");
+
   const form = useForm<CreateOrUpdateProductSchema>({
     resolver: zodResolver(createOrUpdateProductSchema),
     defaultValues: {
@@ -222,10 +226,23 @@ export const ProductPageComponent: FC<Props> = ({
     });
   };
 
-  const totalPages = Math.ceil(productsWithCategories.length / itemsPerPage);
+  const filterProducts = (products: ProductWithCategory[]) => {
+    return products.filter((product) => {
+      const matchesTitle = product.title
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      const matchesCategory =
+        searchCategory === "all" ||
+        product.category.id.toString() === searchCategory;
+      return matchesTitle && matchesCategory;
+    });
+  };
+
+  const filteredProducts = filterProducts(productsWithCategories);
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
   const indexOfLastProduct = currentPage * itemsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - itemsPerPage;
-  const sortedProducts = sortProducts(productsWithCategories);
+  const sortedProducts = sortProducts(filteredProducts);
   const currentProducts = sortedProducts.slice(
     indexOfFirstProduct,
     indexOfLastProduct
@@ -327,15 +344,69 @@ export const ProductPageComponent: FC<Props> = ({
   return (
     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
       <div className="container mx-auto p-4">
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold">Products Management</h1>
-          <Button
-            onClick={() => {
-              setCurrentProduct(null);
-              setIsProductModalOpen(true);
-            }}>
-            <PlusIcon className="mr-2 h-4 w-4" /> Add Product
-          </Button>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-4">
+          <h1 className="text-2xl font-bold whitespace-nowrap">
+            Products Management
+          </h1>
+
+          <div className="flex flex-row gap-2 w-full sm:w-auto">
+            <div className="relative flex-1 sm:flex-initial">
+              <SearchIcon className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+              <Input
+                type="text"
+                placeholder="Search by product name..."
+                className="w-full sm:w-[200px] pl-8"
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1);
+                }}
+              />
+            </div>
+
+            <div className="sm:hidden">
+              <Button variant="outline" size="icon">
+                <FilterIcon className="h-4 w-4" />
+              </Button>
+            </div>
+
+            <div className="hidden sm:block">
+              <Select
+                value={searchCategory}
+                onValueChange={(value) => {
+                  setSearchCategory(value);
+                  setCurrentPage(1);
+                }}>
+                <SelectTrigger className="w-[150px] pl-3">
+                  <SelectValue
+                    className="text-left"
+                    placeholder="Filter by category"
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  {categories.map((category) => (
+                    <SelectItem
+                      key={category.id}
+                      value={category.id.toString()}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="fixed bottom-4 right-4 sm:static sm:ml-auto">
+            <Button
+              onClick={() => {
+                setCurrentProduct(null);
+                setIsProductModalOpen(true);
+              }}>
+              <PlusIcon className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Add Product</span>
+            </Button>
+          </div>
         </div>
 
         <Table>
