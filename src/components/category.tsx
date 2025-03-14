@@ -77,7 +77,7 @@ export const CategoryTableRow = ({
             <Dialog>
               <DialogTrigger>
                 {category.products
-                  .slice(0, 2)
+                  .slice(0, 4)
                   .map((product) => product.title)
                   .join(", ")}
               </DialogTrigger>
@@ -88,7 +88,7 @@ export const CategoryTableRow = ({
                 <h2>Products</h2>
                 <ScrollArea className="h-[400px] rounded-md p-4">
                   {category.products.map((product) => (
-                    <Card key={product.id} className="cursor-pointer">
+                    <Card key={product.id} className="cursor-pointer mb-2">
                       <div className="grid grid-cols-[100px,1fr] items-center gap-4">
                         <Image
                           alt="Product image"

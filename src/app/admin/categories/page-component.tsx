@@ -1,8 +1,8 @@
 "use client";
 
-import { FC, useState, useCallback } from "react";
+import { FC, useState, useCallback, useMemo } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, ArrowUpDown } from "lucide-react"; // Tambahkan ArrowUpDown
 import { zodResolver } from "@hookform/resolvers/zod";
 import { v4 as uuid } from "uuid";
 import { useRouter } from "next/navigation";
@@ -50,6 +50,8 @@ const CategoriesPageComponent: FC<Props> = ({ categories }) => {
   const [currentCategory, setCurrentCategory] =
     useState<CreateCategorySchema | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [sortBy, setSortBy] = useState<"name" | "created_at" | null>(null);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   const form = useForm<CreateCategorySchema>({
     resolver: zodResolver(createCategorySchema),
@@ -61,15 +63,31 @@ const CategoriesPageComponent: FC<Props> = ({ categories }) => {
 
   const router = useRouter();
 
+  const sortedCategories = useMemo(() => {
+    if (!sortBy) return categories;
+
+    return [...categories].sort((a, b) => {
+      if (sortBy === "name") {
+        return sortOrder === "asc"
+          ? a.name.localeCompare(b.name)
+          : b.name.localeCompare(a.name);
+      } else if (sortBy === "created_at") {
+        return sortOrder === "asc"
+          ? new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+          : new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      }
+      return 0;
+    });
+  }, [categories, sortBy, sortOrder]);
+
   const submitCategoryHandler: SubmitHandler<CreateCategorySchema> = async (
     data
   ) => {
     setIsLoading(true);
     const { image, name, intent = "create" } = data;
 
-    // Upload image to Supabase Storage
     const handleImageUpload = async (): Promise<string | null> => {
-      if (!image || image.length === 0) return null; // Kembalikan null jika tidak ada file
+      if (!image || image.length === 0) return null;
       const uniqueId = uuid();
       const fileName = `category/category-${uniqueId}`;
       const file = new File([image[0]], fileName);
@@ -78,7 +96,7 @@ const CategoriesPageComponent: FC<Props> = ({ categories }) => {
 
       try {
         const url = await imageUploadHandler(formData);
-        return url || null; // Pastikan mengembalikan null jika url adalah undefined
+        return url || null;
       } catch (error) {
         console.error("Error uploading image:", error);
         throw new Error("Error uploading image");
@@ -112,13 +130,11 @@ const CategoriesPageComponent: FC<Props> = ({ categories }) => {
       }
       case "update": {
         if (currentCategory?.slug) {
-          // Jika nama berubah, buat slug baru
           const newSlug =
             currentCategory.name === name
               ? currentCategory.slug
               : slugify(name, { lower: true });
 
-          // Gunakan imageUrl dari currentCategory jika tidak ada gambar baru
           const finalImageUrl = imageUrl || currentCategory.imageUrl || "";
 
           await updateCategory({
@@ -156,39 +172,37 @@ const CategoriesPageComponent: FC<Props> = ({ categories }) => {
   return (
     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
       {isLoading && <div className="loading">Loading...</div>}
-      <div className="flex items-center my-18">
-        <div className="ml-auto flex items-center gap-2">
-          <Dialog
-            open={isCreateCategoryModalOpen}
-            onOpenChange={setIsCreateCategoryModalOpen}>
-            <DialogTrigger asChild>
-              <Button
-                size="sm"
-                className="h-8 gap-1"
-                onClick={() => setCurrentCategory(null)}>
-                <PlusCircle className="h-3.5 w-3.5" />
-                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                  Add Category
-                </span>
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Add Category</DialogTitle>
-              </DialogHeader>
-              <CategoryForm
-                form={form}
-                onSubmit={submitCategoryHandler}
-                defaultValues={currentCategory}
-              />
-            </DialogContent>
-          </Dialog>
-        </div>
-      </div>
 
       <Card className="overflow-x-auto">
         <CardHeader>
-          <CardTitle>Categories</CardTitle>
+          <div className="flex justify-between items-center gap-2">
+            <CardTitle>Categories</CardTitle>
+            <Dialog
+              open={isCreateCategoryModalOpen}
+              onOpenChange={setIsCreateCategoryModalOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  size="sm"
+                  className="h-8 gap-1"
+                  onClick={() => setCurrentCategory(null)}>
+                  <PlusCircle className="h-3.5 w-3.5" />
+                  <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                    Add Category
+                  </span>
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add Category</DialogTitle>
+                </DialogHeader>
+                <CategoryForm
+                  form={form}
+                  onSubmit={submitCategoryHandler}
+                  defaultValues={currentCategory}
+                />
+              </DialogContent>
+            </Dialog>
+          </div>
         </CardHeader>
         <CardContent>
           <Table className="min-w-[600px]">
@@ -197,8 +211,37 @@ const CategoriesPageComponent: FC<Props> = ({ categories }) => {
                 <TableHead className="w-[100px] sm:table-cell">
                   <span className="sr-only">Image</span>
                 </TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead className="md:table-cell">Created at</TableHead>
+                <TableHead>
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      setSortBy("name");
+                      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                    }}>
+                    <div className="flex items-center gap-2">
+                      <span className={sortBy === "name" ? "font-bold" : ""}>
+                        Name
+                      </span>
+                      <ArrowUpDown className="h-4 w-4" /> {/* Ikon sorting */}
+                    </div>
+                  </Button>
+                </TableHead>
+                <TableHead className="md:table-cell">
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      setSortBy("created_at");
+                      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                    }}>
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={sortBy === "created_at" ? "font-bold" : ""}>
+                        Created at
+                      </span>
+                      <ArrowUpDown className="h-4 w-4" /> {/* Ikon sorting */}
+                    </div>
+                  </Button>
+                </TableHead>
                 <TableHead className="md:table-cell">Products</TableHead>
                 <TableHead>
                   <span className="sr-only">Actions</span>
@@ -206,7 +249,7 @@ const CategoriesPageComponent: FC<Props> = ({ categories }) => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {categories.map((category) => (
+              {sortedCategories.map((category) => (
                 <CategoryTableRow
                   key={category.id}
                   category={category}
