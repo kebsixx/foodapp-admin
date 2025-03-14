@@ -12,8 +12,15 @@ import {
   PieChart,
   Pie,
   Cell,
+  LabelList,
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 import {
   Table,
   TableBody,
@@ -25,6 +32,7 @@ import {
 import { useState } from "react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
+import { ProductsDistributionChart } from "@/components/ProductsDistributionChart";
 
 type MonthlyOrderData = {
   name: string;
@@ -41,6 +49,13 @@ type LatestUsers = {
   email: string;
   date: string | null;
 };
+
+const chartConfig = {
+  products: {
+    label: "Products",
+    color: "hsl(var(--chart-1))",
+  },
+} satisfies ChartConfig;
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
@@ -81,37 +96,7 @@ const PageComponent = ({
         </Card>
 
         {/* Products Chart */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Products Distribution</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={categoryData}
-                  dataKey="products"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={100}
-                  fill="#8884d8"
-                  labelLine={false}
-                  label={({ name, percent }) =>
-                    `${name} ${(percent * 100).toFixed(0)}`
-                  }>
-                  {categoryData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+        <ProductsDistributionChart categoryData={categoryData} />
 
         {/* Category to Products Chart */}
         <Card>
@@ -119,25 +104,37 @@ const PageComponent = ({
             <CardTitle>Products per Category</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={categoryData}>
-                <CartesianGrid strokeDasharray="3 3" />
+            <ChartContainer
+              config={chartConfig}
+              className="max-h-[300px] w-full">
+              <BarChart
+                accessibilityLayer
+                data={categoryData}
+                margin={{
+                  top: 20,
+                }}>
+                <CartesianGrid vertical={false} />
                 <XAxis
                   dataKey="name"
-                  angle={-45}
-                  textAnchor="end"
-                  height={70}
-                  interval={0}
-                  tick={{
-                    fontSize: 12,
-                  }}
+                  tickLine={false}
+                  tickMargin={10}
+                  axisLine={false}
+                  tickFormatter={(value) => value.slice(0, 5)} // Potong nama kategori menjadi 3 karakter
                 />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="products" fill="#00C49F" />
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent />}
+                />
+                <Bar dataKey="products" fill="var(--color-products)" radius={8}>
+                  <LabelList
+                    position="top"
+                    offset={12}
+                    className="fill-foreground"
+                    fontSize={12}
+                  />
+                </Bar>
               </BarChart>
-            </ResponsiveContainer>
+            </ChartContainer>
           </CardContent>
         </Card>
 
