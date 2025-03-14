@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import { createClient } from "@/supabase/client";
 import { useEffect, useState } from "react";
+import ThemeToggle from "./theme-toggle";
 
 const NAV_LINKS = [
   { href: "/admin/dashboard", label: "Dashboard" },
@@ -207,6 +208,7 @@ export const Header = () => {
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
+            <ThemeToggle className="w-full" />
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
