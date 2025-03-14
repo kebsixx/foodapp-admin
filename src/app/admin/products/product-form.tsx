@@ -290,7 +290,7 @@ export const ProductForm = ({
                       Processing...
                     </>
                   ) : (
-                    (defaultValues ? "Update" : "Create") + " Product"
+                    (defaultValues ? "Update" : "Add") + " Product"
                   )}
                 </Button>
               </DialogFooter>

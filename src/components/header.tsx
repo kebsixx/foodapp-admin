@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { CircleUser, Menu, Package2, Bell } from "lucide-react"; // Import icon Bell
+import { CircleUser, Menu, Package2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,12 +12,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Switch } from "@/components/ui/switch";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import { useTheme } from "next-themes";
 import { createClient } from "@/supabase/client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react"; // Impor useTransition
+import { StoreToggle } from "./store-toggle"; // Pastikan path-nya sesuai
+import { Progress } from "@/components/ui/progress";
 import ThemeToggle from "./theme-toggle";
 
 const NAV_LINKS = [
@@ -27,77 +27,13 @@ const NAV_LINKS = [
   { href: "/admin/categories", label: "Categories" },
 ];
 
-const StoreToggle = () => {
-  const [isOpen, setIsOpen] = useState(true);
-  const supabase = createClient();
-
-  useEffect(() => {
-    const getStoreStatus = async () => {
-      const { data } = await supabase
-        .from("store_settings")
-        .select("is_open")
-        .single();
-
-      console.log("Initial store status:", data);
-      if (data) setIsOpen(data.is_open!);
-    };
-    getStoreStatus();
-  }, [supabase]);
-
-  const toggleStore = async () => {
-    console.log("Toggling store to:", !isOpen);
-
-    const { data: settings } = await supabase
-      .from("store_settings")
-      .select("id")
-      .not("id", "is", null)
-      .single();
-
-    if (settings) {
-      const { error } = await supabase
-        .from("store_settings")
-        .update({ is_open: !isOpen })
-        .eq("id", settings.id) // Use the UUID instead of numeric ID
-        .select();
-
-      if (!error) setIsOpen(!isOpen);
-    }
-
-    const { data, error } = await supabase
-      .from("store_settings")
-      .update({ is_open: !isOpen })
-      .eq("id", "1")
-      .select();
-
-    console.log("Toggle response:", data, error);
-    if (!error) setIsOpen(!isOpen);
-  };
-
-  return (
-    <div className="flex items-center gap-2 ml-auto">
-      <div className="flex items-center gap-2">
-        <div
-          className={`h-3 w-3 rounded-full ${
-            isOpen ? "bg-green-500 animate-pulse" : "bg-red-500 animate-pulse"
-          }`}
-        />
-        <span
-          className={`font-medium ${
-            isOpen ? "text-green-500" : "text-red-500"
-          }`}>
-          {isOpen ? "Open" : "Closed"}
-        </span>
-      </div>
-      <Switch checked={isOpen} onCheckedChange={toggleStore} />
-    </div>
-  );
-};
-
 export const Header = () => {
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
   const [orderCount, setOrderCount] = useState(0);
+  const [isPending, startTransition] = useTransition(); // Gunakan useTransition
+  const [progress, setProgress] = useState(0); // State untuk progress bar
 
   useEffect(() => {
     const fetchOrderCount = async () => {
@@ -121,7 +57,7 @@ export const Header = () => {
         (payload) => {
           if (payload.new.status === "Pending") {
             setOrderCount((prevCount) => prevCount + 1);
-            new Audio("/notification.mp3").play(); // Play notification sound
+            new Audio("/notification.mp3").play();
           }
         }
       )
@@ -137,81 +73,118 @@ export const Header = () => {
     router.push("/");
   };
 
+  // Fungsi untuk menangani navigasi dengan progress bar
+  const handleNavigation = (href: string) => {
+    setProgress(0); // Reset progress ke 0
+    startTransition(() => {
+      // Mulai navigasi
+      router.push(href);
+
+      // Update progress secara bertahap
+      const interval = setInterval(() => {
+        setProgress((prevProgress) => {
+          if (prevProgress >= 100) {
+            clearInterval(interval); // Hentikan interval saat progress mencapai 100
+            return 100;
+          }
+          return prevProgress + 10; // Tambahkan 10 setiap interval
+        });
+      }, 100); // Update setiap 100ms
+    });
+  };
+
   return (
-    <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
-      <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
-        <Link
-          href="/"
-          className="flex items-center gap-2 text-lg font-semibold md:text-base">
-          <Package2 className="h-6 w-6" />
-        </Link>
-        {NAV_LINKS.map(({ href, label }) => (
+    <>
+      <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
+        <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
           <Link
-            key={href}
-            href={href}
-            className={cn(
-              "hover:text-foreground text-muted-foreground flex items-center",
-              {
-                "text-foreground font-bold": pathname === href,
-              }
-            )}>
-            <div className="flex items-center gap-2">
-              {label}
-              {href === "/admin/orders" && orderCount > 0 && (
-                <div className="h-2 w-2 rounded-full bg-red-600 animate-pulse" />
-              )}
-            </div>
+            href="/"
+            className="flex items-center gap-2 text-lg font-semibold md:text-base">
+            <Package2 className="h-6 w-6" />
           </Link>
-        ))}
-      </nav>
-      <Sheet>
-        <SheetTrigger asChild>
-          <Button variant="outline" size="icon" className="shrink-0 md:hidden">
-            <Menu className="h-5 w-5" />
-            <span className="sr-only">Toggle navigation menu</span>
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left">
-          <nav className="grid gap-6 text-lg font-medium">
+          {NAV_LINKS.map(({ href, label }) => (
             <Link
-              href="/"
-              className="flex items-center gap-2 text-lg font-semibold">
-              <Package2 className="h-6 w-6" />
-            </Link>
-            {NAV_LINKS.map(({ href, label }) => (
-              <Link
-                key={href}
-                href={href}
-                className={cn("hover:text-foreground text-muted-foreground", {
+              key={href}
+              href={href}
+              onClick={(e) => {
+                e.preventDefault(); // Mencegah navigasi default
+                handleNavigation(href); // Gunakan handleNavigation
+              }}
+              className={cn(
+                "hover:text-foreground text-muted-foreground flex items-center",
+                {
                   "text-foreground font-bold": pathname === href,
-                })}>
-                <div className="flex items-center gap-2">
-                  {label}
-                  {href === "/admin/orders" && orderCount > 0 && (
-                    <div className="h-2 w-2 rounded-full bg-red-600 animate-pulse" />
-                  )}
-                </div>
-              </Link>
-            ))}
-          </nav>
-        </SheetContent>
-      </Sheet>
-      <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
-        <StoreToggle />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="secondary" size="icon" className="rounded-full">
-              <CircleUser className="h-5 w-5" />
+                }
+              )}>
+              <div className="flex items-center gap-2">
+                {label}
+                {href === "/admin/orders" && orderCount > 0 && (
+                  <div className="h-2 w-2 rounded-full bg-red-600 animate-pulse" />
+                )}
+              </div>
+            </Link>
+          ))}
+        </nav>
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button
+              variant="outline"
+              size="icon"
+              className="shrink-0 md:hidden">
+              <Menu className="h-5 w-5" />
+              <span className="sr-only">Toggle navigation menu</span>
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
-            <ThemeToggle className="w-full" />
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    </header>
+          </SheetTrigger>
+          <SheetContent side="left">
+            <nav className="grid gap-6 text-lg font-medium">
+              <Link
+                href="/"
+                className="flex items-center gap-2 text-lg font-semibold">
+                <Package2 className="h-6 w-6" />
+              </Link>
+              {NAV_LINKS.map(({ href, label }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  onClick={(e) => {
+                    e.preventDefault(); // Mencegah navigasi default
+                    handleNavigation(href); // Gunakan handleNavigation
+                  }}
+                  className={cn("hover:text-foreground text-muted-foreground", {
+                    "text-foreground font-bold": pathname === href,
+                  })}>
+                  <div className="flex items-center gap-2">
+                    {label}
+                    {href === "/admin/orders" && orderCount > 0 && (
+                      <div className="h-2 w-2 rounded-full bg-red-600 animate-pulse" />
+                    )}
+                  </div>
+                </Link>
+              ))}
+            </nav>
+          </SheetContent>
+        </Sheet>
+        <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
+          <StoreToggle />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="secondary" size="icon" className="rounded-full">
+                <CircleUser className="h-5 w-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
+              <ThemeToggle className="w-full" />
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </header>
+      {/* Progress Bar di bawah header */}
+      {isPending && (
+        <Progress value={progress} className="h-1 w-full rounded-none" />
+      )}
+    </>
   );
 };
