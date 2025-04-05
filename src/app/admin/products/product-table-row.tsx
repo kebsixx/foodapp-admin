@@ -10,15 +10,16 @@ import {
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { TableRow, TableCell } from "@/components/ui/table";
-import { ProductWithCategory } from "@/app/admin/products/products.types";
+import {
+  FormProductValues,
+  ProductWithCategory,
+} from "@/app/admin/products/products.types";
 import { CreateOrUpdateProductSchema } from "@/app/admin/products/schema";
 
 type Props = {
   product: ProductWithCategory;
   setIsProductModalOpen: Dispatch<SetStateAction<boolean>>;
-  setCurrentProduct: Dispatch<
-    SetStateAction<CreateOrUpdateProductSchema | null>
-  >;
+  setCurrentProduct: (product: FormProductValues) => void;
   setIsDeleteModalOpen: Dispatch<SetStateAction<boolean>>;
 };
 
@@ -28,14 +29,23 @@ export const ProductTableRow = ({
   setCurrentProduct,
   setIsDeleteModalOpen,
 }: Props) => {
-  const handleEditClick = (product: CreateOrUpdateProductSchema) => {
+  const handleEditClick = () => {
+    if (!product.slug) return;
+
     setCurrentProduct({
       title: product.title,
-      category: product.category,
-      price: product.price,
-      maxQuantity: product.maxQuantity,
-      heroImage: product.heroImage,
+      category: product.category.id.toString(),
+      price: product.price?.toString() ?? "",
+      maxQuantity: product.maxQuantity.toString(),
       slug: product.slug,
+      heroImage: product.heroImage,
+      variants:
+        product.variants?.map((v) => ({
+          id: v.id,
+          name: v.name,
+          price: v.price.toString(),
+          available: v.available ?? true,
+        })) || [],
       intent: "update",
     });
     setIsProductModalOpen(true);
@@ -94,24 +104,7 @@ export const ProductTableRow = ({
         )}
       </TableCell>
       <TableCell>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() =>
-            handleEditClick({
-              title: product.title,
-              category: product.category.id.toString(),
-              price: product.price?.toString() ?? "",
-              maxQuantity: product.maxQuantity.toString(),
-              slug: product.slug,
-              heroImage: product.heroImage,
-              variants: product.variants?.map((v) => ({
-                name: v.name,
-                price: v.price.toString(),
-              })),
-              intent: "update",
-            })
-          }>
+        <Button variant="ghost" size="icon" onClick={handleEditClick}>
           <Pencil className="h-4 w-4" />
         </Button>
         <Button

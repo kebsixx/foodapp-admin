@@ -29,14 +29,15 @@ import { Category } from "@/app/admin/categories/categories.types";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Plus, Trash } from "lucide-react";
+import { FormProductValues } from "@/app/admin/products/products.types";
 
 type Props = {
-  form: UseFormReturn<CreateOrUpdateProductSchema>;
-  onSubmit: (data: CreateOrUpdateProductSchema) => void;
+  form: UseFormReturn<FormProductValues>;
+  onSubmit: (data: FormProductValues) => void;
   categories: Category[];
   setIsProductModalOpen: Dispatch<SetStateAction<boolean>>;
   isProductModalOpen: boolean;
-  defaultValues: CreateOrUpdateProductSchema | null;
+  defaultValues: FormProductValues | null;
   name: string;
 };
 
@@ -59,7 +60,7 @@ export const ProductForm = ({
             id: v.id || crypto.randomUUID(),
             name: v.name,
             price: v.price.toString(),
-            available: v.available ?? true,
+            available: v.available,
           })) || [],
       });
     } else {

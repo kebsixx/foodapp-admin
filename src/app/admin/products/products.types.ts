@@ -30,7 +30,7 @@ export type FormProductVariant = {
   id?: string; // Optional for new variants
   name: string;
   price: string; // Different type for form
-  available?: boolean;
+  available: boolean;
 };
 
 export type FormProductValues = {
@@ -38,7 +38,7 @@ export type FormProductValues = {
   price: string;
   maxQuantity: string;
   category: string;
-  heroImage: any;
+  heroImage?: any;
   variants?: FormProductVariant[];
   slug?: string;
   intent?: "create" | "update";

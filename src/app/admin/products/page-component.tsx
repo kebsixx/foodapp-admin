@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 import {
+  FormProductValues,
   ProductsWithCategoriesResponse,
   ProductWithCategory,
 } from "@/app/admin/products/products.types";
@@ -72,7 +73,7 @@ export const ProductPageComponent: FC<Props> = ({
   productsWithCategories,
 }) => {
   const [currentProduct, setCurrentProduct] =
-    useState<CreateOrUpdateProductSchema | null>(null);
+    useState<FormProductValues | null>(null);
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -84,23 +85,21 @@ export const ProductPageComponent: FC<Props> = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [searchCategory, setSearchCategory] = useState("all");
 
-  const form = useForm<CreateOrUpdateProductSchema>({
+  const form = useForm<FormProductValues>({
     resolver: zodResolver(createOrUpdateProductSchema),
     defaultValues: {
       title: "",
       category: "",
       maxQuantity: "",
       heroImage: undefined,
-      variants: [{ name: "", price: "" }],
+      variants: [],
       intent: "create",
     },
   });
 
   const router = useRouter();
 
-  const productCreateUpdateHandler = async (
-    data: CreateOrUpdateProductSchema
-  ) => {
+  const productCreateUpdateHandler = async (data: FormProductValues) => {
     setIsLoading(true);
     const {
       title,
@@ -110,7 +109,7 @@ export const ProductPageComponent: FC<Props> = ({
       heroImage,
       slug,
       intent = "create",
-      variants, // Ambil variants dari data
+      variants,
     } = data;
 
     const uploadFile = async (file: File) => {
@@ -137,52 +136,47 @@ export const ProductPageComponent: FC<Props> = ({
       }
     }
 
-    // Konversi variants.price dari string ke number
-    const formattedVariants = variants?.map((variant) => ({
-      ...variant,
-      price: Number(variant.price), // Konversi price ke number
-    }));
-
-    switch (intent) {
-      case "create": {
-        if (heroImageUrl) {
-          await createProduct({
-            category: Number(category),
-            heroImage: heroImageUrl,
-            maxQuantity: Number(maxQuantity),
-            price: Number(price),
-            title,
-            variants: formattedVariants, // Gunakan formattedVariants
-          });
-          form.reset();
-          router.refresh();
-          setIsProductModalOpen(false);
-          toast.success("Product created successfully");
-        }
-        break;
-      }
-      case "update": {
-        if (heroImageUrl && slug) {
-          await updateProduct({
-            category: Number(category),
-            heroImage: heroImageUrl,
-            maxQuantity: Number(maxQuantity),
-            price: Number(price),
-            title,
-            slug,
-            variants: formattedVariants, // Gunakan formattedVariants
-          });
-          form.reset();
-          router.refresh();
-          setIsProductModalOpen(false);
-          toast.success("Product updated successfully");
-        }
-        break;
-      }
-      default:
-        console.error("Invalid intent");
+    if (intent === "update" && !slug) {
+      toast.error("Slug is required for updating product");
+      setIsLoading(false);
+      return;
     }
-    setIsLoading(false);
+
+    const productData = {
+      title,
+      category: Number(category),
+      price: Number(price),
+      maxQuantity: Number(maxQuantity),
+      heroImage: heroImageUrl || (currentProduct?.heroImage as string),
+      variants: variants?.map((v) => ({
+        id: v.id || crypto.randomUUID(),
+        name: v.name,
+        price: Number(v.price),
+        available: v.available ?? true,
+      })),
+      ...(intent === "update" && { slug: slug as string }),
+    };
+
+    try {
+      if (intent === "create") {
+        await createProduct(productData);
+        toast.success("Product created successfully");
+      } else {
+        await updateProduct({
+          ...productData,
+          slug: slug as string,
+        });
+        toast.success("Product updated successfully");
+      }
+      form.reset();
+      router.refresh();
+      setIsProductModalOpen(false);
+    } catch (error) {
+      toast.error("Error saving product");
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const deleteProductHandler = async () => {
@@ -469,7 +463,9 @@ export const ProductPageComponent: FC<Props> = ({
                 setIsProductModalOpen={setIsProductModalOpen}
                 key={product.id}
                 product={product}
-                setCurrentProduct={setCurrentProduct}
+                setCurrentProduct={(productData: FormProductValues) => {
+                  setCurrentProduct(productData);
+                }}
                 setIsDeleteModalOpen={setIsDeleteModalOpen}
               />
             ))}
