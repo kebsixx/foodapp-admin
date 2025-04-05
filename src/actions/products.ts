@@ -47,7 +47,12 @@ export const createProduct = async (product: {
     price: number;
     maxQuantity: number;
     heroImage: string;
-    variants?: { name: string; price: number }[]; // Tambahkan variants
+    variants?: { 
+      id: string;
+      name: string; 
+      price: number;
+      available: boolean;
+    }[];
   }) => {
     const supabase = createClient();
     const { data, error } = await supabase
@@ -60,7 +65,12 @@ export const createProduct = async (product: {
           maxQuantity: product.maxQuantity,
           heroImage: product.heroImage,
           slug: slugify(product.title, { lower: true }),
-          variants: product.variants || null, // Sertakan variants
+          variants: product.variants 
+          ? product.variants.map(v => ({
+              ...v,
+              available: v.available ?? true // Ensure available is set
+            }))
+          : null,
         },
       ])
       .select();
@@ -72,16 +82,30 @@ export const createProduct = async (product: {
     return data;
   };
 
-export const updateProduct = async (product: {
+  export const updateProduct = async (product: {
     title: string;
     category: number;
     price: number;
     maxQuantity: number;
     heroImage: string;
     slug: string;
-    variants?: { name: string; price: number }[]; // Tambahkan variants
+    variants?: {
+      id: string;
+      name: string; 
+      price: number;
+      available: boolean;
+    }[];
   }) => {
     const supabase = createClient();
+    
+    // Pastikan variants tidak undefined
+    const variants = product.variants 
+      ? product.variants.map(v => ({
+          ...v,
+          available: v.available ?? true // Ensure available is set
+        }))
+      : null;
+  
     const { data, error } = await supabase
       .from("product")
       .update({
@@ -90,15 +114,12 @@ export const updateProduct = async (product: {
         price: product.price,
         maxQuantity: product.maxQuantity,
         heroImage: product.heroImage,
-        variants: product.variants || null, // Sertakan variants
+        variants
       })
       .eq("slug", product.slug)
       .select();
   
-    if (error) {
-      throw new Error(`Error updating product: ${error.message}`);
-    }
-  
+    if (error) throw new Error(`Error updating product: ${error.message}`);
     return data;
   };
 

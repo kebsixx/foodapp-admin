@@ -52,7 +52,16 @@ export const ProductForm = ({
 
   useEffect(() => {
     if (defaultValues) {
-      form.reset(defaultValues);
+      form.reset({
+        ...defaultValues,
+        variants:
+          defaultValues.variants?.map((v) => ({
+            id: v.id || crypto.randomUUID(),
+            name: v.name,
+            price: v.price.toString(),
+            available: v.available ?? true,
+          })) || [],
+      });
     } else {
       form.reset({
         title: "",
@@ -213,7 +222,12 @@ export const ProductForm = ({
                       const currentVariants = form.getValues("variants") || [];
                       form.setValue("variants", [
                         ...currentVariants,
-                        { name: "", price: "" },
+                        {
+                          id: crypto.randomUUID(),
+                          name: "",
+                          price: "0",
+                          available: true,
+                        },
                       ]);
                     }}
                     disabled={isSubmitting}>
@@ -222,9 +236,9 @@ export const ProductForm = ({
                   </Button>
                 </div>
 
-                {form.watch("variants")?.map((_, index) => (
+                {form.watch("variants")?.map((variant, index) => (
                   <div
-                    key={index}
+                    key={variant.id}
                     className="grid grid-cols-2 gap-2 items-start">
                     <FormField
                       control={form.control}
@@ -258,6 +272,27 @@ export const ProductForm = ({
                               />
                             </FormControl>
                             <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name={`variants.${index}.available`}
+                        render={({ field }) => (
+                          <FormItem className="flex items-center gap-2">
+                            <FormControl>
+                              <input
+                                type="checkbox"
+                                checked={field.value ?? true}
+                                onChange={(e) =>
+                                  field.onChange(e.target.checked)
+                                }
+                                className="h-4 w-4"
+                                disabled={isSubmitting}
+                              />
+                            </FormControl>
+                            <FormLabel>Available</FormLabel>
                           </FormItem>
                         )}
                       />

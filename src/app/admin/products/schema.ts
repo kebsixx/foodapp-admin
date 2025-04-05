@@ -11,8 +11,10 @@ export const createOrUpdateProductSchema = z.object({
   variants: z
     .array(
       z.object({
+        id: z.string().optional(), // ID opsional untuk pembaruan
         name: z.string().min(1, { message: "Variant name is required" }),
         price: z.string().min(1, { message: "Variant price is required" }), // price sebagai string
+        available: z.boolean().optional().default(true), // opsional untuk pembaruan
       })
     )
     .optional(),
@@ -37,8 +39,10 @@ export const createProductSchemaServer = z.object({
   variants: z
     .array(
       z.object({
+        id: z.string().optional(), // ID opsional untuk pembaruan
         name: z.string().min(1, { message: "Variant name is required" }),
         price: z.number().positive({ message: "Variant price is required" }),
+        available: z.boolean().optional().default(true), // opsional untuk pembaruan
       })
     )
     .optional(), // Variant opsional
