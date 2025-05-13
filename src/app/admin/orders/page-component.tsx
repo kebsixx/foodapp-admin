@@ -141,12 +141,12 @@ export default function PageComponent({ ordersWithProducts }: Props) {
       const searchLower = searchQuery.toLowerCase();
       return (
         order.slug.toLowerCase().includes(searchLower) ||
-        order.user.name?.toLowerCase().includes(searchLower) ||
-        order.user.phone?.toLowerCase().includes(searchLower)
+        (order.user?.name?.toLowerCase() || "").includes(searchLower) ||
+        (order.user?.phone?.toLowerCase() || "").includes(searchLower)
       );
     });
     setFilteredOrders(filtered);
-    setCurrentPage(1); // Reset to first page when searching
+    setCurrentPage(1);
   }, [searchQuery, ordersWithProducts]);
 
   // Update the pagination calculation to use filteredOrders
