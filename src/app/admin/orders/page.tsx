@@ -11,9 +11,14 @@ const Orders = async () => {
 
   console.log(ordersWithProducts);
 
+  const mappedOrders = ordersWithProducts.map(order => ({
+    ...order,
+    user: order.users as any
+  }));
+
   return (
     <div>
-      <PageComponent ordersWithProducts={ordersWithProducts} />
+      <PageComponent ordersWithProducts={mappedOrders} />
     </div>
   );
 };
