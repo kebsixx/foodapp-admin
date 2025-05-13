@@ -5,8 +5,6 @@ import slugify from "slugify";
 import { CategoriesWithProductsResponse } from "@/app/admin/categories/categories.types";
 import {
   CreateCategorySchemaServer,
-  UpdateCategorySchema,
-  updateCategorySchema,
 } from "@/app/admin/categories/create-category.schema";
 import { createClient } from "@/supabase/server";
 
@@ -57,18 +55,6 @@ export const imageUploadHandler = async (formData: FormData) => {
     console.log("Error uploading Image", error);
     throw new Error("Error uploading Image");
   }
-};
-
-const getCategoryImagePath = async (slug: string) => {
-  const supabase = createClient();
-  const { data, error } = await supabase
-    .from("category")
-    .select("imageUrl")
-    .eq("slug", slug)
-    .single();
-
-  if (error) throw new Error(`Error fetching category: ${error.message}`);
-  return data?.imageUrl;
 };
 
 const deleteImageFromBucket = async (imageUrl: string) => {

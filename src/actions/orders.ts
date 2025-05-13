@@ -8,7 +8,7 @@ export const getOrdersWithProducts = async () => {
     const supabase = createClient();
     const {data, error} = await supabase
         .from('order')
-        .select('*, order_items:order_item(*, product(*)), user(*)')
+        .select('*, order_items:order_item(*, product(*)), users(*)')
         .order('created_at', {ascending: false});
 
     if(error) throw new Error(error.message);
