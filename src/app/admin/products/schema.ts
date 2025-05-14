@@ -6,8 +6,9 @@ export const createOrUpdateProductSchema = z.object({
   maxQuantity: z.string().min(1, { message: "Max quantity is required" }),
   category: z.string().min(1, { message: "Category is required" }),
   heroImage: z
-    .any()
-    .refine((file) => file.length === 1, "Hero image is required"),
+    .string()
+    .url({ message: "Hero image is required" })
+    .optional(),
   variants: z
     .array(
       z.object({
@@ -54,9 +55,10 @@ export type CreateProductSchemaServer = z.infer<
 
 export type UpdateProductSchema = {
   category: number;
-  heroImage: string;
+  heroImage?: string;
   maxQuantity: number;
   price: number | null;
   slug: string;
   title: string;
+  oldHeroImage?: string;
 };

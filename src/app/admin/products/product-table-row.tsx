@@ -39,6 +39,7 @@ export const ProductTableRow = ({
       maxQuantity: product.maxQuantity.toString(),
       slug: product.slug,
       heroImage: product.heroImage,
+      oldHeroImage: product.heroImage,
       variants:
         product.variants?.map((v) => ({
           id: v.id,
@@ -49,6 +50,20 @@ export const ProductTableRow = ({
       intent: "update",
     });
     setIsProductModalOpen(true);
+  };
+
+  const handleDeleteClick = () => {
+    setCurrentProduct({
+      title: product.title,
+      category: product.category.id.toString(),
+      price: product.price?.toString() ?? "",
+      maxQuantity: product.maxQuantity.toString(),
+      slug: product.slug,
+      heroImage: product.heroImage,
+      oldHeroImage: product.heroImage, // Tambahkan ini untuk penghapusan gambar
+      intent: "update",
+    });
+    setIsDeleteModalOpen(true);
   };
 
   return (
@@ -107,24 +122,8 @@ export const ProductTableRow = ({
         <Button variant="ghost" size="icon" onClick={handleEditClick}>
           <Pencil className="h-4 w-4" />
         </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() =>
-            setCurrentProduct({
-              title: product.title,
-              category: product.category.id.toString(),
-              price: product.price?.toString() ?? "",
-              maxQuantity: product.maxQuantity.toString(),
-              slug: product.slug,
-              heroImage: product.heroImage,
-              intent: "update",
-            })
-          }>
-          <Trash2
-            className="h-4 w-4"
-            onClick={() => setIsDeleteModalOpen(true)}
-          />
+        <Button variant="ghost" size="icon" onClick={handleDeleteClick}>
+          <Trash2 className="h-4 w-4" />
         </Button>
       </TableCell>
     </TableRow>

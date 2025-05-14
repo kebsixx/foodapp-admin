@@ -121,12 +121,14 @@ export const ProductPageComponent: FC<Props> = ({
     };
 
     let heroImageUrl: string | undefined;
+    const oldHeroImage = currentProduct?.heroImage as string | undefined;
 
-    if (heroImage) {
-      const imagePromise = Array.from(heroImage).map((file) =>
-        uploadFile(file as unknown as File)
-      );
+    if (heroImage && heroImage.length > 0) {
       try {
+        const imagePromise =
+          heroImage instanceof FileList
+            ? Array.from(heroImage).map((file) => uploadFile(file))
+            : [];
         [heroImageUrl] = await Promise.all(imagePromise);
       } catch (error) {
         console.error("Error uploading image:", error);
@@ -142,29 +144,42 @@ export const ProductPageComponent: FC<Props> = ({
       return;
     }
 
-    const productData = {
-      title,
-      category: Number(category),
-      price: Number(price),
-      maxQuantity: Number(maxQuantity),
-      heroImage: heroImageUrl || (currentProduct?.heroImage as string),
-      variants: variants?.map((v) => ({
-        id: v.id || crypto.randomUUID(),
-        name: v.name,
-        price: Number(v.price),
-        available: v.available ?? true,
-      })),
-      ...(intent === "update" && { slug: slug as string }),
-    };
-
     try {
       if (intent === "create") {
-        await createProduct(productData);
+        if (!heroImageUrl) {
+          toast.error("Hero image is required for creating a product");
+          setIsLoading(false);
+          return;
+        }
+        await createProduct({
+          title,
+          category: Number(category),
+          price: Number(price),
+          maxQuantity: Number(maxQuantity),
+          heroImage: heroImageUrl,
+          variants: variants?.map((v) => ({
+            id: v.id || crypto.randomUUID(),
+            name: v.name,
+            price: Number(v.price),
+            available: v.available ?? true,
+          })),
+        });
         toast.success("Product created successfully");
       } else {
         await updateProduct({
-          ...productData,
+          title,
+          category: Number(category),
+          price: Number(price),
+          maxQuantity: Number(maxQuantity),
+          heroImage: heroImageUrl || oldHeroImage || "",
+          oldHeroImage: heroImageUrl ? oldHeroImage : undefined,
           slug: slug as string,
+          variants: variants?.map((v) => ({
+            id: v.id || crypto.randomUUID(),
+            name: v.name,
+            price: Number(v.price),
+            available: v.available ?? true,
+          })),
         });
         toast.success("Product updated successfully");
       }
@@ -172,7 +187,9 @@ export const ProductPageComponent: FC<Props> = ({
       router.refresh();
       setIsProductModalOpen(false);
     } catch (error) {
-      toast.error("Error saving product");
+      toast.error(
+        error instanceof Error ? error.message : "Error saving product"
+      );
       console.error(error);
     } finally {
       setIsLoading(false);
@@ -182,7 +199,10 @@ export const ProductPageComponent: FC<Props> = ({
   const deleteProductHandler = async () => {
     setIsLoading(true);
     if (currentProduct?.slug) {
-      await deleteProduct(currentProduct.slug);
+      await deleteProduct(
+        currentProduct.slug,
+        currentProduct.heroImage as string | undefined
+      );
       router.refresh();
       toast.success("Product deleted successfully");
       setIsDeleteModalOpen(false);

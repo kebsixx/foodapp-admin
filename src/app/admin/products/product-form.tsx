@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useEffect } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 
 import {
@@ -23,7 +23,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { CreateOrUpdateProductSchema } from "@/app/admin/products/schema";
+import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Category } from "@/app/admin/categories/categories.types";
 import { Button } from "@/components/ui/button";
@@ -50,6 +50,8 @@ export const ProductForm = ({
   defaultValues,
 }: Props) => {
   const isSubmitting = form.formState.isSubmitting;
+
+  const [newImagePreview, setNewImagePreview] = useState<string | null>(null);
 
   useEffect(() => {
     if (defaultValues) {
@@ -193,16 +195,67 @@ export const ProductForm = ({
                 name="heroImage"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Hero Image</FormLabel>
-                    <FormControl className="col-span-3">
+                    <FormLabel>
+                      Hero Image{" "}
+                      {defaultValues && (
+                        <span className="text-gray-500">(Optional)</span>
+                      )}
+                    </FormLabel>
+
+                    {/* Preview Container */}
+                    {defaultValues?.heroImage &&
+                      typeof defaultValues.heroImage === "string" && (
+                        <div className="mb-3 flex flex-col items-start">
+                          <div className="relative h-32 w-32 border rounded-md overflow-hidden">
+                            <Image
+                              src={defaultValues.heroImage}
+                              alt="Current hero image"
+                              fill
+                              className="object-cover"
+                              sizes="128px"
+                              priority
+                            />
+                          </div>
+                          <p className="text-xs text-gray-500 mt-1">
+                            Current image
+                          </p>
+                        </div>
+                      )}
+
+                    {/* File Input */}
+                    <FormControl>
                       <Input
                         type="file"
                         accept="image/*"
-                        {...form.register("heroImage")}
-                        onChange={(event) => {
-                          field.onChange(
-                            event.target.files?.[0] || field.value
-                          );
+                        className="cursor-pointer"
+                        onChange={(e) => {
+                          field.onChange(e.target.files?.[0] || field.value);
+
+                          // Preview gambar baru yang dipilih
+                          if (e.target.files?.[0]) {
+                            const reader = new FileReader();
+                            reader.onload = (event) => {
+                              {
+                                newImagePreview && (
+                                  <div className="mb-3 flex flex-col items-start">
+                                    <div className="relative h-32 w-32 border rounded-md overflow-hidden">
+                                      <Image
+                                        src={newImagePreview}
+                                        alt="New image preview"
+                                        fill
+                                        className="object-cover"
+                                        sizes="128px"
+                                      />
+                                    </div>
+                                    <p className="text-xs text-gray-500 mt-1">
+                                      New image preview
+                                    </p>
+                                  </div>
+                                );
+                              }
+                            };
+                            reader.readAsDataURL(e.target.files[0]);
+                          }
                         }}
                         disabled={isSubmitting}
                       />
