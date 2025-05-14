@@ -38,7 +38,7 @@ export const Content = ({ products }: Props) => {
 
     // To show up to 3 products per category for example:
     const selectedProducts = Object.values(productsByCategory || {}).flatMap(
-      (categoryProducts) => categoryProducts.slice(0, 3)
+      (categoryProducts) => categoryProducts.slice(0, 2)
     );
 
     return selectedProducts;

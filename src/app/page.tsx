@@ -214,7 +214,7 @@ export default async function Home() {
                   <li>
                     <a
                       className="flex items-center justify-center gap-1.5 ltr:sm:justify-start rtl:sm:justify-end"
-                      href="#">
+                      href="mailto:cerita@senja.id">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="size-5 shrink-0 text-gray-900"
@@ -238,7 +238,7 @@ export default async function Home() {
                   <li>
                     <a
                       className="flex items-center justify-center gap-1.5 ltr:sm:justify-start rtl:sm:justify-end"
-                      href="#">
+                      href="whatsapp://send?phone=6285175003172&text=Halo%20Cerita%20Senja">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="size-5 shrink-0 text-gray-900"
