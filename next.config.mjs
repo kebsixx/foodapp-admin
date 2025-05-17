@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  transpilePackages: ["@radix-ui/react-dialog", "@radix-ui/react-slot"],
   experimental: {
     serverActions: true,
   },
