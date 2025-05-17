@@ -10,6 +10,7 @@ import Hero from "@/components/hero";
 import Feature from "@/components/feature";
 import Testimonial from "@/components/testimonial";
 import ThemeToggle from "@/components/theme-toggle";
+import FeedbackForm from "@/components/FeedbackForm";
 
 export default async function Home() {
   const products = await getProducts();
@@ -98,10 +99,15 @@ export default async function Home() {
             </span>
           </a>
         </section>
+
+        {/* Feedback Form Section */}
+        <section className="m-24">
+          <FeedbackForm />
+        </section>
       </main>
 
       <footer className="bg-white">
-        <div className="mx-auto max-w-screen-xl px-4 pb-6 pt-16 sm:px-6 lg:px-8 lg:pt-24">
+        <div className="mx-auto max-w-screen-xl px-4 pb-6 pt-8 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
             <div>
               <div className="flex justify-center text-black sm:justify-start">
