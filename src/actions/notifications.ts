@@ -48,7 +48,7 @@ export const sendNotification = async (userId: string, status: string) => {
 
     await sendPushNotification({
       expoPushToken: tokenData.expo_notification_token,
-      title: 'Your order has been updated',
+      title: 'Order Status Update',
       body: `Your order has been ${status}`,
     });
 }
