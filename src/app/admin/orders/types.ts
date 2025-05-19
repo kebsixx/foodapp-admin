@@ -17,17 +17,21 @@ export type User = {
 };
 
 export type Order = {
-  id: number;
-  created_at: string;
-  status: string;
-  description: string | null;
-  user: User;
-  slug: string;
-  totalPrice: number;
-  pickup_method: 'pickup' | 'delivery' | null;
-  payment_proof: string | null;
-  user_id: string | null;
-  order_items: OrderItem[];
+    id: number;
+    created_at: string;
+    status: string;
+    description: string | null;
+    user: {
+        id?: string;
+        name: string;
+        phone: string;
+        email?: string;
+    };
+    slug: string;
+    totalPrice: number;
+    pickup_method: 'pickup' | 'delivery' | null;
+    payment_proof: string | null;
+    order_items: OrderItem[];
 };
 
 export type OrderItem = {

@@ -6,14 +6,35 @@ import { sendNotification } from "./notifications";
 
 export const getOrdersWithProducts = async () => {
     const supabase = createClient();
-    const {data, error} = await supabase
+    const { data, error } = await supabase
         .from('order')
-        .select('*, order_items:order_item(*, product(*)), users(*)')
-        .order('created_at', {ascending: false});
+        .select(`
+            *,
+            order_items:order_item(
+                *,
+                product(*)
+            ),
+            users(
+                id, 
+                name,
+                phone,
+                email
+            )
+        `)
+        .order('created_at', { ascending: false });
 
-    if(error) throw new Error(error.message);
+    if (error) {
+        console.error('Error fetching orders:', error);
+        throw new Error('Failed to fetch orders: ' + error.message);
+    }
     
-    return data;
+    // Map the data to ensure user info is available
+    const mappedData = data?.map(order => ({
+        ...order,
+        user: order.users || { name: 'No Name', phone: '-' }
+    }));
+    
+    return mappedData;
 }
 
 export const updateOrderStatus = async (orderId: number, status: string) => {

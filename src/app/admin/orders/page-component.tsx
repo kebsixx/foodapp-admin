@@ -292,7 +292,8 @@ export default function PageComponent({ ordersWithProducts }: Props) {
                       <div className="flex flex-col">
                         <span>{order.slug}</span>
                         <span className="text-sm text-muted-foreground">
-                          {order.user.name} - {order.user.phone}
+                          {order.user?.name || "No Name"} -{" "}
+                          {order.user?.phone || "-"}
                         </span>
                       </div>
                     </CommandItem>
@@ -346,8 +347,8 @@ export default function PageComponent({ ordersWithProducts }: Props) {
               </TableCell>
               <TableCell>{order.description || `No Description`}</TableCell>
               {/* @ts-ignore */}
-              <TableCell>{order.user.name}</TableCell>
-              <TableCell>{order.user.phone}</TableCell>
+              <TableCell>{order.user?.name || "No Name"}</TableCell>
+              <TableCell>{order.user?.phone || "-"}</TableCell>
               <TableCell>{order.slug}</TableCell>
               <TableCell>
                 {new Intl.NumberFormat("id-ID", {
@@ -421,11 +422,11 @@ export default function PageComponent({ ordersWithProducts }: Props) {
                           <div className="space-y-1 text-sm">
                             <p>
                               <span className="font-medium">Name:</span>{" "}
-                              {order.user.name}
+                              {order.user?.name || "No Name"}
                             </p>
                             <p>
                               <span className="font-medium">Phone:</span>{" "}
-                              {order.user.phone}
+                              {order.user?.phone || "-"}
                             </p>
                             <p>
                               <span className="font-medium">
