@@ -304,9 +304,11 @@ export default async function Home() {
 
                 <span> &middot; </span>
 
-                <span className="text-black cursor-default">
+                <a
+                  href="/user/policy"
+                  className="text-black hover:text-[#7FCD91] transition-colors">
                   Privacy Policy
-                </span>
+                </a>
               </p>
 
               <p className="mt-4 text-sm text-gray-500 sm:order-first sm:mt-0">
