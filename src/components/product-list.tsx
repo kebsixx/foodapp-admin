@@ -65,7 +65,7 @@ export const Content = ({ products }: Props) => {
             Menu kami untuk Anda
           </h2>
 
-          <p className="mx-auto mt-4 max-w-md text-gray-500">
+          <p className="mx-auto mt-4 max-w-md text-gray-500 dark:text-gray-300">
             Rasakan nikmatnya makanan dan minuman yang kami sajikan untuk Anda.
             Pilih menu favorit Anda dan nikmati kelezatannya.
           </p>
@@ -75,7 +75,7 @@ export const Content = ({ products }: Props) => {
           {currentProducts?.map((product) => (
             <Card
               key={product.id}
-              className="hover:shadow-lg transition-shadow"
+              className="hover:shadow-lg transition-shadow dark:bg-gray-800 dark:border-gray-700 hover:scale-90"
               isPressable>
               <CardBody className="overflow-visible p-0">
                 <Image
@@ -87,11 +87,11 @@ export const Content = ({ products }: Props) => {
                   width="100%"
                 />
               </CardBody>
-              <CardFooter className="flex justify-between items-center p-4">
+              <CardFooter className="flex justify-between items-center p-4 dark:text-white">
                 <div>
                   <h3 className="font-medium text-lg">{product.title}</h3>
                 </div>
-                <p className="text-default-500">
+                <p className="text-default-500 dark:text-emerald-400">
                   {new Intl.NumberFormat("id-ID", {
                     style: "currency",
                     currency: "IDR",
@@ -105,7 +105,7 @@ export const Content = ({ products }: Props) => {
         {totalPages > 1 && (
           <div className="mt-8 flex justify-center">
             <Pagination>
-              <PaginationContent>
+              <PaginationContent className="dark:text-white">
                 <PaginationItem>
                   <PaginationPrevious
                     onClick={() =>
@@ -124,7 +124,12 @@ export const Content = ({ products }: Props) => {
                   <PaginationItem key={index}>
                     <PaginationLink
                       onClick={() => handlePageChange(index + 1)}
-                      isActive={currentPage === index + 1}>
+                      isActive={currentPage === index + 1}
+                      className={
+                        currentPage === index + 1
+                          ? "dark:bg-emerald-700 dark:text-white"
+                          : "dark:hover:bg-gray-700"
+                      }>
                       {index + 1}
                     </PaginationLink>
                   </PaginationItem>

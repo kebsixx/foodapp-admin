@@ -8,8 +8,8 @@ export default function UserLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
+    <div className="min-h-screen bg-white">
+      <div className="container mx-auto px-4 py-12 max-w-6xl">
         {children}
         <Toaster position="top-center" />
       </div>

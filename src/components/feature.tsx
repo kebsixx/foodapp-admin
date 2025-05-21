@@ -42,15 +42,19 @@ const features = [
 function Feature() {
   return (
     <section className="mb-24">
-      <h3 className="text-3xl font-bold mb-8 text-center">Layanan Kami</h3>
+      <h3 className="text-3xl font-bold mb-8 text-center dark:text-white">
+        Layanan Kami
+      </h3>
       <div className="lg:flex flex-row justify-center gap-8 items-center">
         {features.map((feature, index) => (
           <MotionWrapper key={index} delay={index * 0.1}>
-            <Card className="mb-4 flex flex-col items-center">
+            <Card className="mb-4 flex flex-col items-center dark:bg-gray-800/80 dark:border-gray-700 dark:shadow-lg dark:shadow-emerald-900/20 hover:dark:shadow-emerald-800/30 hover:-translate-y-3 transition-all duration-300">
               <CardContent className="p-6 flex flex-col gap items-center text-center max-w-md">
-                <feature.icon className="h-12 w-12 mb-4" />
-                <h4 className="text-xl font-semibold mb-2">{feature.title}</h4>
-                <p>{feature.description}</p>
+                <feature.icon className="h-12 w-12 mb-4 text-[#7FCD91] dark:text-emerald-500" />
+                <h4 className="text-xl font-semibold mb-2 dark:text-white">
+                  {feature.title}
+                </h4>
+                <p className="dark:text-gray-300">{feature.description}</p>
               </CardContent>
             </Card>
           </MotionWrapper>

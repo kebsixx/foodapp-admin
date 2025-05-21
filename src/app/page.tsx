@@ -18,7 +18,7 @@ export default async function Home() {
   return (
     <div className="min-h-screen">
       <header className="container mx-auto px-4 py-6 flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Cerita Senja</h1>
+        <h1 className="text-2xl font-bold dark:text-white">Cerita Senja</h1>
         <ThemeToggle />
       </header>
 
@@ -36,7 +36,7 @@ export default async function Home() {
 
         {/* Promotion Application Section */}
         <section className="mb-24">
-          <Card className="bg-[#7FCD91] text-white">
+          <Card className="bg-[#7FCD91] dark:bg-emerald-700 text-white">
             <CardContent className="p-8 text-center">
               <h3 className="text-3xl font-bold mb-4">
                 Download Cerita Senja Sekarang
@@ -47,7 +47,7 @@ export default async function Home() {
               <div className="flex flex-wrap justify-center gap-4 md:gap-0 md:flex-nowrap md:space-x-4">
                 <Button
                   size="lg"
-                  className="bg-white text-black hover:bg-green-100">
+                  className="bg-white text-black hover:bg-green-100 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700">
                   <Image
                     src="/google-play.png"
                     alt="Google Play"
@@ -66,20 +66,20 @@ export default async function Home() {
         <Testimonial />
 
         {/* Download App */}
-        <section className="text-center">
-          <h3 className="text-3xl font-bold mb-4">
+        <section className="text-center mb-24">
+          <h3 className="text-3xl font-bold mb-4 dark:text-white">
             Nikmati beragam pilihan makanan dan minuman lezat.
           </h3>
-          <p className="text-xl  mb-8">
+          <p className="text-xl  mb-8 dark:text-gray-300">
             Dari kopi spesial hingga hidangan utama yang menggugah selera, kami
             punya semuanya.
           </p>
           <a
-            className="group relative inline-flex w-56 justify-center items-center overflow-hidden rounded-full bg-transparent border-2 border-[#7FCD91] px-8 py-3 text-[#7FCD91] focus:outline-none focus:ring active:bg-[#7FCD91] hover:bg-[#7FCD91] hover:text-white"
+            className="group relative inline-flex w-56 justify-center items-center overflow-hidden rounded-full bg-transparent border-2 border-[#7FCD91] px-8 py-3 text-[#7FCD91] focus:outline-none focus:ring active:bg-[#7FCD91] hover:bg-[#7FCD91] hover:text-white dark:border-emerald-600 dark:text-emerald-500 dark:hover:bg-emerald-600 dark:active:bg-emerald-600"
             href="#">
             <span className="absolute -end-full transition-all group-hover:end-4">
               <svg
-                className="size-5 rtl:rotate-180"
+                className="size-5 rtl:rotate-180 dark:text-white"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -93,7 +93,7 @@ export default async function Home() {
               </svg>
             </span>
 
-            <span className="text-sm font-medium transition-all group-hover:me-4">
+            <span className="text-sm font-medium transition-all group-hover:me-4 dark:text-white">
               {" "}
               Download{" "}
             </span>
@@ -101,16 +101,16 @@ export default async function Home() {
         </section>
 
         {/* Feedback Form Section */}
-        <section className="m-24">
+        <section id="feedback" className="py-12 sm:my-16 md:my-24">
           <FeedbackForm />
         </section>
       </main>
 
-      <footer className="bg-white">
+      <footer className="bg-white dark:bg-gray-900">
         <div className="mx-auto max-w-screen-xl px-4 pb-6 pt-8 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
             <div>
-              <div className="flex justify-center text-black sm:justify-start">
+              <div className="flex justify-start text-black dark:text-white">
                 <Image
                   src="logo-text.svg"
                   alt="Cerita Senja"
@@ -118,19 +118,17 @@ export default async function Home() {
                   height={24}
                 />
               </div>
-
-              <p className="mt-6 max-w-md text-center leading-relaxed text-gray-500 sm:max-w-xs sm:text-left">
+              <p className="mt-6 max-w-md text-left leading-relaxed text-gray-500 dark:text-gray-400 sm:max-w-xs">
                 Nikmati cita rasa autentik dan suasana yang nyaman. Kunjungi
                 kami atau pesan sekarang.
               </p>
-
-              <ul className="mt-8 flex justify-center gap-6 sm:justify-start md:gap-8">
+              <ul className="mt-8 flex justify-start gap-6 md:gap-8">
                 <li>
                   <a
                     href="https://www.instagram.com/ceritasenja_cafe"
                     rel="noreferrer"
                     target="_blank"
-                    className="text-black transition hover:text-black flex items-center gap-2">
+                    className="text-black dark:text-white transition hover:text-[#7FCD91] dark:hover:text-emerald-500 flex items-center gap-2">
                     <svg
                       className="size-6"
                       fill="currentColor"
@@ -151,79 +149,81 @@ export default async function Home() {
             </div>
 
             <div className="grid grid-cols-1 min-w-full gap-8 sm:grid-cols-2 md:grid-cols-3 lg:col-span-2">
-              <div className="text-center sm:text-left">
-                <p className="text-lg font-medium text-gray-900">About Us</p>
+              <div className="text-left">
+                <p className="text-lg font-medium text-gray-900 dark:text-white">
+                  About Us
+                </p>
 
                 <ul className="mt-8 space-y-4 text-sm">
                   <li>
-                    <span className="text-gray-700 cursor-default">
+                    <span className="text-gray-700 dark:text-gray-300 cursor-default">
                       Company History
                     </span>
                   </li>
 
                   <li>
-                    <span className="text-gray-700 cursor-default">
+                    <span className="text-gray-700 dark:text-gray-300 cursor-default">
                       Meet the Team
                     </span>
                   </li>
 
                   <li>
-                    <span className="text-gray-700 cursor-default">
+                    <span className="text-gray-700 dark:text-gray-300 cursor-default">
                       Employee Handbook
                     </span>
                   </li>
 
                   <li>
-                    <span className="text-gray-700 cursor-default">
+                    <span className="text-gray-700 dark:text-gray-300 cursor-default">
                       Careers
                     </span>
                   </li>
                 </ul>
               </div>
-
-              <div className="text-center sm:text-left">
-                <p className="text-lg font-medium text-gray-900">
+              <div className="text-left">
+                <p className="text-lg font-medium text-gray-900 dark:text-white">
                   Our Services
                 </p>
 
                 <ul className="mt-8 space-y-4 text-sm">
                   <li>
-                    <span className="text-gray-700 cursor-default">
+                    <span className="text-gray-700 dark:text-gray-300 cursor-default">
                       Suasana
                     </span>
                   </li>
 
                   <li>
-                    <span className="text-gray-700 cursor-default">
+                    <span className="text-gray-700 dark:text-gray-300 cursor-default">
                       Cita Rasa
                     </span>
                   </li>
 
                   <li>
-                    <span className="text-gray-700 cursor-default">
+                    <span className="text-gray-700 dark:text-gray-300 cursor-default">
                       Pesan Antar
                     </span>
                   </li>
 
                   <li>
-                    <span className="text-gray-700 cursor-default">
+                    <span className="text-gray-700 dark:text-gray-300 cursor-default">
                       Nail Art
                     </span>
                   </li>
                 </ul>
               </div>
-
-              <div className="text-center sm:text-left">
-                <p className="text-lg font-medium text-gray-900">Contact Us</p>
+              <div id="contact" className="text-left">
+                <p className="text-lg font-medium text-gray-900 dark:text-white">
+                  Contact Us
+                </p>
 
                 <ul className="mt-8 space-y-4 text-sm">
                   <li>
                     <a
-                      className="flex items-center justify-center gap-1.5 ltr:sm:justify-start rtl:sm:justify-end"
+                      className="flex items-center justify-start gap-1.5"
                       href="mailto:cerita@senja.id">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className="size-5 shrink-0 text-gray-900"
+                        className="size-5 shrink-0 text-gray-900 dark:text-emerald-500"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -234,8 +234,7 @@ export default async function Home() {
                           d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                         />
                       </svg>
-
-                      <span className="flex-1 text-gray-700">
+                      <span className="flex-1 text-gray-700 dark:text-gray-300">
                         cerita@senja.id
                       </span>
                     </a>
@@ -243,11 +242,11 @@ export default async function Home() {
 
                   <li>
                     <a
-                      className="flex items-center justify-center gap-1.5 ltr:sm:justify-start rtl:sm:justify-end"
+                      className="flex items-center justify-start gap-1.5"
                       href="whatsapp://send?phone=6285175003172&text=Halo%20Cerita%20Senja">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className="size-5 shrink-0 text-gray-900"
+                        className="size-5 shrink-0 text-gray-900 dark:text-emerald-500"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -258,15 +257,16 @@ export default async function Home() {
                           d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
                         />
                       </svg>
-
-                      <span className="flex-1 text-gray-700">085175003172</span>
+                      <span className="flex-1 text-gray-700 dark:text-gray-300">
+                        085175003172
+                      </span>
                     </a>
                   </li>
 
-                  <li className="flex items-start justify-center gap-1.5 ltr:sm:justify-start rtl:sm:justify-end">
+                  <li className="flex items-start justify-start gap-1.5">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className="size-5 shrink-0 text-gray-900"
+                      className="size-5 shrink-0 text-gray-900 dark:text-emerald-500"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -282,8 +282,7 @@ export default async function Home() {
                         d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                       />
                     </svg>
-
-                    <address className="-mt-0.5 flex-1 not-italic text-gray-700">
+                    <address className="-mt-0.5 flex-1 not-italic text-gray-700 dark:text-gray-300 text-left">
                       Jl. Gubernur Sunandar Prijosoedarmo No.29, Sidowaras,
                       Kraton, Kec. Krian, Kabupaten Sidoarjo, Jawa Timur 61262
                     </address>
@@ -292,27 +291,26 @@ export default async function Home() {
               </div>
             </div>
           </div>
-
-          <div className="mt-12 border-t border-gray-100 pt-6">
-            <div className="text-center sm:flex sm:justify-between sm:text-left">
-              <p className="text-sm text-gray-500">
+          <div className="mt-12 border-t border-gray-100 dark:border-gray-800 pt-6">
+            <div className="text-left sm:flex sm:justify-between">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 <span className="block sm:inline">All rights reserved. </span>
-
-                <span className="text-black cursor-default">
+                <a
+                  href="/user/terms-of-use"
+                  className="text-black dark:text-gray-300 hover:text-[#7FCD91] dark:hover:text-emerald-500 transition-colors">
                   Terms & Conditions
-                </span>
+                </a>
 
                 <span> &middot; </span>
 
                 <a
                   href="/user/policy"
-                  className="text-black hover:text-[#7FCD91] transition-colors">
+                  className="text-black dark:text-gray-300 hover:text-[#7FCD91] dark:hover:text-emerald-500 transition-colors">
                   Privacy Policy
                 </a>
               </p>
-
-              <p className="mt-4 text-sm text-gray-500 sm:order-first sm:mt-0">
-                &copy; 2024 Cerita Senja
+              <p className="mt-4 text-sm text-gray-500 dark:text-gray-400 sm:order-first sm:mt-0">
+                &copy; 2025 Cerita Senja
               </p>
             </div>
           </div>

@@ -41,16 +41,7 @@ const PrivacyPolicy = () => {
             <p className="text-lg">
               We use Your Personal data to provide and improve the Service. By
               using the Service, You agree to the collection and use of
-              information in accordance with this Privacy Policy. This Privacy
-              Policy has been created with the help of the{" "}
-              <a
-                href="https://www.termsfeed.com/privacy-policy-generator/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[#7FCD91] hover:text-[#6ab97c]">
-                Privacy Policy Generator
-              </a>
-              .
+              information in accordance with this Privacy Policy.
             </p>
 
             <h2 className="text-3xl font-bold text-gray-900 mt-12 mb-6">
@@ -167,9 +158,9 @@ const PrivacyPolicy = () => {
               <li>
                 By email:{" "}
                 <a
-                  href="mailto:zieqanw@outlook.com"
+                  href="mailto:cerita@senja.id"
                   className="text-[#7FCD91] hover:text-[#6ab97c]">
-                  zieqanw@outlook.com
+                  cerita@senja.id
                 </a>
               </li>
               <li>

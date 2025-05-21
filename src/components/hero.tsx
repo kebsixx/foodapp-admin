@@ -41,19 +41,19 @@ function Hero() {
     <div className="flex flex-col justify-between md:flex-row items-center">
       <div className="md:w-1/2 mb-8 md:mb-0">
         <MotionWrapper>
-          <h2 className="text-4xl md:text-6xl font-bold mb-4">
+          <h2 className="text-4xl md:text-6xl font-bold mb-4 dark:text-white">
             Nikmati kelezatan Cerita Senja di mana saja, kapan saja!
           </h2>
         </MotionWrapper>
         <MotionWrapper delay={0.2}>
-          <p className="text-xl  mb-6">
+          <p className="text-xl mb-6 dark:text-gray-300">
             Pesan makanan dan minuman favoritmu dengan mudah melalui aplikasi
             kami.
           </p>
         </MotionWrapper>
         <MotionWrapper delay={0.4}>
           <a className="group relative inline-block focus:outline-none focus:ring">
-            <span className="absolute inset-0 translate-x-1.5 translate-y-1.5 bg-[#7FCD91] transition-transform group-hover:translate-x-0 group-hover:translate-y-0"></span>
+            <span className="absolute inset-0 translate-x-1.5 translate-y-1.5 bg-[#7FCD91] dark:bg-emerald-600 transition-transform group-hover:translate-x-0 group-hover:translate-y-0"></span>
 
             <span className="relative inline-block border-2 border-current px-8 py-3 text-sm font-bold uppercase tracking-widest text-black group-active:text-opacity-75 dark:text-white">
               Download
@@ -79,9 +79,9 @@ function Hero() {
             height={1080}
             src="/app-pics.png"
             alt="Cerita Senja App Screenshot"
-            className="rounded-3xl object-cover shadow-2xl mx-auto h-[550px] w-[270px]"
+            className="rounded-3xl object-cover shadow-2xl dark:shadow-emerald-900/30 mx-auto h-[550px] w-[270px]"
           />
-          <Badge className="absolute top-4 right-4 bg-[#7FCD91] text-white">
+          <Badge className="absolute top-4 right-4 bg-[#7FCD91] dark:bg-emerald-600 text-white">
             New Release
           </Badge>
         </motion.div>
