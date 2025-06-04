@@ -112,7 +112,7 @@ export default async function Home() {
             <div>
               <div className="flex justify-start text-black dark:text-white">
                 <Image
-                  src="logo-text.svg"
+                  src="/logo-text.svg"
                   alt="Cerita Senja"
                   width={240}
                   height={24}

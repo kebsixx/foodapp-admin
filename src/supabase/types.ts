@@ -77,7 +77,6 @@ export type Database = {
           status: string
           totalPrice: number
           user: string
-          user_id: string | null
         }
         Insert: {
           created_at?: string
@@ -89,7 +88,6 @@ export type Database = {
           status: string
           totalPrice: number
           user: string
-          user_id?: string | null
         }
         Update: {
           created_at?: string
@@ -101,12 +99,11 @@ export type Database = {
           status?: string
           totalPrice?: number
           user?: string
-          user_id?: string | null
         }
         Relationships: [
           {
             foreignKeyName: "order_user_fkey"
-            columns: ["user_id"]
+            columns: ["user"]
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
@@ -195,6 +192,7 @@ export type Database = {
           category: number
           created_at: string
           heroImage: string
+          heroimageurls: Json | null
           id: number
           maxQuantity: number
           price: number | null
@@ -206,6 +204,7 @@ export type Database = {
           category: number
           created_at?: string
           heroImage: string
+          heroimageurls?: Json | null
           id?: number
           maxQuantity: number
           price?: number | null
@@ -217,6 +216,7 @@ export type Database = {
           category?: number
           created_at?: string
           heroImage?: string
+          heroimageurls?: Json | null
           id?: number
           maxQuantity?: number
           price?: number | null

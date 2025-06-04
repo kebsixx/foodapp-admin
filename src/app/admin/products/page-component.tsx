@@ -1,7 +1,6 @@
 "use client";
 
 import { FC, useState } from "react";
-import { v4 as uuid } from "uuid";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -29,11 +28,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Category } from "@/app/admin/categories/categories.types";
-import {
-  createOrUpdateProductSchema,
-  CreateOrUpdateProductSchema,
-} from "@/app/admin/products/schema";
-import { imageUploadHandler } from "@/actions/categories";
+import { createOrUpdateProductSchema } from "@/app/admin/products/schema";
 import {
   createProduct,
   deleteProduct,
@@ -90,8 +85,10 @@ export const ProductPageComponent: FC<Props> = ({
     defaultValues: {
       title: "",
       category: "",
+      price: "",
       maxQuantity: "",
-      heroImage: undefined,
+      heroImage: "",
+      heroImageUrls: undefined,
       variants: [],
       intent: "create",
     },
@@ -107,35 +104,17 @@ export const ProductPageComponent: FC<Props> = ({
       price,
       maxQuantity,
       heroImage,
+      heroImageUrls,
       slug,
       intent = "create",
       variants,
     } = data;
 
-    const uploadFile = async (file: File) => {
-      const uniqueId = uuid();
-      const fileName = `product/product-${uniqueId}-${file.name}`;
-      const formData = new FormData();
-      formData.append("file", file, fileName);
-      return imageUploadHandler(formData);
-    };
-
-    let heroImageUrl: string | undefined;
-    const oldHeroImage = currentProduct?.heroImage as string | undefined;
-
-    if (heroImage && heroImage.length > 0) {
-      try {
-        const imagePromise =
-          heroImage instanceof FileList
-            ? Array.from(heroImage).map((file) => uploadFile(file))
-            : [];
-        [heroImageUrl] = await Promise.all(imagePromise);
-      } catch (error) {
-        console.error("Error uploading image:", error);
-        toast.error("Error uploading image. Please try again.");
-        setIsLoading(false);
-        return;
-      }
+    // Validasi heroImage untuk create
+    if (intent === "create" && (!heroImage || heroImage.trim() === "")) {
+      toast.error("Product image is required");
+      setIsLoading(false);
+      return;
     }
 
     if (intent === "update" && !slug) {
@@ -146,17 +125,13 @@ export const ProductPageComponent: FC<Props> = ({
 
     try {
       if (intent === "create") {
-        if (!heroImageUrl) {
-          toast.error("Hero image is required for creating a product");
-          setIsLoading(false);
-          return;
-        }
         await createProduct({
           title,
           category: Number(category),
           price: Number(price),
           maxQuantity: Number(maxQuantity),
-          heroImage: heroImageUrl,
+          heroImage: heroImage!,
+          heroImageUrls,
           variants: variants?.map((v) => ({
             id: v.id || crypto.randomUUID(),
             name: v.name,
@@ -166,13 +141,20 @@ export const ProductPageComponent: FC<Props> = ({
         });
         toast.success("Product created successfully");
       } else {
+        // Validasi data sebelum update
+        if (!title || !category || !price || !maxQuantity) {
+          toast.error("Please fill in all required fields");
+          setIsLoading(false);
+          return;
+        }
+
         await updateProduct({
           title,
           category: Number(category),
           price: Number(price),
           maxQuantity: Number(maxQuantity),
-          heroImage: heroImageUrl || oldHeroImage || "",
-          oldHeroImage: heroImageUrl ? oldHeroImage : undefined,
+          heroImage: heroImage || undefined,
+          heroImageUrls,
           slug: slug as string,
           variants: variants?.map((v) => ({
             id: v.id || crypto.randomUUID(),
@@ -183,14 +165,27 @@ export const ProductPageComponent: FC<Props> = ({
         });
         toast.success("Product updated successfully");
       }
-      form.reset();
-      router.refresh();
+
+      // Reset form and close modal
+      form.reset({
+        title: "",
+        category: "",
+        price: "",
+        maxQuantity: "",
+        heroImage: "",
+        heroImageUrls: undefined,
+        variants: [],
+        intent: "create",
+      });
+      setCurrentProduct(null);
       setIsProductModalOpen(false);
+      router.refresh();
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Error saving product"
-      );
-      console.error(error);
+      console.error("Error saving product:", error);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : "An unexpected error occurred while saving the product";
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -198,17 +193,39 @@ export const ProductPageComponent: FC<Props> = ({
 
   const deleteProductHandler = async () => {
     setIsLoading(true);
-    if (currentProduct?.slug) {
-      await deleteProduct(
-        currentProduct.slug,
-        currentProduct.heroImage as string | undefined
+    try {
+      if (currentProduct?.slug) {
+        await deleteProduct(
+          currentProduct.slug,
+          currentProduct.heroImage as string | undefined
+        );
+        router.refresh();
+        toast.success("Product deleted successfully");
+        setIsDeleteModalOpen(false);
+        setCurrentProduct(null);
+      }
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Error deleting product"
       );
-      router.refresh();
-      toast.success("Product deleted successfully");
-      setIsDeleteModalOpen(false);
-      setCurrentProduct(null);
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
+  };
+
+  const handleAddProduct = () => {
+    setCurrentProduct(null);
+    form.reset({
+      title: "",
+      category: "",
+      price: "",
+      maxQuantity: "",
+      heroImage: "",
+      heroImageUrls: undefined,
+      variants: [],
+      intent: "create",
+    });
+    setIsProductModalOpen(true);
   };
 
   const sortProducts = (products: ProductWithCategory[]) => {
@@ -343,7 +360,6 @@ export const ProductPageComponent: FC<Props> = ({
     return items;
   };
 
-  // Add this helper function near the top of your component
   const getSortIcon = (field: SortField) => {
     if (sortField !== field) {
       return <ArrowUpDown className="inline h-4 w-4 ml-1 text-gray-400" />;
@@ -358,7 +374,7 @@ export const ProductPageComponent: FC<Props> = ({
   return (
     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
       <div className="container mx-auto p-4">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6">
           <h1 className="text-2xl font-bold whitespace-nowrap">
             Products Management
           </h1>
@@ -412,152 +428,164 @@ export const ProductPageComponent: FC<Props> = ({
           </div>
 
           <div className="fixed bottom-4 right-4 sm:static sm:ml-auto">
-            <Button
-              onClick={() => {
-                setCurrentProduct(null);
-                setIsProductModalOpen(true);
-              }}>
+            <Button onClick={handleAddProduct}>
               <PlusIcon className="h-4 w-4 sm:mr-2" />
               <span className="hidden sm:inline">Add Product</span>
             </Button>
           </div>
         </div>
 
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead
-                onClick={() => {
-                  if (sortField === "title") {
-                    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                  } else {
-                    setSortField("title");
-                    setSortOrder("asc");
-                  }
-                }}
-                className={cn(
-                  "cursor-pointer hover:bg-gray-100",
-                  sortField === "title" && "text-primary font-medium"
-                )}>
-                Name {getSortIcon("title")}
-              </TableHead>
-              <TableHead
-                onClick={() => {
-                  if (sortField === "category") {
-                    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                  } else {
-                    setSortField("category");
-                    setSortOrder("asc");
-                  }
-                }}
-                className={cn(
-                  "cursor-pointer hover:bg-gray-100",
-                  sortField === "category" && "text-primary font-medium"
-                )}>
-                Category {getSortIcon("category")}
-              </TableHead>
-              <TableHead
-                onClick={() => {
-                  if (sortField === "price") {
-                    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                  } else {
-                    setSortField("price");
-                    setSortOrder("asc");
-                  }
-                }}
-                className={cn(
-                  "cursor-pointer hover:bg-gray-100",
-                  sortField === "price" && "text-primary font-medium"
-                )}>
-                Price {getSortIcon("price")}
-              </TableHead>
-              <TableHead>Variants</TableHead>
-              <TableHead>Max Quantity</TableHead>
-              <TableHead>Image</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {currentProducts.map((product) => (
-              <ProductTableRow
-                setIsProductModalOpen={setIsProductModalOpen}
-                key={product.id}
-                product={product}
-                setCurrentProduct={(productData: FormProductValues) => {
-                  setCurrentProduct(productData);
-                }}
-                setIsDeleteModalOpen={setIsDeleteModalOpen}
-              />
-            ))}
-          </TableBody>
-        </Table>
-
-        <div className="flex items-center justify-between mt-4">
-          {/* Left: Showing items count */}
-          <span className="text-sm text-gray-500">
-            Showing {indexOfFirstProduct + 1}-
-            {Math.min(indexOfLastProduct, productsWithCategories.length)} of{" "}
-            {productsWithCategories.length} items
-          </span>
-
-          {/* Center: Pagination */}
-          <div className="flex-1 flex justify-center">
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setCurrentPage((prev) => Math.max(prev - 1, 1));
-                    }}
-                    aria-disabled={currentPage === 1}
-                    className={
-                      currentPage === 1 ? "pointer-events-none opacity-50" : ""
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead
+                  onClick={() => {
+                    if (sortField === "title") {
+                      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                    } else {
+                      setSortField("title");
+                      setSortOrder("asc");
                     }
-                  />
-                </PaginationItem>
-
-                {generatePaginationItems()}
-
-                <PaginationItem>
-                  <PaginationNext
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setCurrentPage((prev) => Math.min(prev + 1, totalPages));
-                    }}
-                    aria-disabled={currentPage === totalPages}
-                    className={
-                      currentPage === totalPages
-                        ? "pointer-events-none opacity-50"
-                        : ""
+                  }}
+                  className={cn(
+                    "cursor-pointer hover:bg-gray-100",
+                    sortField === "title" && "text-primary font-medium"
+                  )}>
+                  Name {getSortIcon("title")}
+                </TableHead>
+                <TableHead
+                  onClick={() => {
+                    if (sortField === "category") {
+                      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                    } else {
+                      setSortField("category");
+                      setSortOrder("asc");
                     }
+                  }}
+                  className={cn(
+                    "cursor-pointer hover:bg-gray-100",
+                    sortField === "category" && "text-primary font-medium"
+                  )}>
+                  Category {getSortIcon("category")}
+                </TableHead>
+                <TableHead
+                  onClick={() => {
+                    if (sortField === "price") {
+                      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                    } else {
+                      setSortField("price");
+                      setSortOrder("asc");
+                    }
+                  }}
+                  className={cn(
+                    "cursor-pointer hover:bg-gray-100",
+                    sortField === "price" && "text-primary font-medium"
+                  )}>
+                  Price {getSortIcon("price")}
+                </TableHead>
+                <TableHead>Variants</TableHead>
+                <TableHead>Max Quantity</TableHead>
+                <TableHead>Image</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {currentProducts.length === 0 ? (
+                <TableRow>
+                  <td colSpan={7} className="text-center py-8 text-gray-500">
+                    {searchTerm || searchCategory !== "all"
+                      ? "No products found matching your criteria"
+                      : "No products available. Add your first product!"}
+                  </td>
+                </TableRow>
+              ) : (
+                currentProducts.map((product) => (
+                  <ProductTableRow
+                    setIsProductModalOpen={setIsProductModalOpen}
+                    key={product.id}
+                    product={product}
+                    setCurrentProduct={(productData: FormProductValues) => {
+                      setCurrentProduct(productData);
+                    }}
+                    setIsDeleteModalOpen={setIsDeleteModalOpen}
                   />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          </div>
-
-          {/* Right: Items per page selector */}
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-500">Items per page:</span>
-            <Select
-              value={String(itemsPerPage)}
-              onValueChange={handleItemsPerPageChange}>
-              <SelectTrigger className="w-[70px]">
-                <SelectValue placeholder={itemsPerPage} />
-              </SelectTrigger>
-              <SelectContent>
-                {itemsPerPageOptions.map((value) => (
-                  <SelectItem key={value} value={value}>
-                    {value}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+                ))
+              )}
+            </TableBody>
+          </Table>
         </div>
+
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between mt-6">
+            <span className="text-sm text-gray-500">
+              Showing {indexOfFirstProduct + 1}-
+              {Math.min(indexOfLastProduct, filteredProducts.length)} of{" "}
+              {filteredProducts.length} items
+            </span>
+
+            <div className="flex-1 flex justify-center">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCurrentPage((prev) => Math.max(prev - 1, 1));
+                      }}
+                      aria-disabled={currentPage === 1}
+                      className={
+                        currentPage === 1
+                          ? "pointer-events-none opacity-50"
+                          : ""
+                      }
+                    />
+                  </PaginationItem>
+
+                  {generatePaginationItems()}
+
+                  <PaginationItem>
+                    <PaginationNext
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+
+                        setCurrentPage((prev) =>
+                          Math.min(prev + 1, totalPages)
+                        );
+                      }}
+                      aria-disabled={currentPage === totalPages}
+                      className={
+                        currentPage === totalPages
+                          ? "pointer-events-none opacity-50"
+                          : ""
+                      }
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-500">Items per page:</span>
+              <Select
+                value={String(itemsPerPage)}
+                onValueChange={handleItemsPerPageChange}>
+                <SelectTrigger className="w-[70px]">
+                  <SelectValue placeholder={itemsPerPage} />
+                </SelectTrigger>
+                <SelectContent>
+                  {itemsPerPageOptions.map((value) => (
+                    <SelectItem key={value} value={value}>
+                      {value}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        )}
 
         <ProductForm
           form={form}
@@ -574,10 +602,28 @@ export const ProductPageComponent: FC<Props> = ({
             <DialogHeader>
               <DialogTitle>Delete Product</DialogTitle>
             </DialogHeader>
-            <p>Are you sure you want to delete {currentProduct?.title}</p>
+            <div className="py-4">
+              <p className="text-gray-600">
+                Are you sure you want to delete{" "}
+                <strong>{currentProduct?.title}</strong>?
+              </p>
+              <p className="text-sm text-gray-500 mt-2">
+                This action cannot be undone.
+              </p>
+            </div>
             <DialogFooter>
-              <Button variant="destructive" onClick={deleteProductHandler}>
-                Delete
+              <Button
+                variant="outline"
+                onClick={() => setIsDeleteModalOpen(false)}
+                disabled={isLoading}>
+                Cancel
+              </Button>
+
+              <Button
+                variant="destructive"
+                onClick={deleteProductHandler}
+                disabled={isLoading}>
+                {isLoading ? "Deleting..." : "Delete"}
               </Button>
             </DialogFooter>
           </DialogContent>

@@ -21,15 +21,21 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Category } from "@/app/admin/categories/categories.types";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Plus, Trash } from "lucide-react";
 import { FormProductValues } from "@/app/admin/products/products.types";
+import { ImageUploader } from "@/components/ui/ImageUploader";
+import { CloudinaryUpload } from "@/components/ui/CloudinaryUpload";
+import { getCloudinaryUrl } from "@/lib/cloudinary";
+import { SafeImage } from "@/components/ui/SafeImage";
+import { toast } from "react-hot-toast";
+import { Label } from "@/components/ui/label";
 
 type Props = {
   form: UseFormReturn<FormProductValues>;
@@ -51,8 +57,6 @@ export const ProductForm = ({
 }: Props) => {
   const isSubmitting = form.formState.isSubmitting;
 
-  const [newImagePreview, setNewImagePreview] = useState<string | null>(null);
-
   useEffect(() => {
     if (defaultValues) {
       form.reset({
@@ -71,66 +75,102 @@ export const ProductForm = ({
         category: "",
         price: "",
         maxQuantity: "",
-        heroImage: undefined,
+        heroImage: "",
+        heroImageUrls: undefined,
         variants: [],
       });
     }
   }, [defaultValues, form]);
 
+  const handleModalClose = () => {
+    if (!isSubmitting) {
+      setIsProductModalOpen(false);
+      form.reset();
+    }
+  };
+
+  // Helper function untuk mendapatkan preview image
+  const getPreviewImage = () => {
+    const currentHeroImage = form.watch("heroImage");
+    const currentHeroImageUrls = form.watch("heroImageUrls");
+
+    // Prioritas: medium > display > original
+    return (
+      currentHeroImageUrls?.medium ||
+      currentHeroImageUrls?.display ||
+      currentHeroImage ||
+      defaultValues?.heroImageUrls?.medium ||
+      defaultValues?.heroImageUrls?.display ||
+      defaultValues?.heroImage
+    );
+  };
+
   return (
-    <Dialog open={isProductModalOpen} onOpenChange={setIsProductModalOpen}>
-      <DialogContent>
+    <Dialog open={isProductModalOpen} onOpenChange={handleModalClose}>
+      <DialogContent className="max-w-2xl max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>
             {defaultValues ? "Update Product" : "Add New Product"}
           </DialogTitle>
+          <DialogDescription>
+            {defaultValues 
+              ? "Update the details of your existing product"
+              : "Fill in the details to add a new product to your catalog"}
+          </DialogDescription>
         </DialogHeader>
 
         {isSubmitting && (
-          <div className="absolute top-0 left-0 w-full">
+          <div className="absolute top-0 left-0 w-full z-50">
             <Progress value={33} className="h-1" />
           </div>
         )}
 
         <div
-          className="max-h-[calc(100svh-200px)] overflow-y-auto"
+          className="max-h-[calc(90vh-200px)] overflow-y-auto pr-2"
           style={{
-            scrollbarWidth: "none" /* Firefox */,
-            msOverflowStyle: "none" /* Internet Explorer 10+ */,
+            scrollbarWidth: "thin",
+            scrollbarColor: "#cbd5e0 #f7fafc",
           }}>
           <Form {...form}>
+            {" "}
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="grid gap-4 py-4">
+              className="grid gap-6 py-4">
               <FormField
                 control={form.control}
                 name="title"
                 render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Name</FormLabel>
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium">
+                      Product Name <span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Enter product title"
+                        placeholder="Enter product name"
                         {...field}
-                        className="col-span-3"
                         disabled={isSubmitting}
+                        className="focus:ring-2 focus:ring-primary/20"
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="category"
                 render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Category</FormLabel>
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium">
+                      Category <span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
-                      <Select onValueChange={field.onChange}>
-                        <SelectTrigger
-                          disabled={isSubmitting}
-                          className="col-span-3">
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                        disabled={isSubmitting}>
+                        <SelectTrigger className="focus:ring-2 focus:ring-primary/20">
                           <SelectValue placeholder="Select a category" />
                         </SelectTrigger>
                         <SelectContent>
@@ -149,125 +189,89 @@ export const ProductForm = ({
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="price"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Default Price</FormLabel>
-                    <FormControl>
-                      <Input
-                        id="price"
-                        type="number"
-                        className="col-span-3"
-                        placeholder="Default price (used if no variants)"
-                        {...field}
-                        disabled={isSubmitting}
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="price"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium">
+                        Default Price <span className="text-red-500">*</span>
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder="0"
+                          {...field}
+                          disabled={isSubmitting}
+                          className="focus:ring-2 focus:ring-primary/20"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="maxQuantity"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium">
+                        Max Quantity <span className="text-red-500">*</span>
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder="0"
+                          {...field}
+                          disabled={isSubmitting}
+                          className="focus:ring-2 focus:ring-primary/20"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Product Image</Label>
+                <div className="flex items-center gap-4">
+                  {form.watch("heroImage") && (
+                    <div className="relative w-20 h-20 rounded-md overflow-hidden">
+                      <SafeImage
+                        src={form.watch("heroImage")}
+                        alt="Product preview"
+                        fill
+                        className="object-cover"
+                        sizes="80px"
                       />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="maxQuantity"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Max Quantity</FormLabel>
-                    <FormControl>
-                      <Input
-                        id="maxQuantity"
-                        type="number"
-                        className="col-span-3"
-                        {...field}
-                        disabled={isSubmitting}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="heroImage"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>
-                      Hero Image{" "}
-                      {defaultValues && (
-                        <span className="text-gray-500">(Optional)</span>
-                      )}
-                    </FormLabel>
-
-                    {/* Preview Container */}
-                    {defaultValues?.heroImage &&
-                      typeof defaultValues.heroImage === "string" && (
-                        <div className="mb-3 flex flex-col items-start">
-                          <div className="relative h-32 w-32 border rounded-md overflow-hidden">
-                            <Image
-                              src={defaultValues.heroImage}
-                              alt="Current hero image"
-                              fill
-                              className="object-cover"
-                              sizes="128px"
-                              priority
-                            />
-                          </div>
-                          <p className="text-xs text-gray-500 mt-1">
-                            Current image
-                          </p>
-                        </div>
-                      )}
-
-                    {/* File Input */}
-                    <FormControl>
-                      <Input
-                        type="file"
-                        accept="image/*"
-                        className="cursor-pointer"
-                        onChange={(e) => {
-                          field.onChange(e.target.files?.[0] || field.value);
-
-                          // Preview gambar baru yang dipilih
-                          if (e.target.files?.[0]) {
-                            const reader = new FileReader();
-                            reader.onload = (event) => {
-                              {
-                                newImagePreview && (
-                                  <div className="mb-3 flex flex-col items-start">
-                                    <div className="relative h-32 w-32 border rounded-md overflow-hidden">
-                                      <Image
-                                        src={newImagePreview}
-                                        alt="New image preview"
-                                        fill
-                                        className="object-cover"
-                                        sizes="128px"
-                                      />
-                                    </div>
-                                    <p className="text-xs text-gray-500 mt-1">
-                                      New image preview
-                                    </p>
-                                  </div>
-                                );
-                              }
-                            };
-                            reader.readAsDataURL(e.target.files[0]);
-                          }
-                        }}
-                        disabled={isSubmitting}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                    </div>
+                  )}
+                  <CloudinaryUpload
+                    onSuccess={(result) => {
+                      form.setValue("heroImage", result.secure_url);
+                      form.setValue("heroImageUrls", {
+                        original: result.secure_url,
+                        display: getCloudinaryUrl(result.public_id, { width: 800 }),
+                        medium: getCloudinaryUrl(result.public_id, { width: 400 }),
+                        thumb: getCloudinaryUrl(result.public_id, { width: 200 }),
+                      });
+                    }}
+                    onError={(error) => {
+                      toast.error("Failed to upload image: " + error);
+                    }}
+                  />
+                </div>
+                <FormMessage />
+              </div>
 
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <FormLabel>Variants (Optional)</FormLabel>
+                  <FormLabel className="text-sm font-medium">
+                    Product Variants (Optional)
+                  </FormLabel>
                   <Button
                     type="button"
                     variant="outline"
@@ -293,68 +297,15 @@ export const ProductForm = ({
                 {form.watch("variants")?.map((variant, index) => (
                   <div
                     key={variant.id}
-                    className="grid grid-cols-2 gap-2 items-start">
-                    <FormField
-                      control={form.control}
-                      name={`variants.${index}.name`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Input
-                              placeholder="Variant name"
-                              {...field}
-                              disabled={isSubmitting}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <div className="flex gap-2">
-                      <FormField
-                        control={form.control}
-                        name={`variants.${index}.price`}
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <FormControl>
-                              <Input
-                                type="number"
-                                placeholder="Variant price"
-                                {...field}
-                                disabled={isSubmitting}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name={`variants.${index}.available`}
-                        render={({ field }) => (
-                          <FormItem className="flex items-center gap-2">
-                            <FormControl>
-                              <input
-                                type="checkbox"
-                                checked={field.value ?? true}
-                                onChange={(e) =>
-                                  field.onChange(e.target.checked)
-                                }
-                                className="h-4 w-4"
-                                disabled={isSubmitting}
-                              />
-                            </FormControl>
-                            <FormLabel>Available</FormLabel>
-                          </FormItem>
-                        )}
-                      />
-
+                    className="p-4 border rounded-lg bg-gray-50/50 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-700">
+                        Variant {index + 1}
+                      </span>
                       <Button
                         type="button"
                         variant="destructive"
-                        size="icon"
+                        size="sm"
                         onClick={() => {
                           const currentVariants =
                             form.getValues("variants") || [];
@@ -367,17 +318,91 @@ export const ProductForm = ({
                         <Trash className="w-4 h-4" />
                       </Button>
                     </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <FormField
+                        control={form.control}
+                        name={`variants.${index}.name`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-xs">
+                              Variant Name
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="e.g., Small, Medium, Large"
+                                {...field}
+                                disabled={isSubmitting}
+                                className="focus:ring-2 focus:ring-primary/20"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name={`variants.${index}.price`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-xs">Price</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                placeholder="0"
+                                {...field}
+                                disabled={isSubmitting}
+                                className="focus:ring-2 focus:ring-primary/20"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <FormField
+                      control={form.control}
+                      name={`variants.${index}.available`}
+                      render={({ field }) => (
+                        <FormItem className="flex items-center gap-2">
+                          <FormControl>
+                            <input
+                              type="checkbox"
+                              checked={field.value ?? true}
+                              onChange={(e) => field.onChange(e.target.checked)}
+                              className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                              disabled={isSubmitting}
+                            />
+                          </FormControl>
+                          <FormLabel className="text-sm">
+                            Available for sale
+                          </FormLabel>
+                        </FormItem>
+                      )}
+                    />
                   </div>
                 ))}
               </div>
 
-              <DialogFooter>
-                <Button disabled={isSubmitting} type="submit">
+              <DialogFooter className="gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleModalClose}
+                  disabled={isSubmitting}>
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="min-w-[120px]">
                   {isSubmitting ? (
-                    <>
-                      <span className="loading loading-spinner"></span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                       Processing...
-                    </>
+                    </div>
                   ) : (
                     (defaultValues ? "Update" : "Add") + " Product"
                   )}

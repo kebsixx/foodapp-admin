@@ -9,12 +9,32 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "ftcctrtnvcytcuuljjik.supabase.co",
+        port: "",
+        pathname: "/**",
       },
       {
         protocol: "https",
         hostname: "images.unsplash.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "i.ibb.co",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "ibb.co",
+        port: "",
+        pathname: "/**",
       },
     ],
+    loader: "default",
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    domains: ["i.ibb.co", "ibb.co", "ftcctrtnvcytcuuljjik.supabase.co", "res.cloudinary.com"],
   },
   webpack: (config) => {
     config.externals.push({
