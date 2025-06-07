@@ -107,12 +107,12 @@ export const ProductForm = ({
 
   return (
     <Dialog open={isProductModalOpen} onOpenChange={handleModalClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh]">
+      <DialogContent className="max-w-2xl max-h-[90vh]" aria-describedby="product-form-description">
         <DialogHeader>
           <DialogTitle>
             {defaultValues ? "Update Product" : "Add New Product"}
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription id="product-form-description">
             {defaultValues 
               ? "Update the details of your existing product"
               : "Fill in the details to add a new product to your catalog"}

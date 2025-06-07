@@ -1,0 +1,44 @@
+/* Font Fallbacks */
+@font-face {
+  font-family: 'Inter Fallback';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Arial');
+  ascent-override: 90%;
+  descent-override: 22%;
+  line-gap-override: 0%;
+  size-adjust: 107%;
+}
+
+@font-face {
+  font-family: 'Inter Fallback';
+  font-style: normal;
+  font-weight: 500;
+  src: local('Arial');
+  ascent-override: 89%;
+  descent-override: 22%;
+  line-gap-override: 0%;
+  size-adjust: 108%;
+}
+
+@font-face {
+  font-family: 'Inter Fallback';
+  font-style: normal;
+  font-weight: 600;
+  src: local('Arial');
+  ascent-override: 89%;
+  descent-override: 22%;
+  line-gap-override: 0%;
+  size-adjust: 109%;
+}
+
+@font-face {
+  font-family: 'Inter Fallback';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Arial Bold');
+  ascent-override: 88%;
+  descent-override: 22%;
+  line-gap-override: 0%;
+  size-adjust: 109%;
+} 

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { ImageIcon } from "lucide-react";
 
@@ -38,27 +38,8 @@ export const SafeImage: React.FC<SafeImageProps> = ({
   const maxRetries = 2; // Reduced retries for faster fallback
   const timeoutDuration = 5000; // Reduced timeout to 5 seconds
 
-  // Reset state when src changes
-  useEffect(() => {
-    setImgSrc(src.trim());
-    setHasError(false);
-    setIsLoading(true);
-    setRetryCount(0);
-  }, [src]);
-
-  // Add timeout to prevent infinite loading
-  useEffect(() => {
-    if (isLoading) {
-      const timeout = setTimeout(() => {
-        if (isLoading) {
-          handleError();
-        }
-      }, timeoutDuration);
-      return () => clearTimeout(timeout);
-    }
-  }, [isLoading]);
-
-  const handleError = () => {
+  // Define handleError first as a useCallback
+  const handleError = useCallback(() => {
     if (retryCount < maxRetries) {
       // Retry loading the image
       setRetryCount(prev => prev + 1);
@@ -77,7 +58,27 @@ export const SafeImage: React.FC<SafeImageProps> = ({
     } else {
       onError?.(new Error(`Failed to load image: ${imgSrc}`));
     }
-  };
+  }, [retryCount, maxRetries, fallbackSrc, imgSrc, onError]);
+
+  // Reset state when src changes
+  useEffect(() => {
+    setImgSrc(src.trim());
+    setHasError(false);
+    setIsLoading(true);
+    setRetryCount(0);
+  }, [src]);
+
+  // Add timeout to prevent infinite loading
+  useEffect(() => {
+    if (isLoading) {
+      const timeout = setTimeout(() => {
+        if (isLoading) {
+          handleError();
+        }
+      }, timeoutDuration);
+      return () => clearTimeout(timeout);
+    }
+  }, [isLoading, handleError]);
 
   const handleLoad = () => {
     setIsLoading(false);

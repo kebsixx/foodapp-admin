@@ -26,6 +26,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Category } from "@/app/admin/categories/categories.types";
 import { createOrUpdateProductSchema } from "@/app/admin/products/schema";
@@ -598,17 +599,17 @@ export const ProductPageComponent: FC<Props> = ({
         />
 
         <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
-          <DialogContent>
+          <DialogContent aria-describedby="delete-dialog-description">
             <DialogHeader>
               <DialogTitle>Delete Product</DialogTitle>
+              <DialogDescription id="delete-dialog-description">
+                This action cannot be undone. Please confirm if you want to proceed.
+              </DialogDescription>
             </DialogHeader>
             <div className="py-4">
               <p className="text-gray-600">
                 Are you sure you want to delete{" "}
                 <strong>{currentProduct?.title}</strong>?
-              </p>
-              <p className="text-sm text-gray-500 mt-2">
-                This action cannot be undone.
               </p>
             </div>
             <DialogFooter>

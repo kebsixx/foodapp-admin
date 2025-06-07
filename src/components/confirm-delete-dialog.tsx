@@ -25,10 +25,10 @@ export function ConfirmDeleteDialog({
 }) {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
+      <AlertDialogContent aria-describedby="alert-dialog-description">
         <AlertDialogHeader>
           <AlertDialogTitle>Anda yakin ingin menghapus akun?</AlertDialogTitle>
-          <AlertDialogDescription>
+          <AlertDialogDescription id="alert-dialog-description">
             Tindakan ini tidak dapat dibatalkan. Semua data Anda akan dihapus
             permanen dari sistem kami.
           </AlertDialogDescription>

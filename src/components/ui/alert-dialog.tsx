@@ -6,7 +6,37 @@ import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 
-const AlertDialog = AlertDialogPrimitive.Root
+const AlertDialog = ({ 
+  open, 
+  onOpenChange, 
+  children,
+  ...props 
+}: AlertDialogPrimitive.AlertDialogProps) => {
+  // Gunakan useRef untuk melacak state sebelumnya
+  const prevOpenRef = React.useRef(open);
+
+  // Tangani perubahan state dengan lebih baik
+  React.useEffect(() => {
+    // Jika state berubah dari terbuka ke tertutup
+    if (prevOpenRef.current === true && open === false) {
+      // Berikan waktu untuk animasi menutup
+      const timer = setTimeout(() => {
+        // Pastikan callback onOpenChange dipanggil
+        if (onOpenChange) {
+          onOpenChange(false);
+        }
+      }, 300); // Waktu animasi dialog
+      return () => clearTimeout(timer);
+    }
+    prevOpenRef.current = open;
+  }, [open, onOpenChange]);
+
+  return (
+    <AlertDialogPrimitive.Root open={open} onOpenChange={onOpenChange} {...props}>
+      {children}
+    </AlertDialogPrimitive.Root>
+  );
+};
 
 const AlertDialogTrigger = AlertDialogPrimitive.Trigger
 
@@ -30,19 +60,44 @@ AlertDialogOverlay.displayName = AlertDialogPrimitive.Overlay.displayName
 const AlertDialogContent = React.forwardRef<
   React.ElementRef<typeof AlertDialogPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Content>
->(({ className, ...props }, ref) => (
-  <AlertDialogPortal>
-    <AlertDialogOverlay />
-    <AlertDialogPrimitive.Content
-      ref={ref}
-      className={cn(
-        "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg",
-        className
-      )}
-      {...props}
-    />
-  </AlertDialogPortal>
-))
+>(({ className, children, "aria-describedby": ariaDescribedby = "alert-dialog-description", ...props }, ref) => {
+  const dialogId = React.useId();
+  const describedById = ariaDescribedby || `alert-dialog-description-${dialogId}`;
+  
+  // Check if there's already an AlertDialogDescription in the children
+  let hasDescription = false;
+  React.Children.forEach(children, (child) => {
+    if (React.isValidElement(child)) {
+      if (child.type === AlertDialogDescription || 
+          (child.props && child.props.children && React.Children.toArray(child.props.children).some(c => 
+            React.isValidElement(c) && c.type === AlertDialogDescription))) {
+        hasDescription = true;
+      }
+    }
+  });
+  
+  return (
+    <AlertDialogPortal>
+      <AlertDialogOverlay />
+      <AlertDialogPrimitive.Content
+        ref={ref}
+        aria-describedby={describedById}
+        className={cn(
+          "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg",
+          className
+        )}
+        {...props}
+      >
+        {children}
+        {!hasDescription && (
+          <AlertDialogDescription id={describedById} className="sr-only">
+            Alert dialog content
+          </AlertDialogDescription>
+        )}
+      </AlertDialogPrimitive.Content>
+    </AlertDialogPortal>
+  );
+})
 AlertDialogContent.displayName = AlertDialogPrimitive.Content.displayName
 
 const AlertDialogHeader = ({

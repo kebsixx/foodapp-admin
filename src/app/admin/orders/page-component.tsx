@@ -28,6 +28,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import {
   Pagination,
@@ -378,9 +379,12 @@ export default function PageComponent({ ordersWithProducts }: Props) {
                       View Details
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+                  <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto" aria-describedby="order-details-description">
                     <DialogHeader>
                       <DialogTitle>Order Details</DialogTitle>
+                      <DialogDescription id="order-details-description">
+                        View detailed information about this order
+                      </DialogDescription>
                     </DialogHeader>
 
                     <div className="mt-4 space-y-6">

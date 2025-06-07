@@ -39,21 +39,32 @@ export const CategoryTableRow = ({
   deleteCategoryHandler: (id: number) => Promise<void>;
 }) => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isProductsDialogOpen, setIsProductsDialogOpen] = useState(false);
 
   const handleEditClick = (category: CreateCategorySchema) => {
     setCurrentCategory({
       name: category.name,
-      // @ts-ignore
-      image: new File([], ""),
+      imageUrl: category.imageUrl || "",
       intent: "update",
       slug: category.slug,
     });
-    setIsCreateCategoryModalOpen(true);
+    
+    setTimeout(() => {
+      setIsCreateCategoryModalOpen(true);
+    }, 0);
   };
 
   const handleDelete = async () => {
     await deleteCategoryHandler(category.id);
     setIsDeleteDialogOpen(false);
+  };
+
+  const handleProductsDialogChange = (open: boolean) => {
+    setIsProductsDialogOpen(open);
+  };
+
+  const handleDeleteDialogChange = (open: boolean) => {
+    setIsDeleteDialogOpen(open);
   };
 
   return (
@@ -74,50 +85,22 @@ export const CategoryTableRow = ({
         </TableCell>
         <TableCell className="md:table-cell">
           {category.products && category.products.length > 0 ? (
-            <Dialog>
-              <DialogTrigger>
-                {category.products
-                  .slice(0, 4)
-                  .map((product) => product.title)
-                  .join(", ")}
-              </DialogTrigger>
-              <DialogContent>
-                <DialogTitle className="sr-only">
-                  Category product list
-                </DialogTitle>
-                <h2>Products</h2>
-                <ScrollArea className="h-[400px] rounded-md p-4">
-                  {category.products.map((product) => (
-                    <Card key={product.id} className="cursor-pointer mb-2">
-                      <div className="grid grid-cols-[100px,1fr] items-center gap-4">
-                        <Image
-                          alt="Product image"
-                          className="aspect-square rounded-md object-cover"
-                          height="100"
-                          src={product.heroImage}
-                          width="100"
-                        />
-                        <div className="flex flex-col space-y-1">
-                          <h3 className="font-medium leading-none">
-                            {product.title}
-                          </h3>
-                          <p className="text-sm text-muted-foreground">
-                            {product.maxQuantity} in stock
-                          </p>
-                        </div>
-                      </div>
-                    </Card>
-                  ))}
-                </ScrollArea>
-              </DialogContent>
-            </Dialog>
+            <Button
+              variant="link"
+              onClick={() => setIsProductsDialogOpen(true)}
+              className="p-0 h-auto">
+              {category.products
+                .slice(0, 4)
+                .map((product) => product.title)
+                .join(", ")}
+            </Button>
           ) : (
             "No products linked to this category"
           )}
         </TableCell>
         <TableCell>
           <DropdownMenu>
-            <DropdownMenuTrigger>
+            <DropdownMenuTrigger asChild>
               <Button size="icon" variant="ghost">
                 <MoreHorizontal className="h-4 w-4" />
                 <span className="sr-only">Open menu</span>
@@ -143,14 +126,50 @@ export const CategoryTableRow = ({
       </TableRow>
 
       <Dialog
+        open={isProductsDialogOpen}
+        onOpenChange={handleProductsDialogChange}>
+        <DialogContent aria-describedby="products-dialog-description">
+          <DialogHeader>
+            <DialogTitle>Products in {category.name}</DialogTitle>
+            <DialogDescription id="products-dialog-description">
+              List of products associated with this category
+            </DialogDescription>
+          </DialogHeader>
+          <ScrollArea className="h-[400px] rounded-md p-4">
+            {category.products.map((product) => (
+              <Card key={product.id} className="cursor-pointer mb-2">
+                <div className="grid grid-cols-[100px,1fr] items-center gap-4">
+                  <Image
+                    alt="Product image"
+                    className="aspect-square rounded-md object-cover"
+                    height="100"
+                    src={product.heroImage}
+                    width="100"
+                  />
+                  <div className="flex flex-col space-y-1">
+                    <h3 className="font-medium leading-none">
+                      {product.title}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      {product.maxQuantity} in stock
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
         open={isDeleteDialogOpen}
-        onOpenChange={() => setIsDeleteDialogOpen(!isDeleteDialogOpen)}>
-        <DialogContent>
+        onOpenChange={handleDeleteDialogChange}>
+        <DialogContent aria-describedby="delete-category-dialog-description">
           <DialogHeader>
             <DialogTitle>Are you absolutely sure?</DialogTitle>
-            <DialogDescription>
+            <DialogDescription id="delete-category-dialog-description">
               This action cannot be undone. This will permanently delete this
-              category.
+              category and remove it from our servers.
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-end gap-4">

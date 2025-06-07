@@ -1,7 +1,8 @@
 export const isValidImageUrl = async (url: string): Promise<boolean> => {
   try {
     const response = await fetch(url, { method: 'HEAD' });
-    return response.ok && response.headers.get('content-type')?.startsWith('image/');
+    const contentType = response.headers.get('content-type');
+    return response.ok && !!contentType && contentType.startsWith('image/');
   } catch {
     return false;
   }

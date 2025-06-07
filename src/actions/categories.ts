@@ -2,11 +2,12 @@
 
 import slugify from "slugify";
 
-import { CategoriesWithProductsResponse } from "@/app/admin/categories/categories.types";
+import { CategoriesWithProductsResponse, Category } from "@/app/admin/categories/categories.types";
 import {
   CreateCategorySchemaServer,
 } from "@/app/admin/categories/create-category.schema";
 import { createClient } from "@/supabase/server";
+import { uploadToCloudinary, deleteFromCloudinary, getPublicIdFromUrl } from "@/lib/cloudinary";
 
 export const getCategoriesWithProducts =
   async (): Promise<CategoriesWithProductsResponse> => {
@@ -69,69 +70,124 @@ const deleteImageFromBucket = async (imageUrl: string) => {
   if (error) throw new Error(`Error deleting image: ${error.message}`);
 };
 
-export const createCategory = async ({
-  imageUrl,
-  name,
-}: CreateCategorySchemaServer) => {
+export const getCategories = async (): Promise<Category[]> => {
   const supabase = createClient();
-
-  const slug = slugify(name, { lower: true });
-
-  const { data, error } = await supabase.from("category").insert({
-    name,
-    imageUrl,
-    slug,
-  });
-
-  if (error) throw new Error(`Error creating category: ${error.message}`);
-
+  const { data, error } = await supabase.from("category").select("*");
+  if (error) {
+    throw new Error(`Error fetching categories: ${error.message}`);
+  }
   return data;
 };
 
-export const updateCategory = async ({
-  imageUrl,
-  name,
-  slug,
-}: {
-  imageUrl: string;
+export const createCategory = async (category: {
   name: string;
-  slug: string;
+  imageUrl?: string;
 }) => {
   const supabase = createClient();
+  const slug = slugify(category.name, { lower: true });
+  
+  // Jika imageUrl tidak ada, gunakan string kosong
+  const imageUrl = category.imageUrl || "";
+  
   const { data, error } = await supabase
     .from("category")
-    .update({
-      name,
-      imageUrl,
+    .insert({
+      name: category.name,
+      imageUrl: imageUrl,
+      slug,
     })
-    .match({ slug });
-
-  if (error) throw new Error(`Error updating category: ${error.message}`);
-
+    .select();
+  
+  if (error) {
+    throw new Error(`Error creating category: ${error.message}`);
+  }
   return data;
 };
 
-export const deleteCategory = async (id: number) => {
+export const updateCategory = async (category: {
+  id: number;
+  name: string;
+  imageUrl?: string;
+}) => {
   const supabase = createClient();
 
-  // Ambil path gambar sebelum menghapus kategori
-  const { data: category, error: fetchError } = await supabase
-    .from("category")
-    .select("imageUrl")
-    .eq("id", id)
-    .single();
+  try {
+    // Get the current category to check for old image
+    const { data: currentCategory, error: fetchError } = await supabase
+      .from("category")
+      .select("imageUrl")
+      .eq("id", category.id)
+      .single();
 
-  if (fetchError) throw new Error(`Error fetching category: ${fetchError.message}`);
+    if (fetchError) {
+      throw new Error(`Error fetching current category: ${fetchError.message}`);
+    }
 
-  // Hapus gambar dari bucket jika ada
-  if (category?.imageUrl) {
-    await deleteImageFromBucket(category.imageUrl);
+    // Delete old image if it exists and is from Cloudinary
+    if (currentCategory?.imageUrl && category.imageUrl && currentCategory.imageUrl !== category.imageUrl) {
+      const oldPublicId = getPublicIdFromUrl(currentCategory.imageUrl);
+      if (oldPublicId) {
+        try {
+          await deleteFromCloudinary(oldPublicId);
+        } catch (deleteError) {
+          console.error('Error deleting old image:', deleteError);
+          // Continue with update even if image deletion fails
+        }
+      }
+    }
+
+    // Jika imageUrl tidak ada, gunakan string kosong atau nilai sebelumnya
+    const imageUrl = category.imageUrl || currentCategory?.imageUrl || "";
+
+    const { data, error } = await supabase
+      .from("category")
+      .update({
+        name: category.name,
+        imageUrl: imageUrl,
+      })
+      .eq("id", category.id)
+      .select();
+
+    if (error) {
+      throw new Error(`Error updating category: ${error.message}`);
+    }
+
+    if (!data || data.length === 0) {
+      throw new Error("Category not found");
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Update category error:', error);
+    throw error;
+  }
+};
+
+export const deleteCategory = async (id: number, imageUrl?: string) => {
+  const supabase = createClient();
+  
+  // Delete image from Cloudinary if it exists
+  if (imageUrl) {
+    const publicId = getPublicIdFromUrl(imageUrl);
+    if (publicId) {
+      try {
+        await deleteFromCloudinary(publicId);
+      } catch (error) {
+        console.error('Error deleting image from Cloudinary:', error);
+        // Continue with category deletion even if image deletion fails
+      }
+    }
   }
 
-  // Hapus kategori dari database
-  const { error } = await supabase.from("category").delete().match({ id });
+  const { data, error } = await supabase
+    .from("category")
+    .delete()
+    .match({ id });
 
-  if (error) throw new Error(`Error deleting category: ${error.message}`);
+  if (error) {
+    throw new Error(`Error deleting category: ${error.message}`);
+  }
+  return data;
 };
 
 export const getCategoryData = async () => {

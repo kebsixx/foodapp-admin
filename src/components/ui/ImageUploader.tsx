@@ -5,6 +5,7 @@ import { Upload, X, Image as ImageIcon, Edit2 } from "lucide-react";
 import { useImageUpload } from "@/hooks/useImageUpload";
 import { ProductImageUrls } from "@/app/admin/products/products.types";
 import { SafeImage } from "./SafeImage";
+import Image from "next/image";
 
 interface ImageUploaderProps {
   onImageUploaded: (url: string, urls?: ProductImageUrls) => void;
@@ -147,11 +148,17 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
             <div
               className={`relative w-full h-full ${shapeClasses[shape]} overflow-hidden`}>
               {imagePreview ? (
-                // Untuk preview lokal, gunakan img biasa
-                <img
+                // Untuk preview lokal, gunakan Image dari next/image
+                <Image
                   src={imagePreview}
                   alt="Preview"
-                  className={`w-full h-full object-cover ${shapeClasses[shape]}`}
+                  fill
+                  className={`object-cover ${shapeClasses[shape]}`}
+                  sizes={`${
+                    size === "sm" ? "80px" : size === "md" ? "128px" : "192px"
+                  }`}
+                  loading="lazy"
+                  priority={false}
                 />
               ) : (
                 // Untuk gambar dari server, gunakan SafeImage

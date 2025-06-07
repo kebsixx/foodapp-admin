@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useState, useCallback, useMemo } from "react";
+import { FC, useState, useCallback, useMemo, useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { PlusCircle, ArrowUpDown } from "lucide-react"; // Tambahkan ArrowUpDown
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,6 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import {
   Table,
@@ -30,7 +31,7 @@ import {
   createCategorySchema,
   CreateCategorySchema,
 } from "@/app/admin/categories/create-category.schema";
-import { CategoriesWithProductsResponse } from "@/app/admin/categories/categories.types";
+import { CategoriesWithProductsResponse, Category } from "@/app/admin/categories/categories.types";
 import { CategoryForm } from "@/app/admin/categories/category-form";
 import {
   createCategory,
@@ -62,6 +63,41 @@ const CategoriesPageComponent: FC<Props> = ({ categories }) => {
   });
 
   const router = useRouter();
+
+  // Reset form when modal opens/closes
+  useEffect(() => {
+    if (isCreateCategoryModalOpen) {
+      if (currentCategory) {
+        form.reset({
+          name: currentCategory.name,
+          imageUrl: currentCategory.imageUrl,
+          intent: "update",
+          slug: currentCategory.slug,
+        });
+      } else {
+        form.reset({
+          name: "",
+          image: undefined,
+          intent: "create",
+        });
+      }
+    }
+  }, [isCreateCategoryModalOpen, currentCategory, form]);
+
+  const handleModalOpenChange = (open: boolean) => {
+    if (!isLoading) {
+      if (!open) {
+        // Only close if not loading
+        setIsCreateCategoryModalOpen(false);
+        setTimeout(() => {
+          form.reset();
+          if (!open) setCurrentCategory(null);
+        }, 100);
+      } else {
+        setIsCreateCategoryModalOpen(true);
+      }
+    }
+  };
 
   const sortedCategories = useMemo(() => {
     if (!sortBy) return categories;
@@ -137,10 +173,12 @@ const CategoriesPageComponent: FC<Props> = ({ categories }) => {
 
           const finalImageUrl = imageUrl || currentCategory.imageUrl || "";
 
+          const categoryId = (categories.find(c => c.slug === currentCategory.slug)?.id) || 0;
+
           await updateCategory({
+            id: categoryId,
             imageUrl: finalImageUrl,
             name,
-            slug: newSlug,
           });
         }
         break;
@@ -179,26 +217,38 @@ const CategoriesPageComponent: FC<Props> = ({ categories }) => {
             <CardTitle>Categories</CardTitle>
             <Dialog
               open={isCreateCategoryModalOpen}
-              onOpenChange={setIsCreateCategoryModalOpen}>
+              onOpenChange={handleModalOpenChange}>
               <DialogTrigger asChild>
                 <Button
                   size="sm"
                   className="h-8 gap-1"
-                  onClick={() => setCurrentCategory(null)}>
+                  onClick={() => {
+                    setCurrentCategory(null);
+                    setIsCreateCategoryModalOpen(true);
+                  }}>
                   <PlusCircle className="h-3.5 w-3.5" />
                   <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
                     Add Category
                   </span>
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent aria-describedby="category-dialog-description">
                 <DialogHeader>
-                  <DialogTitle>Add Category</DialogTitle>
+                  <DialogTitle>
+                    {currentCategory ? "Update Category" : "Add Category"}
+                  </DialogTitle>
+                  <DialogDescription id="category-dialog-description">
+                    {currentCategory
+                      ? "Update the details of your existing category."
+                      : "Fill in the details to add a new category to your store."}
+                  </DialogDescription>
                 </DialogHeader>
                 <CategoryForm
                   form={form}
                   onSubmit={submitCategoryHandler}
-                  defaultValues={currentCategory}
+                  defaultValues={currentCategory as unknown as Category | null}
+                  setIsCategoryModalOpen={setIsCreateCategoryModalOpen}
+                  isCategoryModalOpen={isCreateCategoryModalOpen}
                 />
               </DialogContent>
             </Dialog>
