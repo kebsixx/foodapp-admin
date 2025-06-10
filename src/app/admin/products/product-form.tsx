@@ -107,7 +107,7 @@ export const ProductForm = ({
 
   return (
     <Dialog open={isProductModalOpen} onOpenChange={handleModalClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh]" aria-describedby="product-form-description">
+      <DialogContent className="max-w-2xl max-h-[90vh] w-[calc(100%-2rem)] p-4 sm:p-6" aria-describedby="product-form-description">
         <DialogHeader>
           <DialogTitle>
             {defaultValues ? "Update Product" : "Add New Product"}
@@ -189,7 +189,7 @@ export const ProductForm = ({
                 )}
               />
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="price"
@@ -237,19 +237,19 @@ export const ProductForm = ({
 
               <div className="space-y-2">
                 <Label>Product Image</Label>
-                <div className="flex items-center gap-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                   {form.watch("heroImage") && (
-                    <div className="relative w-20 h-20 rounded-md overflow-hidden">
+                    <div className="relative w-full sm:w-20 h-40 sm:h-20 rounded-md overflow-hidden">
                       <SafeImage
                         src={form.watch("heroImage")}
                         alt="Product preview"
                         fill
                         className="object-cover"
-                        sizes="80px"
+                        sizes="(max-width: 640px) 100vw, 80px"
                       />
                     </div>
                   )}
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2 w-full sm:w-auto">
                     <CloudinaryUpload
                       onSuccess={(result) => {
                         form.setValue("heroImage", result.secure_url);
@@ -263,6 +263,7 @@ export const ProductForm = ({
                       onError={(error) => {
                         toast.error("Failed to upload image: " + error);
                       }}
+                      className="w-full sm:w-auto"
                     />
                     {form.watch("heroImage") && (
                       <Button
@@ -273,6 +274,7 @@ export const ProductForm = ({
                           form.setValue("heroImage", "");
                           form.setValue("heroImageUrls", undefined);
                         }}
+                        className="w-full sm:w-auto"
                       >
                         Remove Image
                       </Button>
@@ -315,7 +317,7 @@ export const ProductForm = ({
                 {form.watch("variants")?.map((variant, index) => (
                   <div
                     key={variant.id}
-                    className="p-4 border rounded-lg bg-gray-50/50 space-y-3">
+                    className="p-3 sm:p-4 border rounded-lg bg-gray-50/50 space-y-3">
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium text-gray-700">
                         Variant {index + 1}
@@ -337,7 +339,7 @@ export const ProductForm = ({
                       </Button>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <FormField
                         control={form.control}
                         name={`variants.${index}.name`}
@@ -404,18 +406,19 @@ export const ProductForm = ({
                 ))}
               </div>
 
-              <DialogFooter className="gap-2">
+              <DialogFooter className="flex flex-col sm:flex-row gap-2 sm:gap-0 pt-2">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={handleModalClose}
-                  disabled={isSubmitting}>
+                  disabled={isSubmitting}
+                  className="w-full sm:w-auto order-2 sm:order-1">
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="min-w-[120px]">
+                  className="min-w-[120px] w-full sm:w-auto order-1 sm:order-2">
                   {isSubmitting ? (
                     <div className="flex items-center gap-2">
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />

@@ -37,7 +37,7 @@ import {
 } from "@/actions/products";
 import { ProductForm } from "@/app/admin/products/product-form";
 import { ProductTableRow } from "@/app/admin/products/product-table-row";
-import { PlusIcon, ArrowUpDown, SearchIcon, FilterIcon } from "lucide-react";
+import { PlusIcon, ArrowUpDown, SearchIcon, FilterIcon, ChevronDown } from "lucide-react";
 import {
   Pagination,
   PaginationContent,
@@ -55,6 +55,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 type Props = {
   categories: Category[];
@@ -80,6 +87,7 @@ export const ProductPageComponent: FC<Props> = ({
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [searchTerm, setSearchTerm] = useState("");
   const [searchCategory, setSearchCategory] = useState("all");
+  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
   const form = useForm<FormProductValues>({
     resolver: zodResolver(createOrUpdateProductSchema),
@@ -365,21 +373,116 @@ export const ProductPageComponent: FC<Props> = ({
     );
   };
 
+  // Mobile filter sheet content
+  const FilterContent = () => (
+    <div className="space-y-4 py-4">
+      <div className="space-y-2">
+        <h4 className="text-sm font-medium">Category</h4>
+        <Select
+          value={searchCategory}
+          onValueChange={(value) => {
+            setSearchCategory(value);
+            setCurrentPage(1);
+          }}>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Filter by category" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Categories</SelectItem>
+            {categories.map((category) => (
+              <SelectItem
+                key={category.id}
+                value={category.id.toString()}>
+                {category.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      
+      <div className="space-y-2">
+        <h4 className="text-sm font-medium">Sort By</h4>
+        <div className="grid grid-cols-2 gap-2">
+          <Select
+            value={sortField}
+            onValueChange={(value: SortField) => {
+              setSortField(value);
+            }}>
+            <SelectTrigger>
+              <SelectValue placeholder="Sort field" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="title">Name</SelectItem>
+              <SelectItem value="category">Category</SelectItem>
+              <SelectItem value="price">Price</SelectItem>
+            </SelectContent>
+          </Select>
+          
+          <Select
+            value={sortOrder}
+            onValueChange={(value: SortOrder) => {
+              setSortOrder(value);
+            }}>
+            <SelectTrigger>
+              <SelectValue placeholder="Order" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="asc">Ascending</SelectItem>
+              <SelectItem value="desc">Descending</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      
+      <div className="space-y-2">
+        <h4 className="text-sm font-medium">Items per page</h4>
+        <Select
+          value={String(itemsPerPage)}
+          onValueChange={handleItemsPerPageChange}>
+          <SelectTrigger>
+            <SelectValue placeholder={itemsPerPage} />
+          </SelectTrigger>
+          <SelectContent>
+            {itemsPerPageOptions.map((value) => (
+              <SelectItem key={value} value={value}>
+                {value}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      
+      <Button 
+        className="w-full mt-4" 
+        onClick={() => setIsMobileFiltersOpen(false)}
+      >
+        Apply Filters
+      </Button>
+    </div>
+  );
+
   return (
     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-      <div className="container mx-auto p-4">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6">
-          <h1 className="text-2xl font-bold whitespace-nowrap">
-            Products Management
-          </h1>
+      <div className="container mx-auto px-2 sm:px-4">
+        <div className="flex flex-col gap-4 mb-6">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <h1 className="text-2xl font-bold">
+              Products Management
+            </h1>
 
-          <div className="flex flex-row gap-2 w-full sm:w-auto">
-            <div className="relative flex-1 sm:flex-initial">
+            <Button onClick={handleAddProduct} className="ml-auto">
+              <PlusIcon className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Add Product</span>
+            </Button>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="relative flex-1 min-w-[200px]">
               <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
               <Input
                 type="text"
                 placeholder="Search by product name..."
-                className="w-full sm:w-[240px] pl-9"
+                className="w-full pl-9"
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
@@ -388,24 +491,16 @@ export const ProductPageComponent: FC<Props> = ({
               />
             </div>
 
-            <div className="sm:hidden">
-              <Button variant="outline" size="icon">
-                <FilterIcon className="h-4 w-4" />
-              </Button>
-            </div>
-
-            <div className="hidden sm:block">
+            {/* Desktop filters */}
+            <div className="hidden md:flex items-center gap-2">
               <Select
                 value={searchCategory}
                 onValueChange={(value) => {
                   setSearchCategory(value);
                   setCurrentPage(1);
                 }}>
-                <SelectTrigger className="w-[150px] pl-3">
-                  <SelectValue
-                    className="text-left"
-                    placeholder="Filter by category"
-                  />
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Filter by category" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Categories</SelectItem>
@@ -418,18 +513,41 @@ export const ProductPageComponent: FC<Props> = ({
                   ))}
                 </SelectContent>
               </Select>
-            </div>
-          </div>
 
-          <div className="fixed bottom-4 right-4 sm:static sm:ml-auto">
-            <Button onClick={handleAddProduct}>
-              <PlusIcon className="h-4 w-4 sm:mr-2" />
-              <span className="hidden sm:inline">Add Product</span>
-            </Button>
+              <Select
+                value={String(itemsPerPage)}
+                onValueChange={handleItemsPerPageChange}>
+                <SelectTrigger className="w-[140px]">
+                  <SelectValue placeholder={`${itemsPerPage} per page`} />
+                </SelectTrigger>
+                <SelectContent>
+                  {itemsPerPageOptions.map((value) => (
+                    <SelectItem key={value} value={value}>
+                      {value} per page
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Mobile filter button */}
+            <Sheet open={isMobileFiltersOpen} onOpenChange={setIsMobileFiltersOpen}>
+              <SheetTrigger asChild>
+                <Button variant="outline" size="icon" className="md:hidden">
+                  <FilterIcon className="h-4 w-4" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right">
+                <SheetHeader>
+                  <SheetTitle>Filters & Sort</SheetTitle>
+                </SheetHeader>
+                <FilterContent />
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
 
-        <div className="rounded-md border">
+        <div className="rounded-md border overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
@@ -443,7 +561,7 @@ export const ProductPageComponent: FC<Props> = ({
                     }
                   }}
                   className={cn(
-                    "cursor-pointer hover:bg-gray-100",
+                    "cursor-pointer hover:bg-gray-100 whitespace-nowrap",
                     sortField === "title" && "text-primary font-medium"
                   )}>
                   Name {getSortIcon("title")}
@@ -458,7 +576,7 @@ export const ProductPageComponent: FC<Props> = ({
                     }
                   }}
                   className={cn(
-                    "cursor-pointer hover:bg-gray-100",
+                    "cursor-pointer hover:bg-gray-100 whitespace-nowrap hidden sm:table-cell",
                     sortField === "category" && "text-primary font-medium"
                   )}>
                   Category {getSortIcon("category")}
@@ -473,15 +591,15 @@ export const ProductPageComponent: FC<Props> = ({
                     }
                   }}
                   className={cn(
-                    "cursor-pointer hover:bg-gray-100",
+                    "cursor-pointer hover:bg-gray-100 whitespace-nowrap",
                     sortField === "price" && "text-primary font-medium"
                   )}>
                   Price {getSortIcon("price")}
                 </TableHead>
-                <TableHead>Variants</TableHead>
-                <TableHead>Max Quantity</TableHead>
-                <TableHead>Image</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead className="hidden md:table-cell whitespace-nowrap">Variants</TableHead>
+                <TableHead className="hidden sm:table-cell whitespace-nowrap">Max Qty</TableHead>
+                <TableHead className="whitespace-nowrap">Image</TableHead>
+                <TableHead className="whitespace-nowrap">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -511,8 +629,8 @@ export const ProductPageComponent: FC<Props> = ({
         </div>
 
         {totalPages > 1 && (
-          <div className="flex items-center justify-between mt-6">
-            <span className="text-sm text-gray-500">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-6 gap-4">
+            <span className="text-sm text-gray-500 text-center sm:text-left">
               Showing {indexOfFirstProduct + 1}-
               {Math.min(indexOfLastProduct, filteredProducts.length)} of{" "}
               {filteredProducts.length} items
@@ -520,7 +638,7 @@ export const ProductPageComponent: FC<Props> = ({
 
             <div className="flex-1 flex justify-center">
               <Pagination>
-                <PaginationContent>
+                <PaginationContent className="flex flex-wrap justify-center gap-1">
                   <PaginationItem>
                     <PaginationPrevious
                       href="#"
@@ -537,7 +655,22 @@ export const ProductPageComponent: FC<Props> = ({
                     />
                   </PaginationItem>
 
-                  {generatePaginationItems()}
+                  {/* On mobile, show only current page */}
+                  <div className="sm:hidden flex items-center gap-1">
+                    <PaginationItem>
+                      <PaginationLink
+                        href="#"
+                        isActive={true}>
+                        {currentPage}
+                      </PaginationLink>
+                    </PaginationItem>
+                    <span className="text-sm text-gray-500">of {totalPages}</span>
+                  </div>
+
+                  {/* On desktop, show pagination numbers */}
+                  <div className="hidden sm:flex">
+                    {generatePaginationItems()}
+                  </div>
 
                   <PaginationItem>
                     <PaginationNext
@@ -561,7 +694,7 @@ export const ProductPageComponent: FC<Props> = ({
               </Pagination>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="hidden sm:flex items-center gap-2 justify-end">
               <span className="text-sm text-gray-500">Items per page:</span>
               <Select
                 value={String(itemsPerPage)}
@@ -605,18 +738,20 @@ export const ProductPageComponent: FC<Props> = ({
                 <strong>{currentProduct?.title}</strong>?
               </p>
             </div>
-            <DialogFooter>
+            <DialogFooter className="flex flex-col sm:flex-row gap-2">
               <Button
                 variant="outline"
                 onClick={() => setIsDeleteModalOpen(false)}
-                disabled={isLoading}>
+                disabled={isLoading}
+                className="w-full sm:w-auto">
                 Cancel
               </Button>
 
               <Button
                 variant="destructive"
                 onClick={deleteProductHandler}
-                disabled={isLoading}>
+                disabled={isLoading}
+                className="w-full sm:w-auto">
                 {isLoading ? "Deleting..." : "Delete"}
               </Button>
             </DialogFooter>

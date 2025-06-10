@@ -58,19 +58,19 @@ export const CloudinaryUpload = ({
       <Button
         type="button"
         variant="outline"
-        className={className}
+        className={`flex items-center justify-center text-sm ${className}`}
         onClick={() => fileInputRef.current?.click()}
         disabled={isUploading}
       >
         {isUploading ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Uploading...
+            <span className="truncate">Uploading...</span>
           </>
         ) : (
           <>
             <Upload className="mr-2 h-4 w-4" />
-            Upload Image
+            <span className="truncate">Upload Image</span>
           </>
         )}
       </Button>

@@ -36,7 +36,7 @@ export const ProductTableRow = ({
       price: product.price?.toString() ?? "",
       maxQuantity: product.maxQuantity.toString(),
       slug: product.slug,
-      heroImage: product.heroImage,
+      heroImage: product.heroImage ?? "",
       heroImageUrls: product.heroImageUrls,
       variants:
         product.variants?.map((v) => ({
@@ -57,7 +57,7 @@ export const ProductTableRow = ({
       price: product.price?.toString() ?? "",
       maxQuantity: product.maxQuantity.toString(),
       slug: product.slug,
-      heroImage: product.heroImage,
+      heroImage: product.heroImage ?? "",
       heroImageUrls: product.heroImageUrls,
       intent: "update",
     });
@@ -67,7 +67,7 @@ export const ProductTableRow = ({
   // Function untuk mendapatkan thumb URL dengan fallback
   const getImageUrls = () => {
     // Validasi URL
-    const isValidUrl = (url: string | undefined) => {
+    const isValidUrl = (url: string | undefined | null) => {
       if (!url) return false;
       try {
         const parsedUrl = new URL(url);
@@ -143,20 +143,44 @@ export const ProductTableRow = ({
   };
 
   const imageUrls = getImageUrls();
+  
+  // Format price for display
+  const formatPrice = (price: number | null) => {
+    if (price === null) return "N/A";
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+    }).format(price);
+  };
 
   return (
     <TableRow key={product.id}>
-      <TableCell>{product.title}</TableCell>
-      <TableCell>{product.category.name}</TableCell>
-      <TableCell>
-        {product.price !== null
-          ? new Intl.NumberFormat("id-ID", {
-              style: "currency",
-              currency: "IDR",
-            }).format(product.price)
-          : "N/A"}
+      <TableCell className="font-medium">
+        <div className="flex items-center gap-2">
+          <div className="relative w-8 h-8 rounded-md overflow-hidden sm:hidden">
+            <SafeImage
+              src={imageUrls.primary}
+              alt={product.title}
+              fill
+              className="object-cover"
+              sizes="32px"
+              fallbackSrc={imageUrls.fallback}
+            />
+          </div>
+          <span className="line-clamp-2">{product.title}</span>
+        </div>
+        <div className="text-xs text-gray-500 mt-1 sm:hidden">
+          {formatPrice(product.price)}
+        </div>
       </TableCell>
-      <TableCell>
+      
+      <TableCell className="hidden sm:table-cell">{product.category.name}</TableCell>
+      
+      <TableCell className="hidden sm:table-cell">
+        {formatPrice(product.price)}
+      </TableCell>
+      
+      <TableCell className="hidden md:table-cell">
         {product.variants && product.variants.length > 0 ? (
           <TooltipProvider>
             <Tooltip>
@@ -170,10 +194,7 @@ export const ProductTableRow = ({
                   {product.variants.map((variant, index) => (
                     <div key={index} className="text-sm">
                       <span className="font-medium">{variant.name}</span>:{" "}
-                      {new Intl.NumberFormat("id-ID", {
-                        style: "currency",
-                        currency: "IDR",
-                      }).format(variant.price)}
+                      {formatPrice(variant.price)}
                     </div>
                   ))}
                 </div>
@@ -184,8 +205,10 @@ export const ProductTableRow = ({
           <span className="text-gray-500">No variants</span>
         )}
       </TableCell>
-      <TableCell>{product.maxQuantity}</TableCell>
-      <TableCell>
+      
+      <TableCell className="hidden sm:table-cell">{product.maxQuantity}</TableCell>
+      
+      <TableCell className="hidden sm:table-cell">
         <div className="relative w-10 h-10 rounded-md overflow-hidden">
           <SafeImage
             src={imageUrls.primary}
@@ -210,12 +233,13 @@ export const ProductTableRow = ({
           />
         </div>
       </TableCell>
+      
       <TableCell>
-        <div className="flex gap-1">
-          <Button variant="ghost" size="icon" onClick={handleEditClick}>
+        <div className="flex gap-1 justify-end sm:justify-start">
+          <Button variant="ghost" size="icon" onClick={handleEditClick} className="h-8 w-8">
             <Pencil className="h-4 w-4" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={handleDeleteClick}>
+          <Button variant="ghost" size="icon" onClick={handleDeleteClick} className="h-8 w-8">
             <Trash2 className="h-4 w-4" />
           </Button>
         </div>

@@ -25,7 +25,7 @@ export const SafeImage: React.FC<SafeImageProps> = ({
   height,
   fill,
   className = "",
-  sizes,
+  sizes = "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw",
   priority = false,
   loading = "lazy",
   fallbackSrc,
@@ -89,14 +89,15 @@ export const SafeImage: React.FC<SafeImageProps> = ({
   if (hasError && (!fallbackSrc || imgSrc === fallbackSrc.trim())) {
     return (
       <div
-        className={`flex items-center justify-center bg-gray-100 dark:bg-gray-800 ${className}`}>
+        className={`flex items-center justify-center bg-gray-100 dark:bg-gray-800 ${className}`}
+        style={fill ? { position: 'relative', width: '100%', height: '100%' } : { width, height }}>
         <ImageIcon className="w-6 h-6 text-gray-400" />
       </div>
     );
   }
 
   return (
-    <>
+    <div className="relative w-full h-full">
       {isLoading && (
         <div
           className={`absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800 ${className}`}>
@@ -109,7 +110,7 @@ export const SafeImage: React.FC<SafeImageProps> = ({
         width={width}
         height={height}
         fill={fill}
-        className={`${className} ${isLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-200`}
+        className={`${className} ${isLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-200 object-contain`}
         sizes={sizes}
         priority={priority}
         loading={loading}
@@ -119,6 +120,6 @@ export const SafeImage: React.FC<SafeImageProps> = ({
         placeholder="blur"
         blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDABQODxIPDRQSEBIXFRQdHx4eHRoaHSQtJSEkMjU1LS0yMi4qLjg0OD4wMDw7QEBAPj5APj4+Pj4+Pj4+Pj4+Pj7/2wBDAR4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
       />
-    </>
+    </div>
   );
 };
