@@ -77,7 +77,12 @@ type Props = {
   ordersWithProducts: OrdersWithProducts;
 };
 
-type OrderedProducts = OrderItem[];
+type OrderedProducts = {
+  id: number;
+  quantity: number;
+  order_id: number;
+  product: any;
+}[];
 
 const statusStyles = {
   Process: "bg-[#81C784]",
@@ -474,6 +479,8 @@ export default function PageComponent({ ordersWithProducts }: Props) {
                             onClick={() =>
                               openProductsModal(
                                 order.order_items.map((item) => ({
+                                  id: item.id,
+                                  quantity: item.quantity,
                                   order_id: order.id,
                                   product: item.product,
                                 }))
