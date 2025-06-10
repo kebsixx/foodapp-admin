@@ -208,8 +208,8 @@ export const ProductTableRow = ({
       
       <TableCell className="hidden sm:table-cell">{product.maxQuantity}</TableCell>
       
-      <TableCell className="hidden sm:table-cell">
-        <div className="relative w-10 h-10 rounded-md overflow-hidden">
+      <TableCell className="hidden sm:table-cell text-center p-2">
+        <div className="relative w-10 h-10 rounded-md overflow-hidden mx-auto">
           <SafeImage
             src={imageUrls.primary}
             alt={product.title}
@@ -218,7 +218,6 @@ export const ProductTableRow = ({
             sizes="40px"
             fallbackSrc={imageUrls.fallback}
             onError={(error) => {
-              // Log error jika benar-benar gagal
               console.error(
                 "Image load error for product:",
                 {
@@ -234,13 +233,15 @@ export const ProductTableRow = ({
         </div>
       </TableCell>
       
-      <TableCell>
-        <div className="flex gap-1 justify-end sm:justify-start">
-          <Button variant="ghost" size="icon" onClick={handleEditClick} className="h-8 w-8">
+      <TableCell className="text-center p-2">
+        <div className="flex gap-1 justify-center">
+          <Button variant="ghost" size="icon" onClick={handleEditClick} className="h-8 w-8 sm:h-9 sm:w-9">
             <Pencil className="h-4 w-4" />
+            <span className="sr-only">Edit</span>
           </Button>
-          <Button variant="ghost" size="icon" onClick={handleDeleteClick} className="h-8 w-8">
+          <Button variant="ghost" size="icon" onClick={handleDeleteClick} className="h-8 w-8 sm:h-9 sm:w-9">
             <Trash2 className="h-4 w-4" />
+            <span className="sr-only">Delete</span>
           </Button>
         </div>
       </TableCell>

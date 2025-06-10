@@ -564,7 +564,9 @@ export const ProductPageComponent: FC<Props> = ({
                     "cursor-pointer hover:bg-gray-100 whitespace-nowrap",
                     sortField === "title" && "text-primary font-medium"
                   )}>
-                  Name {getSortIcon("title")}
+                  <span className="hidden sm:inline">Name</span>
+                  <span className="sm:hidden">Product</span>
+                  {getSortIcon("title")}
                 </TableHead>
                 <TableHead
                   onClick={() => {
@@ -591,15 +593,15 @@ export const ProductPageComponent: FC<Props> = ({
                     }
                   }}
                   className={cn(
-                    "cursor-pointer hover:bg-gray-100 whitespace-nowrap",
+                    "cursor-pointer hover:bg-gray-100 whitespace-nowrap hidden sm:table-cell",
                     sortField === "price" && "text-primary font-medium"
                   )}>
                   Price {getSortIcon("price")}
                 </TableHead>
                 <TableHead className="hidden md:table-cell whitespace-nowrap">Variants</TableHead>
                 <TableHead className="hidden sm:table-cell whitespace-nowrap">Max Qty</TableHead>
-                <TableHead className="whitespace-nowrap">Image</TableHead>
-                <TableHead className="whitespace-nowrap">Actions</TableHead>
+                <TableHead className="whitespace-nowrap text-center w-[80px] hidden sm:table-cell">Image</TableHead>
+                <TableHead className="whitespace-nowrap text-center w-[100px]">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
