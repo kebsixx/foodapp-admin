@@ -516,7 +516,7 @@ export default function PageComponent({ ordersWithProducts }: Props) {
                                 </div>
                                 <div className="col-span-2">
                                   <p className="text-gray-500">Address</p>
-                                  <p>{order.address || "-"}</p>
+                                  <p>{order.user?.address || "-"}</p>
                                 </div>
                                 <div>
                                   <p className="text-gray-500">Method</p>
@@ -594,9 +594,9 @@ export default function PageComponent({ ordersWithProducts }: Props) {
                                               <p className="font-medium">
                                                 {item.product?.title}
                                               </p>
-                                              {item.variant_name && (
+                                              {(item as any).variant_name && (
                                                 <p className="text-xs text-gray-500">
-                                                  {item.variant_name}
+                                                  {(item as any).variant_name}
                                                 </p>
                                               )}
                                             </div>
@@ -607,7 +607,7 @@ export default function PageComponent({ ordersWithProducts }: Props) {
                                         </TableCell>
                                         <TableCell className="text-right">
                                           Rp{" "}
-                                          {item.price?.toLocaleString("id-ID")}
+                                          {((item as any).price || 0).toLocaleString("id-ID")}
                                         </TableCell>
                                       </TableRow>
                                     ))}
@@ -623,7 +623,7 @@ export default function PageComponent({ ordersWithProducts }: Props) {
                                           .reduce(
                                             (sum, item) =>
                                               sum +
-                                              (item.price || 0) * item.quantity,
+                                              ((item as any).price || 0) * item.quantity,
                                             0
                                           )
                                           .toLocaleString("id-ID")}
