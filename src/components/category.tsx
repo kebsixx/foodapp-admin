@@ -29,33 +29,18 @@ import { CategoryWithProducts } from "@/app/admin/categories/categories.types";
 
 export const CategoryTableRow = ({
   category,
-  setCurrentCategory,
-  setIsCreateCategoryModalOpen,
-  deleteCategoryHandler,
+  onEdit,
+  onDelete,
 }: {
   category: CategoryWithProducts;
-  setCurrentCategory: (category: CreateCategorySchema | null) => void;
-  setIsCreateCategoryModalOpen: (isOpen: boolean) => void;
-  deleteCategoryHandler: (id: number) => Promise<void>;
+  onEdit: (category: CategoryWithProducts) => void;
+  onDelete: (id: number) => Promise<void>;
 }) => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isProductsDialogOpen, setIsProductsDialogOpen] = useState(false);
 
-  const handleEditClick = (category: CreateCategorySchema) => {
-    setCurrentCategory({
-      name: category.name,
-      imageUrl: category.imageUrl || "",
-      intent: "update",
-      slug: category.slug,
-    });
-    
-    setTimeout(() => {
-      setIsCreateCategoryModalOpen(true);
-    }, 0);
-  };
-
   const handleDelete = async () => {
-    await deleteCategoryHandler(category.id);
+    await onDelete(category.id);
     setIsDeleteDialogOpen(false);
   };
 
@@ -67,38 +52,39 @@ export const CategoryTableRow = ({
     setIsDeleteDialogOpen(open);
   };
 
+  // Default placeholder image
+  const placeholderImage = "/placeholder.jpg";
+  const imageUrl = category.imageUrl || placeholderImage;
+
   return (
     <>
       <TableRow>
-        <TableCell className="sm:table-cell">
-          <Image
-            alt="Product image"
-            className="aspect-square rounded-md object-cover"
-            height="64"
-            src={category.imageUrl}
-            width="64"
-          />
-        </TableCell>
         <TableCell className="font-medium">{category.name}</TableCell>
-        <TableCell className="md:table-cell">
-          {format(new Date(category.created_at), "yyyy-MM-dd")}
-        </TableCell>
-        <TableCell className="md:table-cell">
+        <TableCell>
           {category.products && category.products.length > 0 ? (
             <Button
               variant="link"
               onClick={() => setIsProductsDialogOpen(true)}
               className="p-0 h-auto">
-              {category.products
-                .slice(0, 4)
-                .map((product) => product.title)
-                .join(", ")}
+              {category.products.length} {category.products.length === 1 ? 'product' : 'products'}
             </Button>
           ) : (
-            "No products linked to this category"
+            "No products"
           )}
         </TableCell>
-        <TableCell>
+        <TableCell className="hidden md:table-cell">
+          {format(new Date(category.created_at), "yyyy-MM-dd")}
+        </TableCell>
+        <TableCell className="text-center">
+          <Image
+            alt="Category image"
+            className="aspect-square rounded-md object-cover inline-block"
+            height="48"
+            src={imageUrl}
+            width="48"
+          />
+        </TableCell>
+        <TableCell className="text-right">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button size="icon" variant="ghost">
@@ -108,13 +94,7 @@ export const CategoryTableRow = ({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[160px]">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() =>
-                  handleEditClick({
-                    ...category,
-                    intent: "update",
-                  })
-                }>
+              <DropdownMenuItem onClick={() => onEdit(category)}>
                 Edit
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setIsDeleteDialogOpen(true)}>
@@ -143,7 +123,7 @@ export const CategoryTableRow = ({
                     alt="Product image"
                     className="aspect-square rounded-md object-cover"
                     height="100"
-                    src={product.heroImage}
+                    src={product.heroImage || placeholderImage}
                     width="100"
                   />
                   <div className="flex flex-col space-y-1">

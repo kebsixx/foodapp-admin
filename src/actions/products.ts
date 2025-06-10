@@ -30,7 +30,7 @@ export const getProducts = async (): Promise<ProductsResponse> => {
     ];
     
     return !brokenPatterns.some(pattern => 
-      product.heroImage.toLowerCase().includes(pattern)
+      product.heroImage?.toLowerCase().includes(pattern)
     );
   });
   
@@ -54,13 +54,15 @@ export const getProductsWithCategories =
       
       // Check for common broken URL patterns
       const brokenPatterns = [
+        'adaptive-icon',
         'undefined',
         'null',
+        'localhost',
         'file://',
       ];
       
       return !brokenPatterns.some(pattern => 
-        product.heroImage.toLowerCase().includes(pattern)
+        product.heroImage?.toLowerCase().includes(pattern)
       );
     });
     

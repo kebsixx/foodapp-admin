@@ -71,109 +71,128 @@ const PageComponent = ({
   const [isLoading, setIsLoading] = useState(false);
 
   return (
-    <div className="flex-1 p-8 overflow-auto">
-      {isLoading && <div className="loading">Loading...</div>}
-      <div className="text-3xl font-bold mb-6">Dashboard Overview</div>
+    <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
+      <div className="container mx-auto px-2 sm:px-4">
+        {isLoading && <div className="loading">Loading...</div>}
+        <div className="flex flex-col gap-4 mb-6">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <h1 className="text-2xl font-bold">
+              Dashboard Overview
+            </h1>
+          </div>
+        </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Orders Chart */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Orders Over Time</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={monthlyOrders}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="orders" fill="#8884d8" />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Orders Chart */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Orders Over Time</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={monthlyOrders}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="orders" fill="#8884d8" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
 
-        {/* Products Chart */}
-        <ProductsDistributionChart categoryData={categoryData} />
+          {/* Products Chart */}
+          <ProductsDistributionChart categoryData={categoryData} />
 
-        {/* Category to Products Chart */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Products per Category</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer
-              config={chartConfig}
-              className="max-h-[300px] w-full">
-              <BarChart
-                accessibilityLayer
-                data={categoryData}
-                margin={{
-                  top: 20,
-                }}>
-                <CartesianGrid vertical={false} />
-                <XAxis
-                  dataKey="name"
-                  tickLine={false}
-                  tickMargin={10}
-                  axisLine={false}
-                  tickFormatter={(value) => value.slice(0, 5)} // Potong nama kategori menjadi 3 karakter
-                />
-                <ChartTooltip
-                  cursor={false}
-                  content={<ChartTooltipContent />}
-                />
-                <Bar dataKey="products" fill="var(--color-products)" radius={8}>
-                  <LabelList
-                    position="top"
-                    offset={12}
-                    className="fill-foreground"
-                    fontSize={12}
-                  />
-                </Bar>
-              </BarChart>
-            </ChartContainer>
-          </CardContent>
-        </Card>
+          {/* Category to Products Chart */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Products per Category</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px] w-full">
+                <ChartContainer
+                  config={chartConfig}
+                  className="h-full w-full">
+                  <BarChart
+                    accessibilityLayer
+                    data={categoryData}
+                    margin={{
+                      top: 20,
+                      right: 10,
+                      left: 10,
+                      bottom: 20,
+                    }}>
+                    <CartesianGrid vertical={false} />
+                    <XAxis
+                      dataKey="name"
+                      tickLine={false}
+                      tickMargin={10}
+                      axisLine={false}
+                      tickFormatter={(value) => value.slice(0, 5)} // Potong nama kategori menjadi 5 karakter
+                    />
+                    <ChartTooltip
+                      cursor={false}
+                      content={<ChartTooltipContent />}
+                    />
+                    <Bar dataKey="products" fill="var(--color-products)" radius={8}>
+                      <LabelList
+                        position="top"
+                        offset={12}
+                        className="fill-foreground"
+                        fontSize={12}
+                      />
+                    </Bar>
+                  </BarChart>
+                </ChartContainer>
+              </div>
+            </CardContent>
+          </Card>
 
-        {/* Latest Users */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Latest Users</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Date</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {latestUsers.map((user) => (
-                  <TableRow key={user.id}>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>
-                      {user.date
-                        ? format(
-                            new Date(user.date),
-                            "EEEE, dd MM yyyy HH:mm:ss",
-                            {
-                              locale: id,
-                            }
-                          )
-                        : "-"}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+          {/* Latest Users */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Latest Users</CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Email</TableHead>
+                      <TableHead className="hidden sm:table-cell">Date</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {latestUsers.map((user) => (
+                      <TableRow key={user.id}>
+                        <TableCell className="font-medium text-xs sm:text-sm">
+                          {user.email}
+                        </TableCell>
+                        <TableCell className="hidden sm:table-cell text-xs sm:text-sm">
+                          {user.date
+                            ? format(
+                                new Date(user.date),
+                                "dd/MM/yyyy HH:mm",
+                                {
+                                  locale: id,
+                                }
+                              )
+                            : "-"}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-    </div>
+    </main>
   );
 };
 
