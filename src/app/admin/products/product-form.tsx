@@ -249,22 +249,40 @@ export const ProductForm = ({
                       />
                     </div>
                   )}
-                  <CloudinaryUpload
-                    onSuccess={(result) => {
-                      form.setValue("heroImage", result.secure_url);
-                      form.setValue("heroImageUrls", {
-                        original: result.secure_url,
-                        display: getCloudinaryUrl(result.public_id, { width: 800 }),
-                        medium: getCloudinaryUrl(result.public_id, { width: 400 }),
-                        thumb: getCloudinaryUrl(result.public_id, { width: 200 }),
-                      });
-                    }}
-                    onError={(error) => {
-                      toast.error("Failed to upload image: " + error);
-                    }}
-                  />
+                  <div className="flex flex-col gap-2">
+                    <CloudinaryUpload
+                      onSuccess={(result) => {
+                        form.setValue("heroImage", result.secure_url);
+                        form.setValue("heroImageUrls", {
+                          original: result.secure_url,
+                          display: getCloudinaryUrl(result.public_id, { width: 800 }),
+                          medium: getCloudinaryUrl(result.public_id, { width: 400 }),
+                          thumb: getCloudinaryUrl(result.public_id, { width: 200 }),
+                        });
+                      }}
+                      onError={(error) => {
+                        toast.error("Failed to upload image: " + error);
+                      }}
+                    />
+                    {form.watch("heroImage") && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          form.setValue("heroImage", "");
+                          form.setValue("heroImageUrls", undefined);
+                        }}
+                      >
+                        Remove Image
+                      </Button>
+                    )}
+                  </div>
                 </div>
                 <FormMessage />
+                <p className="text-xs text-gray-500">
+                  If no image is provided, a default image will be used.
+                </p>
               </div>
 
               <div className="space-y-4">

@@ -111,9 +111,9 @@ export const ProductPageComponent: FC<Props> = ({
       variants,
     } = data;
 
-    // Validasi heroImage untuk create
-    if (intent === "create" && (!heroImage || heroImage.trim() === "")) {
-      toast.error("Product image is required");
+    // Validasi data sebelum create/update
+    if (!title || !category || !price || !maxQuantity) {
+      toast.error("Please fill in all required fields");
       setIsLoading(false);
       return;
     }
@@ -131,7 +131,7 @@ export const ProductPageComponent: FC<Props> = ({
           category: Number(category),
           price: Number(price),
           maxQuantity: Number(maxQuantity),
-          heroImage: heroImage!,
+          heroImage: heroImage || undefined, // Allow undefined heroImage
           heroImageUrls,
           variants: variants?.map((v) => ({
             id: v.id || crypto.randomUUID(),
@@ -142,13 +142,6 @@ export const ProductPageComponent: FC<Props> = ({
         });
         toast.success("Product created successfully");
       } else {
-        // Validasi data sebelum update
-        if (!title || !category || !price || !maxQuantity) {
-          toast.error("Please fill in all required fields");
-          setIsLoading(false);
-          return;
-        }
-
         await updateProduct({
           title,
           category: Number(category),

@@ -117,6 +117,9 @@ export const ProductTableRow = ({
     // Fallback ke heroImage jika diperlukan
     const legacyImage = product.heroImage;
 
+    // Default image jika tidak ada gambar valid
+    const defaultImage = "/favicon.jpg";
+
     // Validasi dan pilih URL terbaik
     const validUrls = [
       { url: thumb, priority: 1, type: 'thumb' },
@@ -127,15 +130,15 @@ export const ProductTableRow = ({
     ].filter(item => isValidUrl(item.url))
       .sort((a, b) => a.priority - b.priority);
 
-    // Jika tidak ada URL yang valid, return empty
+    // Jika tidak ada URL yang valid, gunakan default image
     if (validUrls.length === 0) {
-      console.error('No valid image URLs found for product:', product.title);
-      return { primary: '', fallback: '' };
+      console.log('Using default image for product:', product.title);
+      return { primary: defaultImage, fallback: defaultImage };
     }
 
     return {
-      primary: validUrls[0].url,
-      fallback: validUrls[1]?.url || validUrls[0].url
+      primary: validUrls[0].url || defaultImage,
+      fallback: validUrls[1]?.url || validUrls[0].url || defaultImage
     };
   };
 
@@ -183,37 +186,29 @@ export const ProductTableRow = ({
       </TableCell>
       <TableCell>{product.maxQuantity}</TableCell>
       <TableCell>
-        {imageUrls.primary ? (
-          <div className="relative w-10 h-10 rounded-md overflow-hidden">
-            <SafeImage
-              src={imageUrls.primary}
-              alt={product.title}
-              fill
-              className="object-cover"
-              sizes="40px"
-              fallbackSrc={imageUrls.fallback}
-              onError={(error) => {
-                // Hanya log error jika benar-benar gagal
-                if (!imageUrls.fallback) {
-                  console.error(
-                    "Image load error for product:",
-                    {
-                      title: product.title,
-                      primaryUrl: imageUrls.primary,
-                      fallbackUrl: imageUrls.fallback,
-                      heroImage: product.heroImage,
-                      heroImageUrls: product.heroImageUrls
-                    }
-                  );
+        <div className="relative w-10 h-10 rounded-md overflow-hidden">
+          <SafeImage
+            src={imageUrls.primary}
+            alt={product.title}
+            fill
+            className="object-cover"
+            sizes="40px"
+            fallbackSrc={imageUrls.fallback}
+            onError={(error) => {
+              // Log error jika benar-benar gagal
+              console.error(
+                "Image load error for product:",
+                {
+                  title: product.title,
+                  primaryUrl: imageUrls.primary,
+                  fallbackUrl: imageUrls.fallback,
+                  heroImage: product.heroImage,
+                  heroImageUrls: product.heroImageUrls
                 }
-              }}
-            />
-          </div>
-        ) : (
-          <div className="w-10 h-10 rounded-md bg-gray-100 flex items-center justify-center">
-            <span className="text-gray-400 text-xs">No image</span>
-          </div>
-        )}
+              );
+            }}
+          />
+        </div>
       </TableCell>
       <TableCell>
         <div className="flex gap-1">

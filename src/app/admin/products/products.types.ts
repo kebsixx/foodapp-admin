@@ -21,7 +21,7 @@ export type ProductBase = {
   slug: string;
   price: number | null;
   maxQuantity: number;
-  heroImage: string;
+  heroImage: string | null;
   heroImageUrls?: ProductImageUrls;
   category: number;
 };
@@ -36,7 +36,7 @@ export type ProductWithCategory = {
   slug: string;
   price: number | null;
   maxQuantity: number;
-  heroImage: string;
+  heroImage: string | null;
   heroImageUrls?: ProductImageUrls;
   created_at: string;
   category: {

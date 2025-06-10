@@ -41,7 +41,7 @@ export const createProductSchemaServer = z.object({
   price: z.number().positive({ message: "Price is required" }),
   maxQuantity: z.number().positive({ message: "Max quantity is required" }),
   category: z.number().positive({ message: "Category is required" }),
-  heroImage: z.string().url({ message: "Hero image is required" }),
+  heroImage: z.string().url({ message: "Hero image must be a valid URL" }).optional(),
   heroImageUrls: imageUrlsSchema,
   variants: z
     .array(

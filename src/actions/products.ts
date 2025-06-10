@@ -18,7 +18,7 @@ export const getProducts = async (): Promise<ProductsResponse> => {
   
   // Filter out products with obviously broken URLs
   const validProducts = (data || []).filter(product => {
-    if (!product.heroImage) return false;
+    if (!product.heroImage) return true; // Allow products without images
     
     // Check for common broken URL patterns
     const brokenPatterns = [
@@ -50,7 +50,7 @@ export const getProductsWithCategories =
     
     // Filter out products with obviously broken URLs
     const validProducts = (data || []).filter(product => {
-      if (!product.heroImage) return false;
+      if (!product.heroImage) return true; // Allow products without images
       
       // Check for common broken URL patterns
       const brokenPatterns = [
@@ -72,7 +72,7 @@ export const createProduct = async (product: {
   category: number;
   price: number;
   maxQuantity: number;
-  heroImage: string;
+  heroImage?: string;
   heroImageUrls?: {
     original?: string;
     display?: string;
@@ -86,18 +86,16 @@ export const createProduct = async (product: {
     available: boolean;
   }[];
 }) => {
-  if (!product.heroImage || product.heroImage.trim() === "") {
-    throw new Error("Hero image is required");
-  }
-
-  // Validate image URL - lebih longgar
-  try {
-    const url = new URL(product.heroImage);
-    if (!url.protocol.startsWith('http')) {
-      throw new Error("Invalid image URL protocol");
+  // Validate image URL if provided
+  if (product.heroImage && product.heroImage.trim() !== "") {
+    try {
+      const url = new URL(product.heroImage);
+      if (!url.protocol.startsWith('http')) {
+        throw new Error("Invalid image URL protocol");
+      }
+    } catch {
+      throw new Error("Invalid image URL");
     }
-  } catch {
-    throw new Error("Invalid image URL");
   }
 
   const supabase = createClient();
@@ -108,7 +106,7 @@ export const createProduct = async (product: {
       category: product.category,
       price: product.price,
       maxQuantity: product.maxQuantity,
-      heroImage: product.heroImage,
+      heroImage: product.heroImage || null,
       heroImageUrls: product.heroImageUrls || null,
       slug: slugify(product.title, { lower: true }),
       variants: product.variants 
