@@ -29,13 +29,13 @@ import { Category } from "@/app/admin/categories/categories.types";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Plus, Trash } from "lucide-react";
-import { FormProductValues } from "@/app/admin/products/products.types";
-import { ImageUploader } from "@/components/ui/ImageUploader";
-import { CloudinaryUpload } from "@/components/ui/CloudinaryUpload";
-import { getCloudinaryUrl } from "@/lib/cloudinary";
+import { getPublicIdFromUrl, getCloudinaryUrl } from "@/lib/cloudinary";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { toast } from "react-hot-toast";
 import { Label } from "@/components/ui/label";
+import { ImageUploader } from "@/components/ui/ImageUploader";
+import { CloudinaryUpload } from "@/components/ui/CloudinaryUpload";
+import { FormProductValues } from "@/app/admin/products/products.types";
 
 type Props = {
   form: UseFormReturn<FormProductValues>;
@@ -45,6 +45,8 @@ type Props = {
   isProductModalOpen: boolean;
   defaultValues: FormProductValues | null;
   name: string;
+  isLoading: boolean;
+  setIsLoading: Dispatch<SetStateAction<boolean>>;
 };
 
 export const ProductForm = ({
@@ -54,13 +56,50 @@ export const ProductForm = ({
   setIsProductModalOpen,
   isProductModalOpen,
   defaultValues,
+  isLoading,
+  setIsLoading,
 }: Props) => {
   const isSubmitting = form.formState.isSubmitting;
 
   useEffect(() => {
     if (defaultValues) {
+      console.log('Loading default values:', defaultValues);
+      
+      // Make sure we have proper heroImageUrls structure
+      // Note: The database column is lowercase 'heroimageurls'
+      let heroImageUrls = defaultValues.heroImageUrls || defaultValues.heroimageurls;
+      
+      // If we have a heroImage but no heroImageUrls, generate them
+      if (defaultValues.heroImage && !heroImageUrls) {
+        try {
+          // Extract public ID if it's a Cloudinary URL
+          const publicId = getPublicIdFromUrl(defaultValues.heroImage);
+          
+          if (publicId) {
+            console.log('Generated heroImageUrls from publicId:', publicId);
+            heroImageUrls = {
+              original: defaultValues.heroImage,
+              display: getCloudinaryUrl(publicId, { width: 800 }),
+              medium: getCloudinaryUrl(publicId, { width: 400 }),
+              thumb: getCloudinaryUrl(publicId, { width: 200 }),
+            };
+          } else {
+            // Just use the heroImage for all URLs
+            heroImageUrls = {
+              original: defaultValues.heroImage,
+              display: defaultValues.heroImage,
+              medium: defaultValues.heroImage,
+              thumb: defaultValues.heroImage,
+            };
+          }
+        } catch (error) {
+          console.error('Error generating heroImageUrls:', error);
+        }
+      }
+      
       form.reset({
         ...defaultValues,
+        heroImageUrls,
         variants:
           defaultValues.variants?.map((v) => ({
             id: v.id || crypto.randomUUID(),
@@ -241,7 +280,7 @@ export const ProductForm = ({
                   {form.watch("heroImage") && (
                     <div className="relative w-full sm:w-20 h-40 sm:h-20 rounded-md overflow-hidden">
                       <SafeImage
-                        src={form.watch("heroImage")}
+                        src={form.watch("heroImage") || ""}
                         alt="Product preview"
                         fill
                         className="object-cover"
@@ -252,12 +291,24 @@ export const ProductForm = ({
                   <div className="flex flex-col gap-2 w-full sm:w-auto">
                     <CloudinaryUpload
                       onSuccess={(result) => {
-                        form.setValue("heroImage", result.secure_url);
+                        // Ensure URLs are properly trimmed
+                        const secureUrl = result.secure_url.trim();
+                        const publicId = result.public_id.trim();
+                        
+                        console.log('CloudinaryUpload success:', { 
+                          secureUrl, 
+                          publicId,
+                          width: result.width,
+                          height: result.height 
+                        });
+                        
+                        // Set the values in the form
+                        form.setValue("heroImage", secureUrl);
                         form.setValue("heroImageUrls", {
-                          original: result.secure_url,
-                          display: getCloudinaryUrl(result.public_id, { width: 800 }),
-                          medium: getCloudinaryUrl(result.public_id, { width: 400 }),
-                          thumb: getCloudinaryUrl(result.public_id, { width: 200 }),
+                          original: secureUrl,
+                          display: getCloudinaryUrl(publicId, { width: 800 }),
+                          medium: getCloudinaryUrl(publicId, { width: 400 }),
+                          thumb: getCloudinaryUrl(publicId, { width: 200 }),
                         });
                       }}
                       onError={(error) => {

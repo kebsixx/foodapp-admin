@@ -2,6 +2,7 @@ import { CloudinaryTest } from '@/components/ui/CloudinaryTest';
 import { checkCloudinaryConfig } from '@/lib/check-cloudinary';
 
 export default function CloudinaryTestPage() {
+  // Server component can't use client hooks, so we'll pass the config as props
   const cloudinaryConfig = checkCloudinaryConfig();
   
   return (

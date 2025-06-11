@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useRef } from 'react';
 import { Button } from './button';
 import { Loader2, Upload } from 'lucide-react';
@@ -76,9 +78,13 @@ export const CloudinaryUpload = ({
       setUploadProgress(100);
       toast.success('Upload successful!', { id: 'upload-image' });
       
+      // Ensure URLs are properly trimmed
+      const secureUrl = result.secure_url.trim();
+      const publicId = result.public_id.trim();
+      
       onSuccess({
-        public_id: result.public_id,
-        secure_url: result.secure_url,
+        public_id: publicId,
+        secure_url: secureUrl,
         width: result.width,
         height: result.height,
       });

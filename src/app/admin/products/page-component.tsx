@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 import {
   FormProductValues,
@@ -62,6 +63,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { getPublicIdFromUrl, getCloudinaryUrl } from "@/lib/cloudinary";
 
 type Props = {
   categories: Category[];
@@ -105,8 +107,62 @@ export const ProductPageComponent: FC<Props> = ({
 
   const router = useRouter();
 
+  // Helper function to clean up form data before submission
+  const cleanupFormData = (data: FormProductValues): FormProductValues => {
+    // Create a copy of the data
+    const cleanData = { ...data };
+    
+    // Clean up heroImage if present
+    if (cleanData.heroImage) {
+      cleanData.heroImage = cleanData.heroImage.trim();
+      
+      // Log the cleaned URL
+      console.log('Cleaned heroImage URL:', cleanData.heroImage);
+      
+      // If heroImage exists but heroImageUrls doesn't, try to generate it
+      if (cleanData.heroImage && !cleanData.heroImageUrls) {
+        try {
+          // Extract public ID if it's a Cloudinary URL
+          const publicId = getPublicIdFromUrl(cleanData.heroImage);
+          
+          if (publicId) {
+            console.log('Generated heroImageUrls from publicId:', publicId);
+            cleanData.heroImageUrls = {
+              original: cleanData.heroImage,
+              display: getCloudinaryUrl(publicId, { width: 800 }),
+              medium: getCloudinaryUrl(publicId, { width: 400 }),
+              thumb: getCloudinaryUrl(publicId, { width: 200 }),
+            };
+          }
+        } catch (error) {
+          console.error('Error generating heroImageUrls:', error);
+        }
+      }
+    }
+    
+    // Clean up heroImageUrls if present
+    if (cleanData.heroImageUrls) {
+      const urls = cleanData.heroImageUrls;
+      
+      // Trim all URLs in the object
+      if (urls.original) urls.original = urls.original.trim();
+      if (urls.display) urls.display = urls.display.trim();
+      if (urls.medium) urls.medium = urls.medium.trim();
+      if (urls.thumb) urls.thumb = urls.thumb.trim();
+      
+      // Log the cleaned URLs
+      console.log('Cleaned heroImageUrls:', urls);
+    }
+    
+    return cleanData;
+  };
+
   const productCreateUpdateHandler = async (data: FormProductValues) => {
     setIsLoading(true);
+    
+    // Clean up the form data
+    const cleanData = cleanupFormData(data);
+    
     const {
       title,
       category,
@@ -117,7 +173,7 @@ export const ProductPageComponent: FC<Props> = ({
       slug,
       intent = "create",
       variants,
-    } = data;
+    } = cleanData;
 
     // Validasi data sebelum create/update
     if (!title || !category || !price || !maxQuantity) {
@@ -465,15 +521,17 @@ export const ProductPageComponent: FC<Props> = ({
     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
       <div className="container mx-auto px-2 sm:px-4">
         <div className="flex flex-col gap-4 mb-6">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <h1 className="text-2xl font-bold">
-            Products Management
-          </h1>
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-xl font-semibold text-foreground">
+              Products
+            </h1>
 
-            <Button onClick={handleAddProduct} className="ml-auto">
-              <PlusIcon className="h-4 w-4 sm:mr-2" />
-              <span className="hidden sm:inline">Add Product</span>
-            </Button>
+            <div className="flex gap-2">
+              <Button onClick={handleAddProduct}>
+                <PlusIcon className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Add Product</span>
+              </Button>
+            </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
@@ -720,10 +778,12 @@ export const ProductPageComponent: FC<Props> = ({
           form={form}
           onSubmit={productCreateUpdateHandler}
           categories={categories}
-          isProductModalOpen={isProductModalOpen}
           setIsProductModalOpen={setIsProductModalOpen}
+          isProductModalOpen={isProductModalOpen}
           defaultValues={currentProduct}
-          name={""}
+          name="product"
+          isLoading={isLoading}
+          setIsLoading={setIsLoading}
         />
 
         <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>

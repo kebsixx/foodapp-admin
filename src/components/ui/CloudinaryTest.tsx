@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from 'react';
 import { Button } from './button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './card';

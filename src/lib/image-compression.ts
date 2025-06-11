@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Utility for compressing images before uploading
  */

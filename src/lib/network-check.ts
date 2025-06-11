@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Utility for checking network connectivity
  */

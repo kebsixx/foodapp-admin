@@ -59,6 +59,12 @@ export const ProductTableRow = ({
       slug: product.slug,
       heroImage: product.heroImage ?? "",
       heroImageUrls: product.heroImageUrls,
+      variants: product.variants?.map(v => ({
+        id: v.id || crypto.randomUUID(),
+        name: v.name,
+        price: v.price.toString(),
+        available: v.available,
+      })) || [],
       intent: "update",
     });
     setIsDeleteModalOpen(true);

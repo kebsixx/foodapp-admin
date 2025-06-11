@@ -1,3 +1,5 @@
+"use client";
+
 import { CldUploadWidget } from 'next-cloudinary';
 
 export const cloudinaryConfig = {
@@ -111,36 +113,55 @@ export const getCloudinaryUrl = (publicId: string, options: {
   format?: 'auto' | 'webp' | 'jpg' | 'png';
   fetchFormat?: 'auto' | 'webp' | 'jpg' | 'png';
 } = {}) => {
-  const { 
-    width, 
-    height, 
-    crop = 'fill', 
-    quality = 80,
-    format = 'auto',
-    fetchFormat = 'auto'
-  } = options;
+  try {
+    // Validate publicId
+    if (!publicId || typeof publicId !== 'string') {
+      console.error('Invalid publicId provided to getCloudinaryUrl:', publicId);
+      return '';
+    }
+    
+    const { 
+      width, 
+      height, 
+      crop = 'fill', 
+      quality = 80,
+      format = 'auto',
+      fetchFormat = 'auto'
+    } = options;
 
-  const transformations = [
-    crop && `c_${crop}`,
-    width && `w_${width}`,
-    height && `h_${height}`,
-    quality && `q_${quality}`,
-    format && `f_${format}`,
-    fetchFormat && `fl_fetch_format:${fetchFormat}`,
-    'fl_progressive',
-    'fl_force_strip',
-    'dpr_auto',
-    'fl_attachment:inline',
-  ].filter(Boolean).join(',');
+    const transformations = [
+      crop && `c_${crop}`,
+      width && `w_${width}`,
+      height && `h_${height}`,
+      quality && `q_${quality}`,
+      format && `f_${format}`,
+      fetchFormat && `fl_fetch_format:${fetchFormat}`,
+      'fl_progressive',
+      'fl_force_strip',
+      'dpr_auto',
+      'fl_attachment:inline',
+    ].filter(Boolean).join(',');
 
-  // Ensure publicId doesn't have any leading/trailing spaces
-  const cleanPublicId = publicId.trim();
-  
-  // Construct the URL with proper encoding
-  const baseUrl = `https://res.cloudinary.com/${cloudinaryConfig.cloudName}/image/upload`;
-  const transformationPath = transformations ? `/${transformations}` : '';
-  
-  return `${baseUrl}${transformationPath}/${cleanPublicId}`;
+    // Ensure publicId doesn't have any leading/trailing spaces
+    const cleanPublicId = publicId.trim();
+    
+    // Validate cloudName
+    if (!cloudinaryConfig.cloudName) {
+      console.error('Missing Cloudinary cloud name in configuration');
+      return '';
+    }
+    
+    // Construct the URL with proper encoding
+    const baseUrl = `https://res.cloudinary.com/${cloudinaryConfig.cloudName}/image/upload`;
+    const transformationPath = transformations ? `/${transformations}` : '';
+    
+    const finalUrl = `${baseUrl}${transformationPath}/${cleanPublicId}`;
+    
+    return finalUrl;
+  } catch (error) {
+    console.error('Error generating Cloudinary URL:', error, 'for publicId:', publicId);
+    return '';
+  }
 };
 
 // Helper function to get optimized image URLs for different sizes
@@ -172,26 +193,84 @@ export const getOptimizedImageUrls = (publicId: string) => {
   };
 };
 
-// Fungsi untuk migrasi gambar dari ImgBB ke Cloudinary
-export const migrateFromImgBB = async (imgbbUrl: string): Promise<CloudinaryUploadResult> => {
+// Fungsi untuk migrasi gambar dari URL eksternal ke Cloudinary
+export const migrateImageToCloudinary = async (imageUrl: string): Promise<CloudinaryUploadResult> => {
   try {
-    // Download gambar dari ImgBB
-    const response = await fetch(imgbbUrl);
-    if (!response.ok) {
-      throw new Error('Failed to download image from ImgBB');
+    console.log(`Starting migration of image: ${imageUrl}`);
+    
+    // Jika sudah URL Cloudinary, tidak perlu migrasi
+    if (imageUrl.includes('res.cloudinary.com')) {
+      console.log('URL already from Cloudinary, no migration needed');
+      throw new Error('URL already from Cloudinary, no migration needed');
     }
-
+    
+    // Cek apakah URL valid
+    try {
+      new URL(imageUrl);
+    } catch (error) {
+      console.error('Invalid URL format:', imageUrl);
+      throw new Error('Invalid URL format');
+    }
+    
+    // Tambahkan header untuk menghindari CORS issues
+    const headers = new Headers();
+    headers.append('Accept', 'image/*');
+    
+    // Download gambar dari URL
+    console.log('Downloading image from URL...');
+    const response = await fetch(imageUrl, { 
+      headers,
+      mode: 'cors',
+      cache: 'no-cache',
+    });
+    
+    if (!response.ok) {
+      console.error(`Failed to download image: ${response.status} ${response.statusText}`);
+      throw new Error(`Failed to download image: ${response.status} ${response.statusText}`);
+    }
+    
+    // Cek content type
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.startsWith('image/')) {
+      console.error(`Invalid content type: ${contentType}`);
+      throw new Error(`Invalid content type: ${contentType}`);
+    }
+    
     // Convert ke blob
     const blob = await response.blob();
+    console.log(`Downloaded image: ${blob.size} bytes, type: ${blob.type}`);
+    
+    // Jika blob kosong atau terlalu kecil, kemungkinan error
+    if (blob.size < 100) {
+      console.error('Downloaded image is too small or empty');
+      throw new Error('Downloaded image is too small or empty');
+    }
+    
+    // Extract filename from URL
+    let filename = 'migrated-image';
+    try {
+      const urlPath = new URL(imageUrl).pathname;
+      const pathSegments = urlPath.split('/');
+      const lastSegment = pathSegments[pathSegments.length - 1];
+      if (lastSegment && lastSegment.includes('.')) {
+        filename = lastSegment;
+      }
+    } catch (e) {
+      // Fallback to default name
+    }
     
     // Convert ke File
-    const file = new File([blob], 'migrated-image.jpg', { type: blob.type });
-
-    // Upload ke Cloudinary
-    return await uploadToCloudinary(file);
+    const file = new File([blob], filename, { type: blob.type });
+    
+    // Upload ke Cloudinary menggunakan smart upload
+    console.log('Uploading to Cloudinary...');
+    const result = await smartUploadToCloudinary(file);
+    
+    console.log('Migration successful:', result);
+    return result;
   } catch (error) {
     console.error('Migration error:', error);
-    throw new Error('Failed to migrate image to Cloudinary');
+    throw new Error(`Failed to migrate image: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
 
@@ -344,5 +423,105 @@ export const smartUploadToCloudinary = async (file: File): Promise<CloudinaryUpl
     return uploadToCloudinaryViaServer(file);
   } else {
     return uploadToCloudinary(file);
+  }
+};
+
+// Helper function to validate Cloudinary URLs
+export const isValidCloudinaryUrl = (url: string): boolean => {
+  if (!url || typeof url !== 'string') {
+    return false;
+  }
+  
+  try {
+    // Trim the URL
+    const trimmedUrl = url.trim();
+    
+    // Parse the URL
+    const parsedUrl = new URL(trimmedUrl);
+    
+    // Check if it's a Cloudinary URL
+    const isCloudinaryUrl = parsedUrl.hostname === 'res.cloudinary.com';
+    
+    // Check if it has a valid protocol
+    const hasValidProtocol = parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:';
+    
+    return isCloudinaryUrl && hasValidProtocol;
+  } catch (error) {
+    console.error('Error validating Cloudinary URL:', error, 'for URL:', url);
+    return false;
+  }
+};
+
+// Helper function to validate any image URL
+export const isValidImageUrl = (url: string): boolean => {
+  if (!url || typeof url !== 'string') {
+    console.error('Invalid URL: URL is empty or not a string');
+    return false;
+  }
+  
+  // Log the URL being validated
+  console.log('Validating URL:', url);
+  
+  try {
+    // Trim the URL
+    const trimmedUrl = url.trim();
+    
+    // Parse the URL
+    const parsedUrl = new URL(trimmedUrl);
+    
+    // Check if it has a valid protocol
+    const hasValidProtocol = parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:';
+    
+    if (!hasValidProtocol) {
+      console.error('Invalid URL protocol:', parsedUrl.protocol);
+      return false;
+    }
+    
+    // Check if it's from a known image hosting service
+    const knownImageHosts = [
+      'res.cloudinary.com',
+      'i.ibb.co',
+      'ibb.co',
+      'images.unsplash.com',
+      'img.youtube.com',
+      'i.imgur.com',
+      'imgur.com',
+      'localhost',
+      'ftcctrtnvcytcuuljjik.supabase.co'
+    ];
+    
+    const isKnownHost = knownImageHosts.includes(parsedUrl.hostname);
+    
+    // Check if it has a common image extension
+    const path = parsedUrl.pathname.toLowerCase();
+    const hasImageExtension = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.avif'].some(ext => 
+      path.endsWith(ext)
+    );
+    
+    // For Cloudinary URLs, they don't always have an extension
+    const isCloudinaryUrl = parsedUrl.hostname === 'res.cloudinary.com';
+    
+    // Log validation details
+    console.log('URL validation details:', {
+      url: trimmedUrl,
+      protocol: parsedUrl.protocol,
+      hostname: parsedUrl.hostname,
+      pathname: parsedUrl.pathname,
+      isKnownHost,
+      hasImageExtension,
+      isCloudinaryUrl
+    });
+    
+    // Always accept Cloudinary URLs as they're our primary image host
+    if (isCloudinaryUrl) {
+      console.log('Accepting Cloudinary URL:', trimmedUrl);
+      return true;
+    }
+    
+    // Either it should have an image extension or be from a known host
+    return hasValidProtocol && (hasImageExtension || isKnownHost);
+  } catch (error) {
+    console.error('Error validating image URL:', error, 'for URL:', url);
+    return false;
   }
 };

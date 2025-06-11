@@ -58,9 +58,20 @@ export type FormProductValues = {
   category: string;
   price: string;
   maxQuantity: string;
-  heroImage: string;
-  heroImageUrls?: ProductImageUrls;
-  variants?: {
+  heroImage?: string;
+  heroImageUrls?: {
+    original?: string;
+    display?: string;
+    medium?: string;
+    thumb?: string;
+  };
+  heroimageurls?: {
+    original?: string;
+    display?: string;
+    medium?: string;
+    thumb?: string;
+  };
+  variants: {
     id: string;
     name: string;
     price: string;
