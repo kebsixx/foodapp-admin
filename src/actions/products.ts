@@ -7,7 +7,52 @@ import {
   UpdateProductSchema,
 } from "@/app/admin/products/products.types";
 import { ProductsResponse } from "@/app/products.types";
-import { deleteFromCloudinary, getPublicIdFromUrl, isValidImageUrl } from "@/lib/cloudinary";
+import { isValidImageUrl } from "@/lib/cloudinary";
+
+// Server-side function to delete an image from Cloudinary
+const deleteFromCloudinaryServer = async (publicId: string): Promise<void> => {
+  try {
+    const timestamp = Math.round(new Date().getTime() / 1000);
+    
+    // Generate signature
+    const generateSignature = async (publicId: string, timestamp: number): Promise<string> => {
+      const message = `public_id=${publicId}&timestamp=${timestamp}${process.env.CLOUDINARY_API_SECRET}`;
+      const encoder = new TextEncoder();
+      const data = encoder.encode(message);
+      const hashBuffer = await crypto.subtle.digest('SHA-1', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    };
+    
+    const signature = await generateSignature(publicId, timestamp);
+    
+    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+    const apiKey = process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY;
+
+    const response = await fetch(
+      `https://api.cloudinary.com/v1_1/${cloudName}/image/destroy`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          public_id: publicId,
+          api_key: apiKey,
+          timestamp: timestamp,
+          signature: signature,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to delete image from Cloudinary');
+    }
+  } catch (error) {
+    console.error('Error deleting from Cloudinary:', error);
+    throw new Error('Failed to delete image from Cloudinary');
+  }
+};
 
 export const getProducts = async (): Promise<ProductsResponse> => {
   const supabase = createClient();
@@ -48,25 +93,7 @@ export const getProductsWithCategories =
       throw new Error(`Error Fetching products with categories: ${error.message}`);
     }
     
-    // Filter out products with obviously broken URLs
-    const validProducts = (data || []).filter(product => {
-      if (!product.heroImage) return true; // Allow products without images
-      
-      // Check for common broken URL patterns
-      const brokenPatterns = [
-        'adaptive-icon',
-        'undefined',
-        'null',
-        'localhost',
-        'file://',
-      ];
-      
-      return !brokenPatterns.some(pattern => 
-        product.heroImage?.toLowerCase().includes(pattern)
-      );
-    });
-    
-    return validProducts;
+    return data;  
   };
 
 export const createProduct = async (product: {
@@ -92,7 +119,7 @@ export const createProduct = async (product: {
   if (product.heroImage && product.heroImage.trim() !== "") {
     try {
       // Log the image URL for debugging
-      console.log('Validating image URL for new product:', product.heroImage);
+      // console.log('Validating image URL for new product:', product.heroImage);
       
       // Make sure we're working with a trimmed URL
       const trimmedUrl = product.heroImage.trim();
@@ -102,7 +129,7 @@ export const createProduct = async (product: {
       
       // Always accept Cloudinary URLs
       if (isCloudinaryUrl) {
-        console.log('URL is a Cloudinary URL, accepting it:', trimmedUrl);
+        // console.log('URL is a Cloudinary URL, accepting it:', trimmedUrl);
         product.heroImage = trimmedUrl;
       }
       // Use the validation function for other URLs
@@ -112,8 +139,6 @@ export const createProduct = async (product: {
       else {
         // Update the product object with the trimmed URL
         product.heroImage = trimmedUrl;
-        
-        console.log('Image URL validated successfully:', trimmedUrl);
       }
     } catch (urlError) {
       console.error('URL validation error:', urlError, 'for URL:', product.heroImage);
@@ -122,6 +147,19 @@ export const createProduct = async (product: {
   }
 
   const supabase = createClient();
+  
+  // Use default image if no image is provided
+  const defaultImage = "https://res.cloudinary.com/dgg4mki57/image/upload/v1749646662/ceritasenja_k2jnf1.jpg";
+  const heroImage = product.heroImage || defaultImage;
+  
+  // Create default heroImageUrls if using default image
+  const heroImageUrls = product.heroImageUrls || (heroImage === defaultImage ? {
+    original: defaultImage,
+    display: defaultImage,
+    medium: defaultImage,
+    thumb: defaultImage,
+  } : null);
+  
   const { data, error } = await supabase
     .from("product")
     .insert([{
@@ -129,8 +167,8 @@ export const createProduct = async (product: {
       category: product.category,
       price: product.price,
       maxQuantity: product.maxQuantity,
-      heroImage: product.heroImage || null,
-      heroImageUrls: product.heroImageUrls || null,
+      heroImage: heroImage,
+      heroimageurls: heroImageUrls, // Using the correct lowercase column name for the database
       slug: slugify(product.title, { lower: true }),
       variants: product.variants 
         ? product.variants.map(v => ({
@@ -190,103 +228,112 @@ export const updateProduct = async (product: {
     // Cast currentProduct to the correct type
     const typedCurrentProduct = currentProduct as CurrentProduct;
 
-    console.log('Current product data:', {
-      slug: product.slug,
-      currentImage: typedCurrentProduct?.heroImage,
-      newImage: product.heroImage,
-      newImageUrls: product.heroImageUrls
-    });
+    const variants = product.variants 
+      ? product.variants.map(v => ({
+          ...v,
+          available: v.available ?? true
+        }))
+      : null;
 
-  const variants = product.variants 
-    ? product.variants.map(v => ({
-        ...v,
-        available: v.available ?? true
-      }))
-    : null;
+    const updateData: any = {
+      title: product.title,
+      category: product.category,
+      price: product.price,
+      maxQuantity: product.maxQuantity,
+      variants,
+    };
 
-  const updateData: any = {
-    title: product.title,
-    category: product.category,
-    price: product.price,
-    maxQuantity: product.maxQuantity,
-    variants,
-  };
-
-  // Only update heroImage if provided and valid
-  if (product.heroImage && product.heroImage.trim() !== "") {
-    try {
-        // Log the image URL for debugging
-        console.log('Validating image URL:', product.heroImage);
-        
-        // Make sure we're working with a trimmed URL
-        const trimmedUrl = product.heroImage.trim();
-        
-        // Use the validation function but be more lenient for updates
-        // If the URL hasn't changed from what's already in the database, allow it
-        const urlHasntChanged = trimmedUrl === typedCurrentProduct?.heroImage?.trim();
-        
-        // Check if it's a Cloudinary URL
-        const isCloudinaryUrl = trimmedUrl.includes('res.cloudinary.com');
-        
-        if (urlHasntChanged) {
-          console.log('URL is unchanged from database, accepting it');
-          updateData.heroImage = trimmedUrl;
+    // Only update heroImage if provided and valid
+    if (product.heroImage && product.heroImage.trim() !== "") {
+      try {
+          // Log the image URL for debugging
+          // console.log('Validating image URL:', product.heroImage);
           
-          // Also update heroImageUrls if provided
-          if (product.heroImageUrls) {
-            updateData.heroimageurls = product.heroImageUrls;
-          }
-        }
-        else if (isCloudinaryUrl) {
-          // Always accept Cloudinary URLs
-          console.log('URL is a Cloudinary URL, accepting it:', trimmedUrl);
-          updateData.heroImage = trimmedUrl;
+          // Make sure we're working with a trimmed URL
+          const trimmedUrl = product.heroImage.trim();
           
-          // Also update heroImageUrls if provided
-          if (product.heroImageUrls) {
-            updateData.heroimageurls = product.heroImageUrls;
-          }
-        }
-        else if (isValidImageUrl(trimmedUrl)) {
-          // Log the validation result
-          console.log('URL validation successful for:', trimmedUrl);
+          // Use the validation function but be more lenient for updates
+          // If the URL hasn't changed from what's already in the database, allow it
+          const urlHasntChanged = trimmedUrl === typedCurrentProduct?.heroImage?.trim();
           
-          // Set the trimmed URL in the update data
-          updateData.heroImage = trimmedUrl;
+          // Check if it's a Cloudinary URL
+          const isCloudinaryUrl = trimmedUrl.includes('res.cloudinary.com');
           
-          // Also update heroImageUrls if provided
-      if (product.heroImageUrls) {
-            updateData.heroimageurls = product.heroImageUrls;
-          }
-        
-          // Delete old image if it exists and is from Cloudinary
-          if (typedCurrentProduct?.heroImage) {
-            const oldPublicId = getPublicIdFromUrl(typedCurrentProduct.heroImage);
-            if (oldPublicId) {
-              try {
-                await deleteFromCloudinary(oldPublicId);
-              } catch (deleteError) {
-                console.error('Error deleting old image:', deleteError);
-                // Continue with update even if image deletion fails
-              }
+          if (urlHasntChanged) {
+            updateData.heroImage = trimmedUrl;
+            
+            // Also update heroImageUrls if provided
+            if (product.heroImageUrls) {
+              updateData.heroimageurls = product.heroImageUrls;
             }
           }
-        } else {
-          throw new Error("Invalid image URL format");
+          else if (isCloudinaryUrl) {
+            // Always accept Cloudinary URLs
+            updateData.heroImage = trimmedUrl;
+            
+            // Also update heroImageUrls if provided
+            if (product.heroImageUrls) {
+              updateData.heroimageurls = product.heroImageUrls;
+            }
+          }
+          else if (isValidImageUrl(trimmedUrl)) {
+            
+            // Set the trimmed URL in the update data
+            updateData.heroImage = trimmedUrl;
+            
+            // Also update heroImageUrls if provided
+        if (product.heroImageUrls) {
+              updateData.heroimageurls = product.heroImageUrls;
+            }
+          
+            // Delete old image if it exists and is from Cloudinary
+            if (typedCurrentProduct?.heroImage) {
+              // Extract public ID manually
+              const extractPublicId = (url: string): string | null => {
+                try {
+                  const parsedUrl = new URL(url);
+                  if (parsedUrl.hostname === 'res.cloudinary.com') {
+                    const pathParts = parsedUrl.pathname.split('/');
+                    const uploadIndex = pathParts.indexOf('upload');
+                    if (uploadIndex !== -1) {
+                      // Get everything after 'upload' and before any transformations
+                      const publicIdWithExtension = pathParts.slice(uploadIndex + 2).join('/');
+                      // Remove file extension
+                      return publicIdWithExtension.replace(/\.[^/.]+$/, '');
+                    }
+                  }
+                  return null;
+                } catch {
+                  return null;
+                }
+              };
+              
+              const oldPublicId = extractPublicId(typedCurrentProduct.heroImage);
+              if (oldPublicId) {
+                try {
+                  await deleteFromCloudinaryServer(oldPublicId);
+                } catch (deleteError) {
+                  console.error('Error deleting old image:', deleteError);
+                  // Continue with update even if image deletion fails
+                }
+              }
+            }
+          } else {
+            throw new Error("Invalid image URL format");
+        }
+        } catch (urlError) {
+          console.error('URL validation error:', urlError, 'for URL:', product.heroImage);
+          throw new Error("Invalid image URL. Please make sure the URL is correct and starts with http:// or https://");
       }
-      } catch (urlError) {
-        console.error('URL validation error:', urlError, 'for URL:', product.heroImage);
-        throw new Error("Invalid image URL. Please make sure the URL is correct and starts with http:// or https://");
     }
-  }
 
-    console.log('Final update data:', updateData);
+    // console.log('Final update data:', updateData);
 
-  const { data, error } = await supabase
-    .from("product")
-    .update(updateData)
-    .eq("slug", product.slug)
-    .select();
+    const { data, error } = await supabase
+      .from("product")
+      .update(updateData)
+      .eq("slug", product.slug)
+      .select();
 
     if (error) {
       throw new Error(`Error updating product: ${error.message}`);
@@ -306,16 +353,36 @@ export const updateProduct = async (product: {
 export const deleteProduct = async (slug: string, heroImage?: string) => {
   const supabase = createClient();
   
-  // Delete image from Cloudinary if it exists
-  if (heroImage) {
-    const publicId = getPublicIdFromUrl(heroImage);
-    if (publicId) {
-      try {
-        await deleteFromCloudinary(publicId);
-      } catch (error) {
-        console.error('Error deleting image from Cloudinary:', error);
-        // Continue with product deletion even if image deletion fails
+  // Delete image from Cloudinary if it exists and it's a Cloudinary URL
+  if (heroImage && heroImage.includes('res.cloudinary.com')) {
+    try {
+      // Extract public ID manually instead of using getPublicIdFromUrl
+      const extractPublicId = (url: string): string | null => {
+        try {
+          const parsedUrl = new URL(url);
+          if (parsedUrl.hostname === 'res.cloudinary.com') {
+            const pathParts = parsedUrl.pathname.split('/');
+            const uploadIndex = pathParts.indexOf('upload');
+            if (uploadIndex !== -1) {
+              // Get everything after 'upload' and before any transformations
+              const publicIdWithExtension = pathParts.slice(uploadIndex + 2).join('/');
+              // Remove file extension
+              return publicIdWithExtension.replace(/\.[^/.]+$/, '');
+            }
+          }
+          return null;
+        } catch {
+          return null;
+        }
+      };
+
+      const publicId = extractPublicId(heroImage);
+      if (publicId) {
+        await deleteFromCloudinaryServer(publicId);
       }
+    } catch (error) {
+      console.error('Error deleting image from Cloudinary:', error);
+      // Continue with product deletion even if image deletion fails
     }
   }
 

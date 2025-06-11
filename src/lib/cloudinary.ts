@@ -455,12 +455,25 @@ export const isValidCloudinaryUrl = (url: string): boolean => {
 // Helper function to validate any image URL
 export const isValidImageUrl = (url: string): boolean => {
   if (!url || typeof url !== 'string') {
-    console.error('Invalid URL: URL is empty or not a string');
     return false;
   }
   
-  // Log the URL being validated
-  console.log('Validating URL:', url);
+  // Handle relative URLs (starting with /)
+  if (url.startsWith('/')) {
+    return true;
+  }
+  
+  // Handle URLs that start with @ (special case for our app)
+  if (url.startsWith('@')) {
+    // Remove the @ prefix and validate the remaining URL
+    const cleanUrl = url.substring(1);
+    try {
+      new URL(cleanUrl);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
   
   try {
     // Trim the URL
@@ -473,7 +486,6 @@ export const isValidImageUrl = (url: string): boolean => {
     const hasValidProtocol = parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:';
     
     if (!hasValidProtocol) {
-      console.error('Invalid URL protocol:', parsedUrl.protocol);
       return false;
     }
     
@@ -501,27 +513,14 @@ export const isValidImageUrl = (url: string): boolean => {
     // For Cloudinary URLs, they don't always have an extension
     const isCloudinaryUrl = parsedUrl.hostname === 'res.cloudinary.com';
     
-    // Log validation details
-    console.log('URL validation details:', {
-      url: trimmedUrl,
-      protocol: parsedUrl.protocol,
-      hostname: parsedUrl.hostname,
-      pathname: parsedUrl.pathname,
-      isKnownHost,
-      hasImageExtension,
-      isCloudinaryUrl
-    });
-    
     // Always accept Cloudinary URLs as they're our primary image host
     if (isCloudinaryUrl) {
-      console.log('Accepting Cloudinary URL:', trimmedUrl);
       return true;
     }
     
     // Either it should have an image extension or be from a known host
     return hasValidProtocol && (hasImageExtension || isKnownHost);
   } catch (error) {
-    console.error('Error validating image URL:', error, 'for URL:', url);
     return false;
   }
 };

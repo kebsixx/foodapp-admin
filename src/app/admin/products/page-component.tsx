@@ -122,9 +122,6 @@ export const ProductPageComponent: FC<Props> = ({
     if (cleanData.heroImage) {
       cleanData.heroImage = cleanData.heroImage.trim();
 
-      // Log the cleaned URL
-      console.log("Cleaned heroImage URL:", cleanData.heroImage);
-
       // If heroImage exists but heroImageUrls doesn't, try to generate it
       if (cleanData.heroImage && !cleanData.heroImageUrls) {
         try {
@@ -132,7 +129,6 @@ export const ProductPageComponent: FC<Props> = ({
           const publicId = getPublicIdFromUrl(cleanData.heroImage);
 
           if (publicId) {
-            console.log("Generated heroImageUrls from publicId:", publicId);
             cleanData.heroImageUrls = {
               original: cleanData.heroImage,
               display: getCloudinaryUrl(publicId, { width: 800 }),
@@ -155,9 +151,6 @@ export const ProductPageComponent: FC<Props> = ({
       if (urls.display) urls.display = urls.display.trim();
       if (urls.medium) urls.medium = urls.medium.trim();
       if (urls.thumb) urls.thumb = urls.thumb.trim();
-
-      // Log the cleaned URLs
-      console.log("Cleaned heroImageUrls:", urls);
     }
 
     return cleanData;

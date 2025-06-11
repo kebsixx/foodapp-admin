@@ -76,6 +76,24 @@ export const ProductTableRow = ({
     // Validasi URL
     const isValidUrl = (url: string | undefined | null) => {
       if (!url) return false;
+
+      // Handle relative URLs (starting with /)
+      if (url.startsWith("/")) {
+        return true;
+      }
+
+      // Handle URLs that start with @ (special case for our app)
+      if (url.startsWith("@")) {
+        // Remove the @ prefix and validate the remaining URL
+        const cleanUrl = url.substring(1);
+        try {
+          new URL(cleanUrl);
+          return true;
+        } catch (error) {
+          return false;
+        }
+      }
+
       try {
         const parsedUrl = new URL(url);
 
@@ -91,7 +109,6 @@ export const ProductTableRow = ({
         ) {
           const pathParts = parsedUrl.pathname.split("/").filter(Boolean);
           if (pathParts.length < 2) {
-            console.error("Invalid ImgBB URL format:", url);
             return false;
           }
           return true;
@@ -102,10 +119,10 @@ export const ProductTableRow = ({
           return true;
         }
 
-        console.error("Invalid image hostname:", parsedUrl.hostname);
-        return false;
+        // Accept other valid URLs without logging errors
+        return true;
       } catch (error) {
-        console.error("URL validation error:", error);
+        // Don't log errors to reduce console noise
         return false;
       }
     };
@@ -128,7 +145,8 @@ export const ProductTableRow = ({
     const legacyImage = product.heroImage;
 
     // Default image jika tidak ada gambar valid
-    const defaultImage = "/favicon.jpg";
+    const defaultImage =
+      "https://res.cloudinary.com/dgg4mki57/image/upload/v1749646662/ceritasenja_k2jnf1.jpg";
 
     // Validasi dan pilih URL terbaik
     const validUrls = [
@@ -143,7 +161,6 @@ export const ProductTableRow = ({
 
     // Jika tidak ada URL yang valid, gunakan default image
     if (validUrls.length === 0) {
-      console.log("Using default image for product:", product.title);
       return { primary: defaultImage, fallback: defaultImage };
     }
 

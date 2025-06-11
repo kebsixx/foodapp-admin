@@ -63,20 +63,18 @@ export const ProductForm = ({
 
   useEffect(() => {
     if (defaultValues) {
-      console.log('Loading default values:', defaultValues);
-      
       // Make sure we have proper heroImageUrls structure
       // Note: The database column is lowercase 'heroimageurls'
-      let heroImageUrls = defaultValues.heroImageUrls || defaultValues.heroimageurls;
-      
+      let heroImageUrls =
+        defaultValues.heroImageUrls || defaultValues.heroimageurls;
+
       // If we have a heroImage but no heroImageUrls, generate them
       if (defaultValues.heroImage && !heroImageUrls) {
         try {
           // Extract public ID if it's a Cloudinary URL
           const publicId = getPublicIdFromUrl(defaultValues.heroImage);
-          
+
           if (publicId) {
-            console.log('Generated heroImageUrls from publicId:', publicId);
             heroImageUrls = {
               original: defaultValues.heroImage,
               display: getCloudinaryUrl(publicId, { width: 800 }),
@@ -93,10 +91,10 @@ export const ProductForm = ({
             };
           }
         } catch (error) {
-          console.error('Error generating heroImageUrls:', error);
+          console.error("Error generating heroImageUrls:", error);
         }
       }
-      
+
       form.reset({
         ...defaultValues,
         heroImageUrls,
@@ -146,13 +144,15 @@ export const ProductForm = ({
 
   return (
     <Dialog open={isProductModalOpen} onOpenChange={handleModalClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] w-[calc(100%-2rem)] p-4 sm:p-6" aria-describedby="product-form-description">
+      <DialogContent
+        className="max-w-2xl max-h-[90vh] w-[calc(100%-2rem)] p-4 sm:p-6"
+        aria-describedby="product-form-description">
         <DialogHeader>
           <DialogTitle>
             {defaultValues ? "Update Product" : "Add New Product"}
           </DialogTitle>
           <DialogDescription id="product-form-description">
-            {defaultValues 
+            {defaultValues
               ? "Update the details of your existing product"
               : "Fill in the details to add a new product to your catalog"}
           </DialogDescription>
@@ -289,33 +289,46 @@ export const ProductForm = ({
                     </div>
                   )}
                   <div className="flex flex-col gap-2 w-full sm:w-auto">
-                    <CloudinaryUpload
-                      onSuccess={(result) => {
-                        // Ensure URLs are properly trimmed
-                        const secureUrl = result.secure_url.trim();
-                        const publicId = result.public_id.trim();
-                        
-                        console.log('CloudinaryUpload success:', { 
-                          secureUrl, 
-                          publicId,
-                          width: result.width,
-                          height: result.height 
-                        });
-                        
-                        // Set the values in the form
-                        form.setValue("heroImage", secureUrl);
-                        form.setValue("heroImageUrls", {
-                          original: secureUrl,
-                          display: getCloudinaryUrl(publicId, { width: 800 }),
-                          medium: getCloudinaryUrl(publicId, { width: 400 }),
-                          thumb: getCloudinaryUrl(publicId, { width: 200 }),
-                        });
-                      }}
-                      onError={(error) => {
-                        toast.error("Failed to upload image: " + error);
-                      }}
-                      className="w-full sm:w-auto"
-                    />
+                    <div className="flex flex-wrap gap-2">
+                      <CloudinaryUpload
+                        onSuccess={(result) => {
+                          // Ensure URLs are properly trimmed
+                          const secureUrl = result.secure_url.trim();
+                          const publicId = result.public_id.trim();
+
+                          // Set the values in the form
+                          form.setValue("heroImage", secureUrl);
+                          form.setValue("heroImageUrls", {
+                            original: secureUrl,
+                            display: getCloudinaryUrl(publicId, { width: 800 }),
+                            medium: getCloudinaryUrl(publicId, { width: 400 }),
+                            thumb: getCloudinaryUrl(publicId, { width: 200 }),
+                          });
+                        }}
+                        onError={(error) => {
+                          toast.error("Failed to upload image: " + error);
+                        }}
+                        className="w-full sm:w-auto"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const cloudinaryUrl =
+                            "https://res.cloudinary.com/dgg4mki57/image/upload/v1749646662/ceritasenja_k2jnf1.jpg";
+                          form.setValue("heroImage", cloudinaryUrl);
+                          form.setValue("heroImageUrls", {
+                            original: cloudinaryUrl,
+                            display: cloudinaryUrl,
+                            medium: cloudinaryUrl,
+                            thumb: cloudinaryUrl,
+                          });
+                        }}
+                        className="w-full sm:w-auto">
+                        Use Default Image
+                      </Button>
+                    </div>
                     {form.watch("heroImage") && (
                       <Button
                         type="button"
@@ -325,8 +338,7 @@ export const ProductForm = ({
                           form.setValue("heroImage", "");
                           form.setValue("heroImageUrls", undefined);
                         }}
-                        className="w-full sm:w-auto"
-                      >
+                        className="w-full sm:w-auto">
                         Remove Image
                       </Button>
                     )}
