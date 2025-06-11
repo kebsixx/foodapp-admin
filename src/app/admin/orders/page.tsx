@@ -9,11 +9,9 @@ const Orders = async () => {
       <div className="text-center font-bold text-2xl">No Orders Found</div>
     );
 
-  console.log(ordersWithProducts);
-
-  const mappedOrders = ordersWithProducts.map(order => ({
+  const mappedOrders = ordersWithProducts.map((order) => ({
     ...order,
-    user: order.users as any
+    user: order.users as any,
   }));
 
   return (

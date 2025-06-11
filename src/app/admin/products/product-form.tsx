@@ -33,8 +33,8 @@ import { getPublicIdFromUrl, getCloudinaryUrl } from "@/lib/cloudinary";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { toast } from "react-hot-toast";
 import { Label } from "@/components/ui/label";
-import { ImageUploader } from "@/components/ui/ImageUploader";
-import { CloudinaryUpload } from "@/components/ui/CloudinaryUpload";
+import { ImageUploader } from "@/components/ImageUploader";
+import { CloudinaryUpload } from "@/components/CloudinaryUpload";
 import { FormProductValues } from "@/app/admin/products/products.types";
 
 type Props = {

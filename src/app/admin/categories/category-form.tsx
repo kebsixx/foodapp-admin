@@ -9,14 +9,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  DialogFooter,
-} from "@/components/ui/dialog";
+import { DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Category } from "@/app/admin/categories/categories.types";
-import { CategoryImageUpload } from "@/components/ui/CategoryImageUpload";
+import { CategoryImageUpload } from "@/components/CategoryImageUpload";
 
 type Props = {
   form: UseFormReturn<any>;

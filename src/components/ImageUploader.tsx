@@ -4,7 +4,7 @@ import React, { useState, useRef } from "react";
 import { Upload, X, Image as ImageIcon, Edit2 } from "lucide-react";
 import { useImageUpload } from "@/hooks/useImageUpload";
 import { ProductImageUrls } from "@/app/admin/products/products.types";
-import { SafeImage } from "./SafeImage";
+import { SafeImage } from "./ui/SafeImage";
 import Image from "next/image";
 
 interface ImageUploaderProps {

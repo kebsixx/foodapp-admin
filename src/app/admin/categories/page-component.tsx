@@ -56,7 +56,10 @@ import {
   createCategorySchema,
   CreateCategorySchema,
 } from "@/app/admin/categories/create-category.schema";
-import { CategoriesWithProductsResponse, Category } from "@/app/admin/categories/categories.types";
+import {
+  CategoriesWithProductsResponse,
+  Category,
+} from "@/app/admin/categories/categories.types";
 import { CategoryForm } from "@/app/admin/categories/category-form";
 import {
   createCategory,
@@ -223,7 +226,8 @@ const CategoriesPageComponent: FC<Props> = ({ categories }) => {
 
           const finalImageUrl = imageUrl || currentCategory.imageUrl || "";
 
-          const categoryId = (categories.find(c => c.slug === currentCategory.slug)?.id) || 0;
+          const categoryId =
+            categories.find((c) => c.slug === currentCategory.slug)?.id || 0;
 
           await updateCategory({
             id: categoryId,
@@ -352,7 +356,7 @@ const CategoriesPageComponent: FC<Props> = ({ categories }) => {
               <SelectItem value="created_at">Date</SelectItem>
             </SelectContent>
           </Select>
-          
+
           <Select
             value={sortOrder}
             onValueChange={(value: "asc" | "desc") => {
@@ -368,7 +372,7 @@ const CategoriesPageComponent: FC<Props> = ({ categories }) => {
           </Select>
         </div>
       </div>
-      
+
       <div className="space-y-2">
         <h4 className="text-sm font-medium">Items per page</h4>
         <Select
@@ -386,11 +390,10 @@ const CategoriesPageComponent: FC<Props> = ({ categories }) => {
           </SelectContent>
         </Select>
       </div>
-      
-      <Button 
-        className="w-full mt-4" 
-        onClick={() => setIsMobileFiltersOpen(false)}
-      >
+
+      <Button
+        className="w-full mt-4"
+        onClick={() => setIsMobileFiltersOpen(false)}>
         Apply Filters
       </Button>
     </div>
@@ -502,7 +505,9 @@ const CategoriesPageComponent: FC<Props> = ({ categories }) => {
             </div>
 
             {/* Mobile filter button */}
-            <Sheet open={isMobileFiltersOpen} onOpenChange={setIsMobileFiltersOpen}>
+            <Sheet
+              open={isMobileFiltersOpen}
+              onOpenChange={setIsMobileFiltersOpen}>
               <SheetTrigger asChild>
                 <Button variant="outline" size="icon" className="md:hidden">
                   <FilterIcon className="h-4 w-4" />
@@ -522,30 +527,38 @@ const CategoriesPageComponent: FC<Props> = ({ categories }) => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead 
+                <TableHead
                   className={cn(
                     "cursor-pointer hover:bg-gray-100",
                     sortBy === "name" && "text-primary font-medium"
                   )}
-                    onClick={() => {
-                      setSortBy("name");
-                    setSortOrder(sortBy === "name" && sortOrder === "asc" ? "desc" : "asc");
-                    }}>
-                  Name {sortBy === "name" && (
+                  onClick={() => {
+                    setSortBy("name");
+                    setSortOrder(
+                      sortBy === "name" && sortOrder === "asc" ? "desc" : "asc"
+                    );
+                  }}>
+                  Name{" "}
+                  {sortBy === "name" && (
                     <ArrowUpDown className="inline h-4 w-4 ml-1 text-primary" />
                   )}
                 </TableHead>
                 <TableHead>Products</TableHead>
-                <TableHead 
+                <TableHead
                   className={cn(
                     "cursor-pointer hover:bg-gray-100 hidden md:table-cell",
                     sortBy === "created_at" && "text-primary font-medium"
                   )}
-                    onClick={() => {
-                      setSortBy("created_at");
-                    setSortOrder(sortBy === "created_at" && sortOrder === "asc" ? "desc" : "asc");
-                    }}>
-                  Created At {sortBy === "created_at" && (
+                  onClick={() => {
+                    setSortBy("created_at");
+                    setSortOrder(
+                      sortBy === "created_at" && sortOrder === "asc"
+                        ? "desc"
+                        : "asc"
+                    );
+                  }}>
+                  Created At{" "}
+                  {sortBy === "created_at" && (
                     <ArrowUpDown className="inline h-4 w-4 ml-1 text-primary" />
                   )}
                 </TableHead>
@@ -564,9 +577,9 @@ const CategoriesPageComponent: FC<Props> = ({ categories }) => {
                 </TableRow>
               ) : (
                 currentCategories.map((category) => (
-                <CategoryTableRow
-                  key={category.id}
-                  category={category}
+                  <CategoryTableRow
+                    key={category.id}
+                    category={category}
                     onDelete={deleteCategoryHandler}
                     onEdit={(category) => {
                       setCurrentCategory({
@@ -577,7 +590,7 @@ const CategoriesPageComponent: FC<Props> = ({ categories }) => {
                       });
                       setIsCreateCategoryModalOpen(true);
                     }}
-                />
+                  />
                 ))
               )}
             </TableBody>
@@ -614,13 +627,13 @@ const CategoriesPageComponent: FC<Props> = ({ categories }) => {
                   {/* On mobile, show only current page */}
                   <div className="sm:hidden flex items-center gap-1">
                     <PaginationItem>
-                      <PaginationLink
-                        href="#"
-                        isActive={true}>
+                      <PaginationLink href="#" isActive={true}>
                         {currentPage}
                       </PaginationLink>
                     </PaginationItem>
-                    <span className="text-sm text-gray-500">of {totalPages}</span>
+                    <span className="text-sm text-gray-500">
+                      of {totalPages}
+                    </span>
                   </div>
 
                   {/* On desktop, show pagination numbers */}

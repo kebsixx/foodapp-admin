@@ -38,7 +38,13 @@ import {
 } from "@/actions/products";
 import { ProductForm } from "@/app/admin/products/product-form";
 import { ProductTableRow } from "@/app/admin/products/product-table-row";
-import { PlusIcon, ArrowUpDown, SearchIcon, FilterIcon, ChevronDown } from "lucide-react";
+import {
+  PlusIcon,
+  ArrowUpDown,
+  SearchIcon,
+  FilterIcon,
+  ChevronDown,
+} from "lucide-react";
 import {
   Pagination,
   PaginationContent,
@@ -111,22 +117,22 @@ export const ProductPageComponent: FC<Props> = ({
   const cleanupFormData = (data: FormProductValues): FormProductValues => {
     // Create a copy of the data
     const cleanData = { ...data };
-    
+
     // Clean up heroImage if present
     if (cleanData.heroImage) {
       cleanData.heroImage = cleanData.heroImage.trim();
-      
+
       // Log the cleaned URL
-      console.log('Cleaned heroImage URL:', cleanData.heroImage);
-      
+      console.log("Cleaned heroImage URL:", cleanData.heroImage);
+
       // If heroImage exists but heroImageUrls doesn't, try to generate it
       if (cleanData.heroImage && !cleanData.heroImageUrls) {
         try {
           // Extract public ID if it's a Cloudinary URL
           const publicId = getPublicIdFromUrl(cleanData.heroImage);
-          
+
           if (publicId) {
-            console.log('Generated heroImageUrls from publicId:', publicId);
+            console.log("Generated heroImageUrls from publicId:", publicId);
             cleanData.heroImageUrls = {
               original: cleanData.heroImage,
               display: getCloudinaryUrl(publicId, { width: 800 }),
@@ -135,34 +141,34 @@ export const ProductPageComponent: FC<Props> = ({
             };
           }
         } catch (error) {
-          console.error('Error generating heroImageUrls:', error);
+          console.error("Error generating heroImageUrls:", error);
         }
       }
     }
-    
+
     // Clean up heroImageUrls if present
     if (cleanData.heroImageUrls) {
       const urls = cleanData.heroImageUrls;
-      
+
       // Trim all URLs in the object
       if (urls.original) urls.original = urls.original.trim();
       if (urls.display) urls.display = urls.display.trim();
       if (urls.medium) urls.medium = urls.medium.trim();
       if (urls.thumb) urls.thumb = urls.thumb.trim();
-      
+
       // Log the cleaned URLs
-      console.log('Cleaned heroImageUrls:', urls);
+      console.log("Cleaned heroImageUrls:", urls);
     }
-    
+
     return cleanData;
   };
 
   const productCreateUpdateHandler = async (data: FormProductValues) => {
     setIsLoading(true);
-    
+
     // Clean up the form data
     const cleanData = cleanupFormData(data);
-    
+
     const {
       title,
       category,
@@ -240,9 +246,10 @@ export const ProductPageComponent: FC<Props> = ({
       router.refresh();
     } catch (error) {
       console.error("Error saving product:", error);
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : "An unexpected error occurred while saving the product";
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "An unexpected error occurred while saving the product";
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -446,16 +453,14 @@ export const ProductPageComponent: FC<Props> = ({
           <SelectContent>
             <SelectItem value="all">All Categories</SelectItem>
             {categories.map((category) => (
-              <SelectItem
-                key={category.id}
-                value={category.id.toString()}>
+              <SelectItem key={category.id} value={category.id.toString()}>
                 {category.name}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
       </div>
-      
+
       <div className="space-y-2">
         <h4 className="text-sm font-medium">Sort By</h4>
         <div className="grid grid-cols-2 gap-2">
@@ -473,7 +478,7 @@ export const ProductPageComponent: FC<Props> = ({
               <SelectItem value="price">Price</SelectItem>
             </SelectContent>
           </Select>
-          
+
           <Select
             value={sortOrder}
             onValueChange={(value: SortOrder) => {
@@ -489,7 +494,7 @@ export const ProductPageComponent: FC<Props> = ({
           </Select>
         </div>
       </div>
-      
+
       <div className="space-y-2">
         <h4 className="text-sm font-medium">Items per page</h4>
         <Select
@@ -507,11 +512,10 @@ export const ProductPageComponent: FC<Props> = ({
           </SelectContent>
         </Select>
       </div>
-      
-      <Button 
-        className="w-full mt-4" 
-        onClick={() => setIsMobileFiltersOpen(false)}
-      >
+
+      <Button
+        className="w-full mt-4"
+        onClick={() => setIsMobileFiltersOpen(false)}>
         Apply Filters
       </Button>
     </div>
@@ -522,9 +526,7 @@ export const ProductPageComponent: FC<Props> = ({
       <div className="container mx-auto px-2 sm:px-4">
         <div className="flex flex-col gap-4 mb-6">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-xl font-semibold text-foreground">
-              Products
-            </h1>
+            <h1 className="text-xl font-semibold text-foreground">Products</h1>
 
             <div className="flex gap-2">
               <Button onClick={handleAddProduct}>
@@ -586,14 +588,16 @@ export const ProductPageComponent: FC<Props> = ({
                   ))}
                 </SelectContent>
               </Select>
-          </div>
+            </div>
 
             {/* Mobile filter button */}
-            <Sheet open={isMobileFiltersOpen} onOpenChange={setIsMobileFiltersOpen}>
+            <Sheet
+              open={isMobileFiltersOpen}
+              onOpenChange={setIsMobileFiltersOpen}>
               <SheetTrigger asChild>
                 <Button variant="outline" size="icon" className="md:hidden">
                   <FilterIcon className="h-4 w-4" />
-            </Button>
+                </Button>
               </SheetTrigger>
               <SheetContent side="right">
                 <SheetHeader>
@@ -656,10 +660,18 @@ export const ProductPageComponent: FC<Props> = ({
                   )}>
                   Price {getSortIcon("price")}
                 </TableHead>
-                <TableHead className="hidden md:table-cell whitespace-nowrap">Variants</TableHead>
-                <TableHead className="hidden sm:table-cell whitespace-nowrap">Max Qty</TableHead>
-                <TableHead className="whitespace-nowrap text-center w-[80px] hidden sm:table-cell">Image</TableHead>
-                <TableHead className="whitespace-nowrap text-center w-[100px]">Actions</TableHead>
+                <TableHead className="hidden md:table-cell whitespace-nowrap">
+                  Variants
+                </TableHead>
+                <TableHead className="hidden sm:table-cell whitespace-nowrap">
+                  Max Qty
+                </TableHead>
+                <TableHead className="whitespace-nowrap text-center w-[80px] hidden sm:table-cell">
+                  Image
+                </TableHead>
+                <TableHead className="whitespace-nowrap text-center w-[100px]">
+                  Actions
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -718,18 +730,18 @@ export const ProductPageComponent: FC<Props> = ({
                   {/* On mobile, show only current page */}
                   <div className="sm:hidden flex items-center gap-1">
                     <PaginationItem>
-                      <PaginationLink
-                        href="#"
-                        isActive={true}>
+                      <PaginationLink href="#" isActive={true}>
                         {currentPage}
                       </PaginationLink>
                     </PaginationItem>
-                    <span className="text-sm text-gray-500">of {totalPages}</span>
+                    <span className="text-sm text-gray-500">
+                      of {totalPages}
+                    </span>
                   </div>
 
                   {/* On desktop, show pagination numbers */}
                   <div className="hidden sm:flex">
-                  {generatePaginationItems()}
+                    {generatePaginationItems()}
                   </div>
 
                   <PaginationItem>
@@ -791,7 +803,8 @@ export const ProductPageComponent: FC<Props> = ({
             <DialogHeader>
               <DialogTitle>Delete Product</DialogTitle>
               <DialogDescription id="delete-dialog-description">
-                This action cannot be undone. Please confirm if you want to proceed.
+                This action cannot be undone. Please confirm if you want to
+                proceed.
               </DialogDescription>
             </DialogHeader>
             <div className="py-4">

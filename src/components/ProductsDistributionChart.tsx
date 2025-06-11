@@ -13,7 +13,7 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart";
+} from "@/components/chart";
 import { Pie, PieChart } from "recharts";
 
 interface ProductsDistributionChartProps {

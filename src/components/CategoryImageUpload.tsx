@@ -1,10 +1,10 @@
 "use client";
 
 import React, { forwardRef, useState } from "react";
-import { Button } from "./button";
+import { Button } from "./ui/button";
 import { ImageIcon, Upload, X } from "lucide-react";
 import { uploadToCloudinary } from "@/lib/cloudinary";
-import { SafeImage } from "./SafeImage";
+import { SafeImage } from "./ui/SafeImage";
 import { toast } from "sonner";
 
 interface CategoryImageUploadProps {
@@ -14,12 +14,10 @@ interface CategoryImageUploadProps {
   disabled?: boolean;
 }
 
-export const CategoryImageUpload = forwardRef<HTMLDivElement, CategoryImageUploadProps>(({
-  value,
-  onChange,
-  onRemove,
-  disabled,
-}, ref) => {
+export const CategoryImageUpload = forwardRef<
+  HTMLDivElement,
+  CategoryImageUploadProps
+>(({ value, onChange, onRemove, disabled }, ref) => {
   const [isUploading, setIsUploading] = useState(false);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,23 +28,23 @@ export const CategoryImageUpload = forwardRef<HTMLDivElement, CategoryImageUploa
       setIsUploading(true);
 
       // Validate file type
-      if (!file.type.startsWith('image/')) {
-        toast.error('Please upload an image file');
+      if (!file.type.startsWith("image/")) {
+        toast.error("Please upload an image file");
         return;
       }
 
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        toast.error('Image size should be less than 5MB');
+        toast.error("Image size should be less than 5MB");
         return;
       }
 
       const result = await uploadToCloudinary(file);
       onChange(result.secure_url);
-      toast.success('Image uploaded successfully');
+      toast.success("Image uploaded successfully");
     } catch (error) {
-      console.error('Upload error:', error);
-      toast.error('Failed to upload image');
+      console.error("Upload error:", error);
+      toast.error("Failed to upload image");
     } finally {
       setIsUploading(false);
     }
@@ -74,8 +72,7 @@ export const CategoryImageUpload = forwardRef<HTMLDivElement, CategoryImageUploa
             </Button>
           </>
         ) : (
-          <label
-            className="w-full h-full flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors">
+          <label className="w-full h-full flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors">
             <input
               type="file"
               accept="image/*"
@@ -94,4 +91,4 @@ export const CategoryImageUpload = forwardRef<HTMLDivElement, CategoryImageUploa
   );
 });
 
-CategoryImageUpload.displayName = "CategoryImageUpload"; 
+CategoryImageUpload.displayName = "CategoryImageUpload";

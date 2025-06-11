@@ -18,7 +18,8 @@ export const getOrdersWithProducts = async () => {
                 id, 
                 name,
                 phone,
-                email
+                email,
+                address
             )
         `)
         .order('created_at', { ascending: false });

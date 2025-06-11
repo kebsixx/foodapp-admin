@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useRef } from 'react';
-import { Button } from './button';
-import { Loader2, Upload } from 'lucide-react';
-import { smartUploadToCloudinary } from '@/lib/cloudinary';
-import { toast } from 'react-hot-toast';
-import { compressImage } from '@/lib/image-compression';
+import { useState, useRef } from "react";
+import { Button } from "./ui/button";
+import { Loader2, Upload } from "lucide-react";
+import { smartUploadToCloudinary } from "@/lib/cloudinary";
+import { toast } from "react-hot-toast";
+import { compressImage } from "@/lib/image-compression";
 
 interface CloudinaryUploadProps {
   onSuccess: (result: {
@@ -27,30 +27,32 @@ interface CloudinaryUploadProps {
 export const CloudinaryUpload = ({
   onSuccess,
   onError,
-  className = '',
+  className = "",
   compressOptions = {
     maxWidth: 1600,
     maxHeight: 1200,
     quality: 0.7,
-    maxSizeMB: 1
-  }
+    maxSizeMB: 1,
+  },
 }: CloudinaryUploadProps) => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
     if (!file) return;
-    
+
     // Reset error state
     setUploadError(null);
     setUploadProgress(0);
 
     // Validate file size (max 10MB for original)
     if (file.size > 10 * 1024 * 1024) {
-      const errorMsg = 'File size exceeds 10MB limit';
+      const errorMsg = "File size exceeds 10MB limit";
       setUploadError(errorMsg);
       onError?.(errorMsg);
       return;
@@ -59,29 +61,29 @@ export const CloudinaryUpload = ({
     try {
       setIsUploading(true);
       setUploadProgress(10);
-      
+
       // Show compression status
-      toast.loading('Compressing image...', { id: 'compress-image' });
-      
+      toast.loading("Compressing image...", { id: "compress-image" });
+
       // Compress the image before uploading
       const compressedFile = await compressImage(file, compressOptions);
-      
+
       setUploadProgress(40);
-      toast.success('Image compressed successfully', { id: 'compress-image' });
-      
+      toast.success("Image compressed successfully", { id: "compress-image" });
+
       // Show upload status
-      toast.loading('Uploading to Cloudinary...', { id: 'upload-image' });
-      
+      toast.loading("Uploading to Cloudinary...", { id: "upload-image" });
+
       // Use the smart upload function that chooses the best method
       const result = await smartUploadToCloudinary(compressedFile);
-      
+
       setUploadProgress(100);
-      toast.success('Upload successful!', { id: 'upload-image' });
-      
+      toast.success("Upload successful!", { id: "upload-image" });
+
       // Ensure URLs are properly trimmed
       const secureUrl = result.secure_url.trim();
       const publicId = result.public_id.trim();
-      
+
       onSuccess({
         public_id: publicId,
         secure_url: secureUrl,
@@ -89,16 +91,16 @@ export const CloudinaryUpload = ({
         height: result.height,
       });
     } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : 'Upload failed';
+      const errorMsg = error instanceof Error ? error.message : "Upload failed";
       setUploadError(errorMsg);
       onError?.(errorMsg);
-      toast.error(`Image upload failed: ${errorMsg}`, { id: 'upload-image' });
+      toast.error(`Image upload failed: ${errorMsg}`, { id: "upload-image" });
     } finally {
       setIsUploading(false);
       setUploadProgress(null);
       // Reset file input
       if (fileInputRef.current) {
-        fileInputRef.current.value = '';
+        fileInputRef.current.value = "";
       }
     }
   };
@@ -117,13 +119,14 @@ export const CloudinaryUpload = ({
         variant="outline"
         className={`flex items-center justify-center text-sm ${className}`}
         onClick={() => fileInputRef.current?.click()}
-        disabled={isUploading}
-      >
+        disabled={isUploading}>
         {isUploading ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             <span className="truncate">
-              {uploadProgress !== null ? `Processing (${uploadProgress}%)` : 'Uploading...'}
+              {uploadProgress !== null
+                ? `Processing (${uploadProgress}%)`
+                : "Uploading..."}
             </span>
           </>
         ) : (
@@ -138,4 +141,4 @@ export const CloudinaryUpload = ({
       )}
     </div>
   );
-}; 
+};

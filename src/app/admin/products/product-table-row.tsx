@@ -59,12 +59,13 @@ export const ProductTableRow = ({
       slug: product.slug,
       heroImage: product.heroImage ?? "",
       heroImageUrls: product.heroImageUrls,
-      variants: product.variants?.map(v => ({
-        id: v.id || crypto.randomUUID(),
-        name: v.name,
-        price: v.price.toString(),
-        available: v.available,
-      })) || [],
+      variants:
+        product.variants?.map((v) => ({
+          id: v.id || crypto.randomUUID(),
+          name: v.name,
+          price: v.price.toString(),
+          available: v.available,
+        })) || [],
       intent: "update",
     });
     setIsDeleteModalOpen(true);
@@ -77,31 +78,34 @@ export const ProductTableRow = ({
       if (!url) return false;
       try {
         const parsedUrl = new URL(url);
-        
+
         // Validasi untuk Supabase Storage
-        if (parsedUrl.hostname === 'ftcctrtnvcytcuuljjik.supabase.co') {
+        if (parsedUrl.hostname === "ftcctrtnvcytcuuljjik.supabase.co") {
           return true;
         }
-        
+
         // Validasi untuk ImgBB
-        if (parsedUrl.hostname === 'i.ibb.co' || parsedUrl.hostname === 'ibb.co') {
-          const pathParts = parsedUrl.pathname.split('/').filter(Boolean);
+        if (
+          parsedUrl.hostname === "i.ibb.co" ||
+          parsedUrl.hostname === "ibb.co"
+        ) {
+          const pathParts = parsedUrl.pathname.split("/").filter(Boolean);
           if (pathParts.length < 2) {
-            console.error('Invalid ImgBB URL format:', url);
+            console.error("Invalid ImgBB URL format:", url);
             return false;
           }
           return true;
         }
 
         // Validasi untuk Cloudinary
-        if (parsedUrl.hostname === 'res.cloudinary.com') {
+        if (parsedUrl.hostname === "res.cloudinary.com") {
           return true;
         }
-        
-        console.error('Invalid image hostname:', parsedUrl.hostname);
+
+        console.error("Invalid image hostname:", parsedUrl.hostname);
         return false;
       } catch (error) {
-        console.error('URL validation error:', error);
+        console.error("URL validation error:", error);
         return false;
       }
     };
@@ -128,28 +132,29 @@ export const ProductTableRow = ({
 
     // Validasi dan pilih URL terbaik
     const validUrls = [
-      { url: thumb, priority: 1, type: 'thumb' },
-      { url: medium, priority: 2, type: 'medium' },
-      { url: display, priority: 3, type: 'display' },
-      { url: original, priority: 4, type: 'original' },
-      { url: legacyImage, priority: 5, type: 'legacy' }
-    ].filter(item => isValidUrl(item.url))
+      { url: thumb, priority: 1, type: "thumb" },
+      { url: medium, priority: 2, type: "medium" },
+      { url: display, priority: 3, type: "display" },
+      { url: original, priority: 4, type: "original" },
+      { url: legacyImage, priority: 5, type: "legacy" },
+    ]
+      .filter((item) => isValidUrl(item.url))
       .sort((a, b) => a.priority - b.priority);
 
     // Jika tidak ada URL yang valid, gunakan default image
     if (validUrls.length === 0) {
-      console.log('Using default image for product:', product.title);
+      console.log("Using default image for product:", product.title);
       return { primary: defaultImage, fallback: defaultImage };
     }
 
     return {
       primary: validUrls[0].url || defaultImage,
-      fallback: validUrls[1]?.url || validUrls[0].url || defaultImage
+      fallback: validUrls[1]?.url || validUrls[0].url || defaultImage,
     };
   };
 
   const imageUrls = getImageUrls();
-  
+
   // Format price for display
   const formatPrice = (price: number | null) => {
     if (price === null) return "N/A";
@@ -179,13 +184,15 @@ export const ProductTableRow = ({
           {formatPrice(product.price)}
         </div>
       </TableCell>
-      
-      <TableCell className="hidden sm:table-cell">{product.category.name}</TableCell>
-      
+
+      <TableCell className="hidden sm:table-cell">
+        {product.category.name}
+      </TableCell>
+
       <TableCell className="hidden sm:table-cell">
         {formatPrice(product.price)}
       </TableCell>
-      
+
       <TableCell className="hidden md:table-cell">
         {product.variants && product.variants.length > 0 ? (
           <TooltipProvider>
@@ -211,41 +218,48 @@ export const ProductTableRow = ({
           <span className="text-gray-500">No variants</span>
         )}
       </TableCell>
-      
-      <TableCell className="hidden sm:table-cell">{product.maxQuantity}</TableCell>
-      
+
+      <TableCell className="hidden sm:table-cell">
+        {product.maxQuantity}
+      </TableCell>
+
       <TableCell className="hidden sm:table-cell text-center p-2">
         <div className="relative w-10 h-10 rounded-md overflow-hidden mx-auto">
-            <SafeImage
-              src={imageUrls.primary}
-              alt={product.title}
-              fill
-              className="object-cover"
-              sizes="40px"
-              fallbackSrc={imageUrls.fallback}
+          <SafeImage
+            src={imageUrls.primary}
+            alt={product.title}
+            fill
+            className="object-cover"
+            sizes="40px"
+            fallbackSrc={imageUrls.fallback}
             onError={(error) => {
-                console.error(
-                "Image load error for product:",
-                {
-                  title: product.title,
-                  primaryUrl: imageUrls.primary,
-                  fallbackUrl: imageUrls.fallback,
-                  heroImage: product.heroImage,
-                  heroImageUrls: product.heroImageUrls
-                }
-                );
-              }}
-            />
-          </div>
+              console.error("Image load error for product:", {
+                title: product.title,
+                primaryUrl: imageUrls.primary,
+                fallbackUrl: imageUrls.fallback,
+                heroImage: product.heroImage,
+                heroImageUrls: product.heroImageUrls,
+              });
+            }}
+          />
+        </div>
       </TableCell>
-      
+
       <TableCell className="text-center p-2">
         <div className="flex gap-1 justify-center">
-          <Button variant="ghost" size="icon" onClick={handleEditClick} className="h-8 w-8 sm:h-9 sm:w-9">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleEditClick}
+            className="h-8 w-8 sm:h-9 sm:w-9">
             <Pencil className="h-4 w-4" />
             <span className="sr-only">Edit</span>
           </Button>
-          <Button variant="ghost" size="icon" onClick={handleDeleteClick} className="h-8 w-8 sm:h-9 sm:w-9">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleDeleteClick}
+            className="h-8 w-8 sm:h-9 sm:w-9">
             <Trash2 className="h-4 w-4" />
             <span className="sr-only">Delete</span>
           </Button>

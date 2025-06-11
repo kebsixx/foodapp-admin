@@ -197,24 +197,24 @@ export const updateProduct = async (product: {
       newImageUrls: product.heroImageUrls
     });
 
-    const variants = product.variants 
-      ? product.variants.map(v => ({
-          ...v,
-          available: v.available ?? true
-        }))
-      : null;
+  const variants = product.variants 
+    ? product.variants.map(v => ({
+        ...v,
+        available: v.available ?? true
+      }))
+    : null;
 
-    const updateData: any = {
-      title: product.title,
-      category: product.category,
-      price: product.price,
-      maxQuantity: product.maxQuantity,
-      variants,
-    };
+  const updateData: any = {
+    title: product.title,
+    category: product.category,
+    price: product.price,
+    maxQuantity: product.maxQuantity,
+    variants,
+  };
 
-    // Only update heroImage if provided and valid
-    if (product.heroImage && product.heroImage.trim() !== "") {
-      try {
+  // Only update heroImage if provided and valid
+  if (product.heroImage && product.heroImage.trim() !== "") {
+    try {
         // Log the image URL for debugging
         console.log('Validating image URL:', product.heroImage);
         
@@ -255,7 +255,7 @@ export const updateProduct = async (product: {
           updateData.heroImage = trimmedUrl;
           
           // Also update heroImageUrls if provided
-          if (product.heroImageUrls) {
+      if (product.heroImageUrls) {
             updateData.heroimageurls = product.heroImageUrls;
           }
         
@@ -273,20 +273,20 @@ export const updateProduct = async (product: {
           }
         } else {
           throw new Error("Invalid image URL format");
-        }
+      }
       } catch (urlError) {
         console.error('URL validation error:', urlError, 'for URL:', product.heroImage);
         throw new Error("Invalid image URL. Please make sure the URL is correct and starts with http:// or https://");
-      }
     }
+  }
 
     console.log('Final update data:', updateData);
 
-    const { data, error } = await supabase
-      .from("product")
-      .update(updateData)
-      .eq("slug", product.slug)
-      .select();
+  const { data, error } = await supabase
+    .from("product")
+    .update(updateData)
+    .eq("slug", product.slug)
+    .select();
 
     if (error) {
       throw new Error(`Error updating product: ${error.message}`);
@@ -296,7 +296,7 @@ export const updateProduct = async (product: {
       throw new Error("Product not found");
     }
 
-    return data;
+  return data;
   } catch (error) {
     console.error('Update product error:', error);
     throw error;

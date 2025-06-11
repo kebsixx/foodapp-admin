@@ -20,7 +20,7 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart";
+} from "@/components/chart";
 import {
   Table,
   TableBody,
@@ -76,9 +76,7 @@ const PageComponent = ({
         {isLoading && <div className="loading">Loading...</div>}
         <div className="flex flex-col gap-4 mb-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <h1 className="text-2xl font-bold">
-              Dashboard Overview
-            </h1>
+            <h1 className="text-2xl font-bold">Dashboard Overview</h1>
           </div>
         </div>
 
@@ -114,9 +112,7 @@ const PageComponent = ({
             </CardHeader>
             <CardContent>
               <div className="h-[300px] w-full">
-                <ChartContainer
-                  config={chartConfig}
-                  className="h-full w-full">
+                <ChartContainer config={chartConfig} className="h-full w-full">
                   <BarChart
                     accessibilityLayer
                     data={categoryData}
@@ -138,7 +134,10 @@ const PageComponent = ({
                       cursor={false}
                       content={<ChartTooltipContent />}
                     />
-                    <Bar dataKey="products" fill="var(--color-products)" radius={8}>
+                    <Bar
+                      dataKey="products"
+                      fill="var(--color-products)"
+                      radius={8}>
                       <LabelList
                         position="top"
                         offset={12}
@@ -163,7 +162,9 @@ const PageComponent = ({
                   <TableHeader>
                     <TableRow>
                       <TableHead>Email</TableHead>
-                      <TableHead className="hidden sm:table-cell">Date</TableHead>
+                      <TableHead className="hidden sm:table-cell">
+                        Date
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -174,13 +175,9 @@ const PageComponent = ({
                         </TableCell>
                         <TableCell className="hidden sm:table-cell text-xs sm:text-sm">
                           {user.date
-                            ? format(
-                                new Date(user.date),
-                                "dd/MM/yyyy HH:mm",
-                                {
-                                  locale: id,
-                                }
-                              )
+                            ? format(new Date(user.date), "dd/MM/yyyy HH:mm", {
+                                locale: id,
+                              })
                             : "-"}
                         </TableCell>
                       </TableRow>
