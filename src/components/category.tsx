@@ -115,31 +115,31 @@ export const CategoryTableRow = ({
               List of products associated with this category
             </DialogDescription>
           </DialogHeader>
-          <ScrollArea className="h-[400px] rounded-md p-4">
-            {category.products.map((product) => (
-              <Card key={product.id} className="cursor-pointer mb-2">
-                <div className="grid grid-cols-[100px,1fr] items-center gap-4">
-                  <Image
-                    alt="Product image"
-                    className="aspect-square rounded-md object-cover"
-                    height="100"
+                <ScrollArea className="h-[400px] rounded-md p-4">
+                  {category.products.map((product) => (
+                    <Card key={product.id} className="cursor-pointer mb-2">
+                      <div className="grid grid-cols-[100px,1fr] items-center gap-4">
+                        <Image
+                          alt="Product image"
+                          className="aspect-square rounded-md object-cover"
+                          height="100"
                     src={product.heroImage || placeholderImage}
-                    width="100"
-                  />
-                  <div className="flex flex-col space-y-1">
-                    <h3 className="font-medium leading-none">
-                      {product.title}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      {product.maxQuantity} in stock
-                    </p>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </ScrollArea>
-        </DialogContent>
-      </Dialog>
+                          width="100"
+                        />
+                        <div className="flex flex-col space-y-1">
+                          <h3 className="font-medium leading-none">
+                            {product.title}
+                          </h3>
+                          <p className="text-sm text-muted-foreground">
+                            {product.maxQuantity} in stock
+                          </p>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </ScrollArea>
+              </DialogContent>
+            </Dialog>
 
       <Dialog
         open={isDeleteDialogOpen}

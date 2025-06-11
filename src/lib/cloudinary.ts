@@ -15,25 +15,76 @@ export interface CloudinaryUploadResult {
 }
 
 export const uploadToCloudinary = async (file: File): Promise<CloudinaryUploadResult> => {
+  // Check if we're online first
+  if (typeof navigator !== 'undefined' && !navigator.onLine) {
+    throw new Error('You appear to be offline. Please check your internet connection and try again.');
+  }
+
+  // Check if Cloudinary is configured
+  if (!cloudinaryConfig.cloudName || !cloudinaryConfig.uploadPreset) {
+    console.error('Cloudinary configuration missing:', { 
+      cloudName: !!cloudinaryConfig.cloudName, 
+      uploadPreset: !!cloudinaryConfig.uploadPreset 
+    });
+    throw new Error('Cloudinary is not properly configured. Please check your environment variables.');
+  }
+
   const formData = new FormData();
   formData.append('file', file);
   formData.append('upload_preset', cloudinaryConfig.uploadPreset!);
   formData.append('cloud_name', cloudinaryConfig.cloudName!);
 
   try {
-    const response = await fetch(
-      `https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/image/upload`,
-      {
-        method: 'POST',
-        body: formData,
-      }
-    );
+    // Add timeout of 60 seconds using AbortController (increased from 30)
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
+
+    console.log('Uploading to Cloudinary:', { 
+      cloudName: cloudinaryConfig.cloudName,
+      fileSize: file.size,
+      fileType: file.type 
+    });
+
+    // Use a different approach for larger files (over 1MB)
+    let response;
+    if (file.size > 1024 * 1024) {
+      // For larger files, use the direct upload endpoint with fetch
+      response = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/image/upload`,
+        {
+          method: 'POST',
+          body: formData,
+          signal: controller.signal,
+        }
+      );
+    } else {
+      // For smaller files, use the standard approach
+      response = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/image/upload`,
+        {
+          method: 'POST',
+          body: formData,
+          signal: controller.signal,
+        }
+      );
+    }
+
+    // Clear the timeout
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
-      throw new Error('Upload failed');
+      const errorText = await response.text();
+      console.error('Cloudinary API error:', errorText);
+      throw new Error(`Upload failed: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();
+    console.log('Cloudinary upload successful:', { 
+      publicId: data.public_id,
+      format: data.format,
+      size: `${data.width}x${data.height}` 
+    });
+    
     return {
       public_id: data.public_id,
       secure_url: data.secure_url,
@@ -42,9 +93,13 @@ export const uploadToCloudinary = async (file: File): Promise<CloudinaryUploadRe
       format: data.format,
       resource_type: data.resource_type,
     };
-  } catch (error) {
+  } catch (error: any) {
+    if (error.name === 'AbortError') {
+      console.error('Cloudinary upload timed out after 60 seconds');
+      throw new Error('Upload timed out. The image may be too large or your connection is slow. Please try compressing the image or using a better network connection.');
+    }
     console.error('Cloudinary upload error:', error);
-    throw new Error('Failed to upload to Cloudinary');
+    throw new Error(error.message || 'Failed to upload to Cloudinary');
   }
 };
 
@@ -230,5 +285,64 @@ export const getPublicIdFromUrl = (url: string): string | null => {
     return null;
   } catch {
     return null;
+  }
+};
+
+// Function to upload via server-side endpoint for large files
+export const uploadToCloudinaryViaServer = async (file: File): Promise<CloudinaryUploadResult> => {
+  // Create form data for the server endpoint
+  const formData = new FormData();
+  formData.append('file', file);
+  
+  try {
+    console.log('Using server-side upload for large file:', { 
+      fileSize: file.size,
+      fileType: file.type 
+    });
+    
+    // Set a timeout of 2 minutes for the server request
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 120000);
+    
+    const response = await fetch('/api/cloudinary/upload', {
+      method: 'POST',
+      body: formData,
+      signal: controller.signal,
+    });
+    
+    // Clear the timeout
+    clearTimeout(timeoutId);
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null);
+      const errorMessage = errorData?.message || `Server upload failed: ${response.status} ${response.statusText}`;
+      console.error('Server upload error:', errorData || response.statusText);
+      throw new Error(errorMessage);
+    }
+    
+    const data = await response.json();
+    
+    if (!data.success || !data.result) {
+      throw new Error('Server returned success: false or missing result');
+    }
+    
+    return data.result;
+  } catch (error: any) {
+    if (error.name === 'AbortError') {
+      console.error('Server upload timed out after 120 seconds');
+      throw new Error('Upload timed out. The server took too long to process your request.');
+    }
+    console.error('Server upload error:', error);
+    throw new Error(error.message || 'Failed to upload to Cloudinary via server');
+  }
+};
+
+// Helper function to choose the best upload method based on file size
+export const smartUploadToCloudinary = async (file: File): Promise<CloudinaryUploadResult> => {
+  // If file is larger than 2MB, use server-side upload
+  if (file.size > 2 * 1024 * 1024) {
+    return uploadToCloudinaryViaServer(file);
+  } else {
+    return uploadToCloudinary(file);
   }
 };

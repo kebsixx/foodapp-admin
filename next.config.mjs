@@ -30,11 +30,23 @@ const nextConfig = {
         port: "",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "api.cloudinary.com",
+        port: "",
+        pathname: "/**",
+      },
     ],
     loader: "default",
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    domains: ["i.ibb.co", "ibb.co", "ftcctrtnvcytcuuljjik.supabase.co", "res.cloudinary.com"],
+    domains: ["i.ibb.co", "ibb.co", "ftcctrtnvcytcuuljjik.supabase.co", "res.cloudinary.com", "api.cloudinary.com"],
   },
   webpack: (config) => {
     config.externals.push({

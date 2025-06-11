@@ -467,8 +467,8 @@ export const ProductPageComponent: FC<Props> = ({
         <div className="flex flex-col gap-4 mb-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <h1 className="text-2xl font-bold">
-              Products Management
-            </h1>
+            Products Management
+          </h1>
 
             <Button onClick={handleAddProduct} className="ml-auto">
               <PlusIcon className="h-4 w-4 sm:mr-2" />
@@ -528,14 +528,14 @@ export const ProductPageComponent: FC<Props> = ({
                   ))}
                 </SelectContent>
               </Select>
-            </div>
+          </div>
 
             {/* Mobile filter button */}
             <Sheet open={isMobileFiltersOpen} onOpenChange={setIsMobileFiltersOpen}>
               <SheetTrigger asChild>
                 <Button variant="outline" size="icon" className="md:hidden">
                   <FilterIcon className="h-4 w-4" />
-                </Button>
+            </Button>
               </SheetTrigger>
               <SheetContent side="right">
                 <SheetHeader>
@@ -671,7 +671,7 @@ export const ProductPageComponent: FC<Props> = ({
 
                   {/* On desktop, show pagination numbers */}
                   <div className="hidden sm:flex">
-                    {generatePaginationItems()}
+                  {generatePaginationItems()}
                   </div>
 
                   <PaginationItem>

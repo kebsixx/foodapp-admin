@@ -210,15 +210,15 @@ export const ProductTableRow = ({
       
       <TableCell className="hidden sm:table-cell text-center p-2">
         <div className="relative w-10 h-10 rounded-md overflow-hidden mx-auto">
-          <SafeImage
-            src={imageUrls.primary}
-            alt={product.title}
-            fill
-            className="object-cover"
-            sizes="40px"
-            fallbackSrc={imageUrls.fallback}
+            <SafeImage
+              src={imageUrls.primary}
+              alt={product.title}
+              fill
+              className="object-cover"
+              sizes="40px"
+              fallbackSrc={imageUrls.fallback}
             onError={(error) => {
-              console.error(
+                console.error(
                 "Image load error for product:",
                 {
                   title: product.title,
@@ -227,10 +227,10 @@ export const ProductTableRow = ({
                   heroImage: product.heroImage,
                   heroImageUrls: product.heroImageUrls
                 }
-              );
-            }}
-          />
-        </div>
+                );
+              }}
+            />
+          </div>
       </TableCell>
       
       <TableCell className="text-center p-2">

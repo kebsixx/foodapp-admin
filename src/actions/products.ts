@@ -90,13 +90,13 @@ export const createProduct = async (product: {
 }) => {
   // Validate image URL if provided
   if (product.heroImage && product.heroImage.trim() !== "") {
-    try {
+  try {
       const url = new URL(product.heroImage);
       if (!url.protocol.startsWith('http')) {
         throw new Error("Invalid image URL protocol");
       }
-    } catch {
-      throw new Error("Invalid image URL");
+  } catch {
+    throw new Error("Invalid image URL");
     }
   }
 
@@ -160,30 +160,30 @@ export const updateProduct = async (product: {
       throw new Error(`Error fetching current product: ${fetchError.message}`);
     }
 
-    const variants = product.variants 
-      ? product.variants.map(v => ({
-          ...v,
-          available: v.available ?? true
-        }))
-      : null;
+  const variants = product.variants 
+    ? product.variants.map(v => ({
+        ...v,
+        available: v.available ?? true
+      }))
+    : null;
 
-    const updateData: any = {
-      title: product.title,
-      category: product.category,
-      price: product.price,
-      maxQuantity: product.maxQuantity,
-      variants,
-    };
+  const updateData: any = {
+    title: product.title,
+    category: product.category,
+    price: product.price,
+    maxQuantity: product.maxQuantity,
+    variants,
+  };
 
-    // Only update heroImage if provided and valid
-    if (product.heroImage && product.heroImage.trim() !== "") {
-      try {
+  // Only update heroImage if provided and valid
+  if (product.heroImage && product.heroImage.trim() !== "") {
+    try {
         const url = new URL(product.heroImage);
         if (!url.protocol.startsWith('http')) {
           throw new Error("Invalid image URL protocol");
         }
-        updateData.heroImage = product.heroImage;
-        
+      updateData.heroImage = product.heroImage;
+      
         // Delete old image if it exists and is from Cloudinary
         if (currentProduct?.heroImage) {
           const oldPublicId = getPublicIdFromUrl(currentProduct.heroImage);
@@ -195,17 +195,17 @@ export const updateProduct = async (product: {
               // Continue with update even if image deletion fails
             }
           }
-        }
-      } catch (urlError) {
-        throw new Error("Invalid image URL");
       }
+      } catch (urlError) {
+      throw new Error("Invalid image URL");
     }
+  }
 
-    const { data, error } = await supabase
-      .from("product")
-      .update(updateData)
-      .eq("slug", product.slug)
-      .select();
+  const { data, error } = await supabase
+    .from("product")
+    .update(updateData)
+    .eq("slug", product.slug)
+    .select();
 
     if (error) {
       throw new Error(`Error updating product: ${error.message}`);
@@ -215,7 +215,7 @@ export const updateProduct = async (product: {
       throw new Error("Product not found");
     }
 
-    return data;
+  return data;
   } catch (error) {
     console.error('Update product error:', error);
     throw error;
@@ -304,10 +304,10 @@ export const uploadImageToImgBB = async (formData: FormData): Promise<{
 
       // Validate all URLs
       const urls = {
-        original: data.url,
-        display: data.display_url || data.url,
-        medium: data.medium?.url || data.url,
-        thumb: data.thumb?.url || data.url,
+          original: data.url,
+          display: data.display_url || data.url,
+          medium: data.medium?.url || data.url,
+          thumb: data.thumb?.url || data.url,
       };
 
       // Check if all URLs are valid

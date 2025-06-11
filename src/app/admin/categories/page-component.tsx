@@ -527,10 +527,10 @@ const CategoriesPageComponent: FC<Props> = ({ categories }) => {
                     "cursor-pointer hover:bg-gray-100",
                     sortBy === "name" && "text-primary font-medium"
                   )}
-                  onClick={() => {
-                    setSortBy("name");
+                    onClick={() => {
+                      setSortBy("name");
                     setSortOrder(sortBy === "name" && sortOrder === "asc" ? "desc" : "asc");
-                  }}>
+                    }}>
                   Name {sortBy === "name" && (
                     <ArrowUpDown className="inline h-4 w-4 ml-1 text-primary" />
                   )}
@@ -541,10 +541,10 @@ const CategoriesPageComponent: FC<Props> = ({ categories }) => {
                     "cursor-pointer hover:bg-gray-100 hidden md:table-cell",
                     sortBy === "created_at" && "text-primary font-medium"
                   )}
-                  onClick={() => {
-                    setSortBy("created_at");
+                    onClick={() => {
+                      setSortBy("created_at");
                     setSortOrder(sortBy === "created_at" && sortOrder === "asc" ? "desc" : "asc");
-                  }}>
+                    }}>
                   Created At {sortBy === "created_at" && (
                     <ArrowUpDown className="inline h-4 w-4 ml-1 text-primary" />
                   )}
@@ -564,9 +564,9 @@ const CategoriesPageComponent: FC<Props> = ({ categories }) => {
                 </TableRow>
               ) : (
                 currentCategories.map((category) => (
-                  <CategoryTableRow
-                    key={category.id}
-                    category={category}
+                <CategoryTableRow
+                  key={category.id}
+                  category={category}
                     onDelete={deleteCategoryHandler}
                     onEdit={(category) => {
                       setCurrentCategory({
@@ -577,7 +577,7 @@ const CategoriesPageComponent: FC<Props> = ({ categories }) => {
                       });
                       setIsCreateCategoryModalOpen(true);
                     }}
-                  />
+                />
                 ))
               )}
             </TableBody>

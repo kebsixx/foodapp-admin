@@ -343,10 +343,10 @@ export default function PageComponent({ ordersWithProducts }: Props) {
                 type="text"
                 placeholder="Search by order ID, customer name, or phone..."
                 className="w-full pl-9"
-                value={searchQuery}
+              value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-            </div>
+                      </div>
 
             {/* Desktop filters */}
             <div className="hidden md:flex items-center gap-2">
@@ -403,9 +403,9 @@ export default function PageComponent({ ordersWithProducts }: Props) {
         </div>
 
         <div className="rounded-md border overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
+      <Table>
+        <TableHeader>
+          <TableRow>
                 <TableHead className="whitespace-nowrap">Order ID</TableHead>
                 <TableHead className="whitespace-nowrap hidden sm:table-cell">Date</TableHead>
                 <TableHead className="whitespace-nowrap">Customer</TableHead>
@@ -413,9 +413,9 @@ export default function PageComponent({ ordersWithProducts }: Props) {
                 <TableHead className="whitespace-nowrap hidden md:table-cell">Method</TableHead>
                 <TableHead className="whitespace-nowrap">Status</TableHead>
                 <TableHead className="whitespace-nowrap text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
               {currentOrders.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center py-8 text-gray-500">
@@ -426,7 +426,7 @@ export default function PageComponent({ ordersWithProducts }: Props) {
                 </TableRow>
               ) : (
                 currentOrders.map((order) => (
-                  <TableRow key={order.id}>
+            <TableRow key={order.id}>
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-2">
                         <StatusIndicator status={order.status} />
@@ -450,45 +450,45 @@ export default function PageComponent({ ordersWithProducts }: Props) {
                           order.pickup_method as keyof typeof PICKUP_METHOD_LABELS
                         ] || order.pickup_method}
                       </span>
-                    </TableCell>
-                    <TableCell>
-                      <Select
+              </TableCell>
+              <TableCell>
+                  <Select
                         defaultValue={order.status}
-                        onValueChange={(value) =>
-                          handleStatusChange(order.id, value)
+                    onValueChange={(value) =>
+                      handleStatusChange(order.id, value)
                         }>
                         <SelectTrigger className="w-[110px] h-8 text-xs">
                           <SelectValue placeholder={order.status} />
-                        </SelectTrigger>
-                        <SelectContent>
+                    </SelectTrigger>
+                    <SelectContent>
                           {statusOptions.map((status) => (
                             <SelectItem key={status} value={status}>
-                              {status}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </TableCell>
+                          {status}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+              </TableCell>
                     <TableCell className="text-right">
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button
-                            variant="outline"
-                            size="sm"
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
                             className="h-8"
-                            onClick={() =>
-                              openProductsModal(
-                                order.order_items.map((item) => ({
+                      onClick={() =>
+                        openProductsModal(
+                          order.order_items.map((item) => ({
                                   id: item.id,
                                   quantity: item.quantity,
-                                  order_id: order.id,
-                                  product: item.product,
-                                }))
-                              )
-                            }>
+                            order_id: order.id,
+                            product: item.product,
+                          }))
+                        )
+                      }>
                             <span className="hidden sm:inline mr-1">View</span> Items
-                          </Button>
-                        </DialogTrigger>
+                    </Button>
+                  </DialogTrigger>
                         <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
                           <DialogHeader className="sticky top-0 bg-white z-10 pb-2">
                             <DialogTitle>Order #{order.slug}</DialogTitle>
@@ -513,29 +513,29 @@ export default function PageComponent({ ordersWithProducts }: Props) {
                                 <div>
                                   <p className="text-gray-500">Phone</p>
                                   <p>{order.user?.phone || "-"}</p>
-                                </div>
+                          </div>
                                 <div className="col-span-2">
                                   <p className="text-gray-500">Address</p>
                                   <p>{order.user?.address || "-"}</p>
-                                </div>
-                                <div>
+                        </div>
+                        <div>
                                   <p className="text-gray-500">Method</p>
-                                  <p>
+                            <p>
                                     {PICKUP_METHOD_LABELS[
-                                      order.pickup_method as keyof typeof PICKUP_METHOD_LABELS
+                                    order.pickup_method as keyof typeof PICKUP_METHOD_LABELS
                                     ] || order.pickup_method}
-                                  </p>
-                                </div>
+                            </p>
+                          </div>
                                 <div>
                                   <p className="text-gray-500">Status</p>
                                   <p>{order.status}</p>
                                 </div>
-                              </div>
-                            </div>
+                        </div>
+                      </div>
 
                             {/* Payment Proof Section */}
-                            {order.payment_proof && (
-                              <div>
+                      {order.payment_proof && (
+                        <div>
                                 <h3 className="font-medium mb-2">Payment Proof</h3>
                                 <div className="border rounded-md p-3 flex flex-col items-center">
                                   <div className="max-h-[300px] overflow-auto">
@@ -545,23 +545,23 @@ export default function PageComponent({ ordersWithProducts }: Props) {
                                       rel="noopener noreferrer"
                                       className="inline-block"
                                     >
-                                      <Image
-                                        src={order.payment_proof}
+                          <Image
+                            src={order.payment_proof}
                                         alt="Payment proof"
-                                        width={300}
-                                        height={200}
+                            width={300}
+                            height={200}
                                         className="rounded-md object-contain w-auto"
-                                      />
+                          />
                                     </a>
                                   </div>
                                   <div className="mt-2 text-xs text-gray-500">
                                     Click image to view full size
                                   </div>
                                 </div>
-                              </div>
-                            )}
-                            
-                            <div>
+                        </div>
+                      )}
+
+                      <div>
                               <h3 className="font-medium mb-2">Order Items</h3>
                               <div className="border rounded-md">
                                 <Table>
@@ -582,7 +582,7 @@ export default function PageComponent({ ordersWithProducts }: Props) {
                                         <TableCell>
                                           <div className="flex items-center gap-2">
                                             {item.product?.heroImage && (
-                                              <Image
+                              <Image
                                                 src={item.product.heroImage}
                                                 alt={item.product?.title || ""}
                                                 width={40}
@@ -593,14 +593,14 @@ export default function PageComponent({ ordersWithProducts }: Props) {
                                             <div>
                                               <p className="font-medium">
                                                 {item.product?.title}
-                                              </p>
+                                </p>
                                               {(item as any).variant_name && (
                                                 <p className="text-xs text-gray-500">
                                                   {(item as any).variant_name}
-                                                </p>
-                                              )}
-                                            </div>
-                                          </div>
+                                  </p>
+                                )}
+                              </div>
+                            </div>
                                         </TableCell>
                                         <TableCell className="text-right">
                                           {item.quantity}
@@ -631,17 +631,17 @@ export default function PageComponent({ ordersWithProducts }: Props) {
                                     </TableRow>
                                   </TableBody>
                                 </Table>
-                              </div>
-                            </div>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
-                    </TableCell>
-                  </TableRow>
+                        </div>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </TableCell>
+            </TableRow>
                 ))
               )}
-            </TableBody>
-          </Table>
+        </TableBody>
+      </Table>
         </div>
 
         {totalPages > 1 && (
@@ -653,23 +653,23 @@ export default function PageComponent({ ordersWithProducts }: Props) {
             </span>
 
             <div className="flex-1 flex justify-center">
-              <Pagination>
+        <Pagination>
                 <PaginationContent className="flex flex-wrap justify-center gap-1">
-                  <PaginationItem>
-                    <PaginationPrevious
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setCurrentPage((prev) => Math.max(prev - 1, 1));
-                      }}
-                      aria-disabled={currentPage === 1}
-                      className={
+            <PaginationItem>
+              <PaginationPrevious
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setCurrentPage((prev) => Math.max(prev - 1, 1));
+                }}
+                aria-disabled={currentPage === 1}
+                className={
                         currentPage === 1
                           ? "pointer-events-none opacity-50"
                           : ""
-                      }
-                    />
-                  </PaginationItem>
+                }
+              />
+            </PaginationItem>
 
                   {/* On mobile, show only current page */}
                   <div className="sm:hidden flex items-center gap-1">
@@ -685,29 +685,29 @@ export default function PageComponent({ ordersWithProducts }: Props) {
 
                   {/* On desktop, show pagination numbers */}
                   <div className="hidden sm:flex">
-                    {generatePaginationItems()}
+            {generatePaginationItems()}
                   </div>
 
-                  <PaginationItem>
-                    <PaginationNext
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
+            <PaginationItem>
+              <PaginationNext
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
                         setCurrentPage((prev) =>
                           Math.min(prev + 1, totalPages)
                         );
-                      }}
-                      aria-disabled={currentPage === totalPages}
-                      className={
-                        currentPage === totalPages
-                          ? "pointer-events-none opacity-50"
-                          : ""
-                      }
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
-            </div>
+                }}
+                aria-disabled={currentPage === totalPages}
+                className={
+                  currentPage === totalPages
+                    ? "pointer-events-none opacity-50"
+                    : ""
+                }
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      </div>
 
             <div className="hidden sm:flex items-center gap-2 justify-end">
               <span className="text-sm text-gray-500">Items per page:</span>
@@ -728,7 +728,7 @@ export default function PageComponent({ ordersWithProducts }: Props) {
             </div>
           </div>
         )}
-      </div>
+    </div>
     </main>
   );
 }

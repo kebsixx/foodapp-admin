@@ -97,7 +97,7 @@ export const createCategory = async (category: {
       slug,
     })
     .select();
-  
+
   if (error) {
     throw new Error(`Error creating category: ${error.message}`);
   }
@@ -114,10 +114,10 @@ export const updateCategory = async (category: {
   try {
     // Get the current category to check for old image
     const { data: currentCategory, error: fetchError } = await supabase
-      .from("category")
-      .select("imageUrl")
+    .from("category")
+    .select("imageUrl")
       .eq("id", category.id)
-      .single();
+    .single();
 
     if (fetchError) {
       throw new Error(`Error fetching current category: ${fetchError.message}`);
