@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { createClient } from "@/supabase/client";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 
 const resetPasswordSchema = z
   .object({
@@ -28,7 +28,7 @@ const resetPasswordSchema = z
     path: ["confirmPassword"],
   });
 
-export default function ResetPassword() {
+function ResetPasswordContent() {
   const supabase = createClient();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -135,5 +135,14 @@ export default function ResetPassword() {
         </Form>
       )}
     </div>
+  );
+}
+
+export default function ResetPassword() {
+  return (
+    <Suspense
+      fallback={<div className="space-y-6 max-w-md mx-auto">Loading...</div>}>
+      <ResetPasswordContent />
+    </Suspense>
   );
 }
