@@ -55,7 +55,7 @@ export default async function Home() {
                     height={24}
                     width={24}
                   />
-                  Google Play
+                  Coming Soon
                 </Button>
               </div>
             </CardContent>
@@ -95,7 +95,7 @@ export default async function Home() {
 
             <span className="text-sm font-medium transition-all group-hover:me-4 dark:text-white">
               {" "}
-              Download{" "}
+              Coming Soon{" "}
             </span>
           </a>
         </section>
