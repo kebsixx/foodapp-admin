@@ -1,9 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   transpilePackages: ["@radix-ui/react-dialog", "@radix-ui/react-slot"],
-  experimental: {
-    serverActions: true,
-  },
   images: {
     remotePatterns: [
       {
@@ -46,8 +43,15 @@ const nextConfig = {
     loader: "default",
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    domains: ["i.ibb.co", "ibb.co", "ftcctrtnvcytcuuljjik.supabase.co", "res.cloudinary.com", "api.cloudinary.com"],
+    domains: [
+      "i.ibb.co",
+      "ibb.co",
+      "ftcctrtnvcytcuuljjik.supabase.co",
+      "res.cloudinary.com",
+      "api.cloudinary.com",
+    ],
   },
+  reactStrictMode: true,
   webpack: (config) => {
     config.externals.push({
       "utf-8-validate": "commonjs utf-8-validate",
