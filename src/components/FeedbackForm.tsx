@@ -73,7 +73,9 @@ const FeedbackForm = () => {
   };
 
   return (
-    <div className="w-full mx-auto px-4 sm:px-6 md:max-w-4xl">
+    <section
+      className="w-full mx-auto px-4 py-24 sm:px-6 md:max-w-4xl"
+      id="feedback">
       <div className="text-center mb-6 sm:mb-8">
         <h2 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-4 dark:text-white">
           Kirimkan Feedback Anda
@@ -141,7 +143,7 @@ const FeedbackForm = () => {
           </form>
         </CardContent>
       </Card>
-    </div>
+    </section>
   );
 };
 

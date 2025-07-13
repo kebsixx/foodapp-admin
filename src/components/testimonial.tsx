@@ -52,8 +52,8 @@ function Testimonial() {
   });
 
   return (
-    <section className="bg-gray-50 mb-24 rounded-sm dark:bg-gray-700">
-      <div className="mx-auto max-w-screen-2xl px-4 py-12 sm:px-6 lg:me-0 lg:py-16 lg:pe-0 lg:ps-32 xl:py-24">
+    <section className="py-24" id="testimonial">
+      <div className="bg-gray-50 mb-24 rounded-sm dark:bg-gray-700 mx-auto max-w-screen-2xl px-4 py-12 sm:px-6 lg:me-0 lg:py-16 lg:pe-0 lg:ps-32 xl:py-12">
         <div className="max-w-7xl items-end justify-between sm:flex sm:pe-6 lg:pe-8">
           <h2 className="max-w-xl text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl dark:text-white">
             Baca ulasan tepercaya dari pelanggan kami

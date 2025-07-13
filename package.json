@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^3.9.0",
     "@nextui-org/card": "^2.2.8",
     "@nextui-org/react": "^2.6.10",

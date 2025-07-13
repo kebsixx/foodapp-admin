@@ -75,8 +75,8 @@ export const Content = ({ products }: Props) => {
   };
 
   return (
-    <section className="mb-24">
-      <div className="mx-auto max-w-full px-4 py-8 sm:px-6 sm:py-12">
+    <section id="menu">
+      <div className="mx-auto max-w-full px-4 py-8 sm:px-6 sm:py-24">
         <header className="text-center">
           <h2 className="text-xl font-bold text-gray-900 sm:text-3xl dark:text-white">
             Menu kami untuk Anda
@@ -111,7 +111,10 @@ export const Content = ({ products }: Props) => {
                           onError={() => {
                             // Only log critical errors
                             if (!imageUrls.fallback) {
-                              console.error("Failed to load product image:", product.title);
+                              console.error(
+                                "Failed to load product image:",
+                                product.title
+                              );
                             }
                           }}
                         />
@@ -127,9 +130,6 @@ export const Content = ({ products }: Props) => {
                           title={product.title}>
                           {product.title}
                         </h3>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                          Stock: {product.maxQuantity}
-                        </p>
                       </div>
                       <div className="text-right">
                         <p className="text-default-500 dark:text-emerald-400 font-semibold">

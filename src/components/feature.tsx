@@ -41,7 +41,7 @@ const features = [
 
 function Feature() {
   return (
-    <section className="mb-24">
+    <section className="py-24" id="services">
       <h3 className="text-3xl font-bold mb-8 text-center dark:text-white">
         Layanan Kami
       </h3>
