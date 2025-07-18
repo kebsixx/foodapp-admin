@@ -2,7 +2,7 @@
 
 import { createClient } from "@/supabase/server";
 import { revalidatePath } from "next/cache";
-import { sendNotification } from "./notifications";
+import { sendOrderNotification } from "./notifications";
 
 export const getOrdersWithProducts = async () => {
     const supabase = createClient();
@@ -39,21 +39,20 @@ export const getOrdersWithProducts = async () => {
 }
 
 export const updateOrderStatus = async (orderId: number, status: string) => {
-    const supabase = createClient();
-    const {error} = await supabase
-        .from('order')
-        .update({status})
-        .eq('id', orderId);
+  const supabase = createClient();
+  
+  // Update status
+  const { error } = await supabase
+    .from('order')
+    .update({ status })
+    .eq('id', orderId);
 
-    if (error) throw new Error(error.message);
+  if (error) throw new Error(error.message);
 
-    const { data: {session}} = await supabase.auth.getSession();
+  // Kirim notifikasi ke pemilik order
+  await sendOrderNotification(orderId, status);
 
-    const userId = session?.user.id!;
-
-    await sendNotification(userId, status + '🚀');
-
-    revalidatePath('/admin/orders');
+  revalidatePath('/admin/orders');
 };
 
 export const getMonthlyOrders = async () => {
