@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { createClient } from "@/supabase/client";
 import { format } from "date-fns";
 import Image from "next/image";
 import { Search, FilterIcon } from "lucide-react";
@@ -120,7 +121,9 @@ const StatusIndicator = ({ status }: { status: string }) => {
   );
 };
 
-export default function PageComponent({ ordersWithProducts }: Props) {
+export default function PageComponent({
+  ordersWithProducts: initialOrders,
+}: Props) {
   const [selectedProducts, setSelectedProducts] = useState<OrderedProducts>([]);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
@@ -129,6 +132,91 @@ export default function PageComponent({ ordersWithProducts }: Props) {
   const [statusFilter, setStatusFilter] = useState("all");
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
   const itemsPerPageOptions = ["5", "10", "20", "50"];
+  const [ordersWithProducts, setOrdersWithProducts] =
+    useState<OrdersWithProducts>(initialOrders);
+
+  const fetchOrders = useCallback(async () => {
+    const supabase = createClient();
+    try {
+      const { data, error } = await supabase
+        .from("order")
+        .select(
+          `
+    *,
+    order_items:order_item(
+      *,
+      product(*)
+    ),
+    users:users!order_user_fkey(
+      id, 
+      name,
+      phone,
+      email,
+      address
+    )
+  `
+        )
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+
+      // ⬇️ Fix field user
+      const orders = (data || []).map((order) => ({
+        ...order,
+        user_details: order.users,
+      })) as unknown as OrdersWithProducts;
+
+      setOrdersWithProducts(orders);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+    }
+  }, []);
+
+  // Setup Supabase Realtime
+  useEffect(() => {
+    const supabase = createClient();
+    const channel = supabase
+      .channel("realtime-orders")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "order",
+        },
+        (payload) => {
+          console.log("Received new order:", payload);
+          fetchOrders(); // Refresh data on new order
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "order",
+        },
+        (payload) => {
+          // Optimistically update the specific order
+          setOrdersWithProducts((prev) =>
+            prev.map((order) =>
+              order.id === payload.new.id
+                ? {
+                    ...order,
+                    ...payload.new,
+                    user_details: payload.new.users, // Simpan detail user
+                  }
+                : order
+            )
+          );
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [fetchOrders]);
 
   useEffect(() => {
     const filtered = ordersWithProducts.filter((order) => {

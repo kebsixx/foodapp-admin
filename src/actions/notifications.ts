@@ -87,7 +87,6 @@ export const sendOrderNotification = async (orderId: number, status: string) => 
     data: {
       type: 'order-status-update',
       orderId: order.id,
-      status: status
     }
   });
 };
