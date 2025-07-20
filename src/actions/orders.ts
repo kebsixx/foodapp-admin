@@ -39,21 +39,28 @@ export const getOrdersWithProducts = async () => {
 }
 
 export const updateOrderStatus = async (orderId: number, status: string) => {
-  const supabase = createClient();
+    const supabase = createClient();
+    
+    const { data, error } = await supabase
+      .from('order')
+      .update({ status })
+      .eq('id', orderId)
+      .select(`
+        *,
+        user:users(*),
+        order_items:order_item(*, product(*))
+      `)
+      .single();
   
-  // Update status
-  const { error } = await supabase
-    .from('order')
-    .update({ status })
-    .eq('id', orderId);
-
-  if (error) throw new Error(error.message);
-
-  // Kirim notifikasi ke pemilik order
-  await sendOrderNotification(orderId, status);
-
-  revalidatePath('/admin/orders');
-};
+    if (error) throw new Error(error.message);
+  
+    await sendOrderNotification(orderId, status);
+    
+    // Gunakan 'layout' untuk revalidation yang lebih halus
+    revalidatePath('/admin/orders', 'layout');
+    
+    return data; // Kembalikan data order yang sudah diupdate
+  };
 
 export const getMonthlyOrders = async () => {
     const supabase = createClient();
