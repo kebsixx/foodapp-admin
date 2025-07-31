@@ -8,6 +8,9 @@ import { Analytics } from "@vercel/analytics/react";
 export const metadata: Metadata = {
   title: "Cerita Senja",
   description: "Cerita Senja Coffee Shop",
+  verification: { 
+    google: "kEObDc_TDYI0z1RCEhAr26RSNQFdca1t5lb8ocUZ3CY",
+  },
 };
 
 export default function RootLayout({
