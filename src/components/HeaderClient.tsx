@@ -25,7 +25,7 @@ const Header = () => {
   }, [isOpen]);
 
   useOnClickOutside(menuRef, (event) => {
-    if (isOpen && hamburgerRef.current?.contains(event.target as Node)) {
+    if (isOpen && !hamburgerRef.current?.contains(event.target as Node)) {
       setIsOpen(false);
     }
   });
@@ -55,8 +55,13 @@ const Header = () => {
           <button
             ref={hamburgerRef}
             onClick={toggleMenu}
-            aria-label="Toggle menu">
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
+            aria-label="Toggle menu"
+            type="button">
+            {isOpen ? (
+              <X size={24} strokeWidth={2} />
+            ) : (
+              <Menu size={24} strokeWidth={2} />
+            )}
           </button>
         </div>
       </div>

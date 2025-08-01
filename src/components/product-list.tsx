@@ -24,7 +24,9 @@ export const Content = ({ products }: Props) => {
 
   // Filter out products with invalid images and get up to 2 products per category
   const filteredProducts = useMemo(() => {
-    const productsByCategory = products?.reduce((acc, product) => {
+    if (!Array.isArray(products)) return [];
+
+    const productsByCategory = products.reduce((acc, product) => {
       // Skip products with invalid or missing images
       if (
         !product.heroImage ||
