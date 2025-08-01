@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "name": "Ocsa Berinda",
+    "comment": "cafe ter baik dan ter nyaman di krian besttt pokoknya, makanan dan minuman wajib di coba",
+    "initialDate": "2025-07-01"
+  },
+  {
+    "id": 2,
+    "name": "Retno S",
+    "comment": "Cafe nya nyaman, cocok buat kerja atau sekadar nongkrong. Interior estetik, banyak spot foto. Kopinya pas banget, makan dan snack nya enak juga. Highly recommended!",
+    "initialDate": "2025-07-25"
+  },
+  {
+    "id": 3,
+    "name": "Ita",
+    "comment": "Sudah langganan dan selalu yummie.. Saya suka bgt teh cerita senja teh yg otentik cafe ini.. Terima ksih",
+    "initialDate": "2025-07-31"
+  },
+  {
+    "id": 4,
+    "name": "Cinta Makan",
+    "comment": "Kafe hits krian Kopinya enaakk semua ✨ Tapi terkadang bbrp menu snack zonk seringnya sih tempe mendoan sperti stok tempe lama Snack favorit enoki cabe garam, kopi favorit butterscoth",
+    "initialDate": "2025-07-27"
+  },
+  {
+    "id": 5,
+    "name": "nungky amelia",
+    "comment": "Hampir semua menu di Cerita Senja enak. Andalanku yg daging sambal matah. Jika ada menu yg kurang sesuaipun akan mereka ganti. Best deh pkoknya",
+    "initialDate": "2025-07-25"
+  },
+  {
+    "id": 6,
+    "name": "Fitri Zelika",
+    "comment": "Cafe Worth it. Udah langganan disini. Makanan enak dan bervariasi",
+    "initialDate": "2025-07-01"
+  },
+  {
+    "id": 7,
+    "name": "Bagus Gandhi",
+    "comment": "Makanannya enak, harganya terjangkau, dan suasananya juga nyaman. Mereka menyediakan musik live setiap Rabu dan Jumat malam. Sambal matah gyudon-nya enak dan mengenyangkan.",
+    "initialDate": "2025-07-18"
+  },
+  {
+    "id": 8,
+    "name": "Dinda Shafir4",
+    "comment": "Baguss, tenang, harga terjangkau, makanannya enakk",
+    "initialDate": "2025-07-11"
+  }
+]

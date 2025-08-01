@@ -13,7 +13,7 @@ const NavLinks: React.FC<NavLinksProps> = ({ onClickLink = () => {} }) => {
   const links = [
     { label: "Services", href: "#services" },
     { label: "Menu", href: "#menu" },
-    { label: "Testimonials", href: "#testimonial" },
+    { label: "Testimonials", href: "#testimonials" },
     { label: "Feedback", href: "#feedback" },
     { label: "Contact", href: "#contact" },
   ];

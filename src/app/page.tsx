@@ -42,10 +42,15 @@ export default async function Home() {
               <p className="text-xl mb-6">
                 Rasakan kemudahan memesan makanan dan minuman favoritmu.
               </p>
-              <div className="flex flex-wrap justify-center gap-4 md:gap-0 md:flex-nowrap md:space-x-4">
-                <Button
-                  size="lg"
-                  className="bg-white text-black hover:bg-green-100 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700">
+              <Button
+                asChild
+                size="lg"
+                className="bg-white text-emerald-700 hover:bg-green-100 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700">
+                <a
+                  href="https://play.google.com/store/apps/details?id=com.kebsixx.foodApp"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center space-x-2 ">
                   <Image
                     src="/google-play.png"
                     alt="Google Play"
@@ -53,9 +58,9 @@ export default async function Home() {
                     height={24}
                     width={24}
                   />
-                  Coming Soon
-                </Button>
-              </div>
+                  Download di Play Store
+                </a>
+              </Button>
             </CardContent>
           </Card>
         </section>
@@ -74,7 +79,9 @@ export default async function Home() {
           </p>
           <a
             className="group relative inline-flex w-56 justify-center items-center overflow-hidden rounded-full bg-transparent border-2 border-[#7FCD91] px-8 py-3 text-[#7FCD91] focus:outline-none focus:ring active:bg-[#7FCD91] hover:bg-[#7FCD91] hover:text-white dark:border-emerald-600 dark:text-emerald-500 dark:hover:bg-emerald-600 dark:active:bg-emerald-600"
-            href="#">
+            href="https://play.google.com/store/apps/details?id=com.kebsixx.foodApp"
+            target="_blank"
+            rel="noopener noreferrer">
             <span className="absolute -end-full transition-all group-hover:end-4">
               <svg
                 className="size-5 rtl:rotate-180 dark:text-white"
@@ -92,8 +99,7 @@ export default async function Home() {
             </span>
 
             <span className="text-sm font-medium transition-all group-hover:me-4 dark:text-white">
-              {" "}
-              Coming Soon{" "}
+              Download Sekarang
             </span>
           </a>
         </section>
