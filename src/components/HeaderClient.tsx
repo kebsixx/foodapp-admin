@@ -5,6 +5,12 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import NavLinks from "./NavLinks";
 import { useOnClickOutside } from "../hooks/useOnClickOutside";
+import { Meow_Script } from "next/font/google";
+
+const meow = Meow_Script({
+  subsets: ["latin"],
+  weight: ["400"],
+});
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -40,9 +46,9 @@ const Header = () => {
         {/* Logo */}
         <Link
           href="/"
-          className="text-2xl font-bold"
+          className={`${meow.className} text-4xl font-extrabold text-[#6fc483]`}
           onClick={() => setIsOpen(false)}>
-          Cerita Senja
+          cerita senja
         </Link>
 
         {/* Navigasi Desktop */}
