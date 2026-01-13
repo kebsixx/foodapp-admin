@@ -9,14 +9,14 @@ const Orders = async () => {
       <div className="text-center font-bold text-2xl">No Orders Found</div>
     );
 
-  const mappedOrders = ordersWithProducts.map((order) => ({
+  const mappedOrders = ordersWithProducts.map((order: any) => ({
     ...order,
     user: order.users as any,
   }));
 
   return (
     <div>
-      <PageComponent ordersWithProducts={mappedOrders} />
+      <PageComponent ordersWithProducts={mappedOrders as any} />
     </div>
   );
 };

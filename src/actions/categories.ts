@@ -7,6 +7,7 @@ import {
   CreateCategorySchemaServer,
 } from "@/app/admin/categories/create-category.schema";
 import { createClient } from "@/supabase/server";
+import type { Database } from "@/supabase/types";
 import { uploadToCloudinary, deleteFromCloudinary, getPublicIdFromUrl } from "@/lib/cloudinary";
 
 export const getCategoriesWithProducts =
@@ -95,7 +96,7 @@ export const createCategory = async (category: {
       name: category.name,
       imageUrl: imageUrl,
       slug,
-    })
+    } as any)
     .select();
 
   if (error) {
@@ -124,8 +125,8 @@ export const updateCategory = async (category: {
     }
 
     // Delete old image if it exists and is from Cloudinary
-    if (currentCategory?.imageUrl && category.imageUrl && currentCategory.imageUrl !== category.imageUrl) {
-      const oldPublicId = getPublicIdFromUrl(currentCategory.imageUrl);
+    if ((currentCategory as any)?.imageUrl && category.imageUrl && (currentCategory as any).imageUrl !== category.imageUrl) {
+      const oldPublicId = getPublicIdFromUrl((currentCategory as any).imageUrl);
       if (oldPublicId) {
         try {
           await deleteFromCloudinary(oldPublicId);
@@ -137,10 +138,10 @@ export const updateCategory = async (category: {
     }
 
     // Jika imageUrl tidak ada, gunakan string kosong atau nilai sebelumnya
-    const imageUrl = category.imageUrl || currentCategory?.imageUrl || "";
+    const imageUrl = category.imageUrl || (currentCategory as any)?.imageUrl || "";
 
-    const { data, error } = await supabase
-      .from("category")
+    const { data, error } = await (supabase
+      .from("category") as any)
       .update({
         name: category.name,
         imageUrl: imageUrl,

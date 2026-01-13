@@ -16,7 +16,9 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { createClient } from "@/supabase/client";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, Suspense } from "react";
+import { useEffect, Suspense, useState } from "react";
+
+export const dynamic = "force-dynamic";
 
 const resetPasswordSchema = z
   .object({
@@ -29,10 +31,14 @@ const resetPasswordSchema = z
   });
 
 function ResetPasswordContent() {
-  const supabase = createClient();
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get("email");
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const form = useForm<z.infer<typeof resetPasswordSchema>>({
     resolver: zodResolver(resetPasswordSchema),
@@ -43,6 +49,7 @@ function ResetPasswordContent() {
   });
 
   const onSubmit = async (data: z.infer<typeof resetPasswordSchema>) => {
+    const supabase = createClient();
     try {
       // Jika ada email dari query param, gunakan flow reset password
       if (email) {
@@ -73,10 +80,14 @@ function ResetPasswordContent() {
   };
 
   useEffect(() => {
-    if (email) {
+    if (email && mounted) {
       toast.error(`Password reset link has been sent to ${email}`);
     }
-  }, [email]);
+  }, [email, mounted]);
+
+  if (!mounted) {
+    return <div className="space-y-6 max-w-md mx-auto">Loading...</div>;
+  }
 
   return (
     <div className="space-y-6 max-w-md mx-auto">

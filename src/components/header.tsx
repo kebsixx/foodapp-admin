@@ -55,7 +55,7 @@ export const Header = () => {
       .on(
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "order" },
-        (payload) => {
+        (payload: any) => {
           if (payload.new.status === "Pending") {
             setOrderCount((prevCount) => prevCount + 1);
             new Audio("/notification.mp3").play();

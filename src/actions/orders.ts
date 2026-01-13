@@ -30,7 +30,7 @@ export const getOrdersWithProducts = async () => {
     }
     
     // Map the data to ensure user info is available
-    const mappedData = data?.map(order => ({
+    const mappedData = data?.map((order: any) => ({
         ...order,
         user: order.users || { name: 'No Name', phone: '-' }
     }));
@@ -41,8 +41,8 @@ export const getOrdersWithProducts = async () => {
 export const updateOrderStatus = async (orderId: number, status: string) => {
     const supabase = createClient();
     
-    const { data, error } = await supabase
-      .from('order')
+    const { data, error } = await ((supabase
+      .from('order') as any)
       .update({ status })
       .eq('id', orderId)
       .select(`
@@ -50,7 +50,7 @@ export const updateOrderStatus = async (orderId: number, status: string) => {
         user:users(*),
         order_items:order_item(*, product(*))
       `)
-      .single();
+      .single());
   
     if (error) throw new Error(error.message);
   

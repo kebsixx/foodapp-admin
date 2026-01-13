@@ -74,19 +74,19 @@ export const sendOrderNotification = async (orderId: number, status: string) => 
   }
 
   // 2. Verify notification token
-  if (!order.users?.expo_notification_token) {
-    console.warn(`User ${order.user} has no notification token`);
+  if (!(order as any).users?.expo_notification_token) {
+    console.warn(`User ${(order as any).user} has no notification token`);
     return;
   }
 
   // 3. Send notification
   await sendPushNotification({
-    expoPushToken: order.users.expo_notification_token,
-    title: `Order #${order.slug} Update`,
+    expoPushToken: (order as any).users.expo_notification_token,
+    title: `Order #${(order as any).slug} Update`,
     body: `Status changed to: ${status}`,
     data: {
       type: 'order-status-update',
-      orderId: order.id,
+      orderId: (order as any).id,
     }
   });
 };

@@ -18,9 +18,10 @@ export const authenticate = async (email: string, password: string) => {
       .from('users')
       .select('type')
       .eq('id', authData.user?.id)
-      .single();
+      .single() as { data: { type: string } | null; error: any };
 
     if (userError) throw userError;
+    if (!userData) throw new Error('User data not found');
 
     if (userData.type !== 'ADMIN') {
       // Sign out if not admin

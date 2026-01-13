@@ -26,7 +26,7 @@ export default async function RootLayout({
       return;
     }
 
-    if (data.type === ADMIN) return redirect("/");
+    if ((data as any).type === ADMIN) return redirect("/");
   }
 
   return (
