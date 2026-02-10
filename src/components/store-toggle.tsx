@@ -16,7 +16,7 @@ export const StoreToggle = () => {
         .single();
 
       console.log("Initial store status:", data);
-      if (data) setIsOpen(data.is_open!);
+      if (data) setIsOpen((data as any).is_open!);
     };
     getStoreStatus();
   }, [supabase]);
@@ -31,17 +31,15 @@ export const StoreToggle = () => {
       .single();
 
     if (settings) {
-      const { error } = await supabase
-        .from("store_settings")
+      const { error } = await (supabase.from("store_settings") as any)
         .update({ is_open: !isOpen })
-        .eq("id", settings.id)
+        .eq("id", (settings as any).id)
         .select();
 
       if (!error) setIsOpen(!isOpen);
     }
 
-    const { data, error } = await supabase
-      .from("store_settings")
+    const { data, error } = await (supabase.from("store_settings") as any)
       .update({ is_open: !isOpen })
       .eq("id", "1")
       .select();

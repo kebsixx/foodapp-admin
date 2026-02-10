@@ -62,7 +62,7 @@ export const getProducts = async (): Promise<ProductsResponse> => {
   }
   
   // Filter out products with obviously broken URLs
-  const validProducts = (data || []).filter(product => {
+  const validProducts = (data || []).filter((product: any) => {
     if (!product.heroImage) return true; // Allow products without images
     
     // Check for common broken URL patterns
@@ -160,8 +160,8 @@ export const createProduct = async (product: {
     thumb: defaultImage,
   } : null);
   
-  const { data, error } = await supabase
-    .from("product")
+  const { data, error } = await ((supabase
+    .from("product") as any)
     .insert([{
       title: product.title,
       category: product.category,
@@ -177,7 +177,7 @@ export const createProduct = async (product: {
           }))
         : null,
     }])
-    .select();
+    .select());
   
   if (error) {
     throw new Error(`Error creating product: ${error.message}`);
@@ -329,11 +329,11 @@ export const updateProduct = async (product: {
 
     // console.log('Final update data:', updateData);
 
-    const { data, error } = await supabase
-      .from("product")
+    const { data, error } = await ((supabase
+      .from("product") as any)
       .update(updateData)
       .eq("slug", product.slug)
-      .select();
+      .select());
 
     if (error) {
       throw new Error(`Error updating product: ${error.message}`);
@@ -493,11 +493,11 @@ export const updateProductImage = async (slug: string, newImageUrl: string, newI
     // heroImageUrls: newImageUrls || null,
   };
 
-  const { data, error } = await supabase
-    .from("product")
+  const { data, error } = await ((supabase
+    .from("product") as any)
     .update(updateData)
     .eq("slug", slug)
-    .select();
+    .select());
 
   if (error) {
     throw new Error(`Error updating product image: ${error.message}`);

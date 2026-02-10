@@ -52,7 +52,9 @@ const FeedbackForm = () => {
         name: name || "Unknown",
       };
 
-      const { error } = await supabase.from("feedbacks").insert([newFeedback]);
+      const { error } = await (supabase.from("feedbacks") as any).insert([
+        newFeedback,
+      ]);
 
       if (error) {
         throw new Error(error.message);

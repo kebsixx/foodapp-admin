@@ -161,7 +161,7 @@ export default function PageComponent({
       if (error) throw error;
 
       // ⬇️ Fix field user
-      const orders = (data || []).map((order) => ({
+      const orders = (data || []).map((order: any) => ({
         ...order,
         user_details: order.users,
       })) as unknown as OrdersWithProducts;
@@ -184,7 +184,7 @@ export default function PageComponent({
           schema: "public",
           table: "order",
         },
-        (payload) => {
+        (payload: any) => {
           console.log("Received new order:", payload);
           fetchOrders(); // Refresh data on new order
         }
@@ -196,10 +196,10 @@ export default function PageComponent({
           schema: "public",
           table: "order",
         },
-        (payload) => {
+        (payload: any) => {
           // Optimistically update the specific order
-          setOrdersWithProducts((prev) =>
-            prev.map((order) =>
+          setOrdersWithProducts((prev: any) =>
+            prev.map((order: any) =>
               order.id === payload.new.id
                 ? {
                     ...order,
@@ -219,7 +219,7 @@ export default function PageComponent({
   }, [fetchOrders]);
 
   useEffect(() => {
-    const filtered = ordersWithProducts.filter((order) => {
+    const filtered = ordersWithProducts.filter((order: any) => {
       const searchLower = searchQuery.toLowerCase();
       const matchesSearch =
         order.slug.toLowerCase().includes(searchLower) ||
@@ -246,8 +246,8 @@ export default function PageComponent({
     setSelectedProducts(products);
   };
 
-  const OrderedProducts = ordersWithProducts.flatMap((order) =>
-    order.order_items.map((item) => ({
+  const OrderedProducts = ordersWithProducts.flatMap((order: any) =>
+    order.order_items.map((item: any) => ({
       order_id: order.id,
       product: item.product
         ? {
@@ -512,7 +512,7 @@ export default function PageComponent({
                   </TableCell>
                 </TableRow>
               ) : (
-                currentOrders.map((order) => (
+                currentOrders.map((order: any) => (
                   <TableRow key={order.id}>
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-2">
@@ -565,7 +565,7 @@ export default function PageComponent({
                             className="h-8"
                             onClick={() =>
                               openProductsModal(
-                                order.order_items.map((item) => ({
+                                order.order_items.map((item: any) => ({
                                   id: item.id,
                                   quantity: item.quantity,
                                   order_id: order.id,
@@ -666,51 +666,59 @@ export default function PageComponent({
                                     </TableRow>
                                   </TableHeader>
                                   <TableBody>
-                                    {order.order_items.map((item, i) => {
-                                      // Determine the correct price to display
-                                      const itemPrice =
-                                        (item as any).price || // Direct price on the item
-                                        (item as any).variant_price || // Variant price
-                                        item.product?.price || // Product price
-                                        0; // Fallback
+                                    {order.order_items.map(
+                                      (item: any, i: number) => {
+                                        // Determine the correct price to display
+                                        const itemPrice =
+                                          (item as any).price || // Direct price on the item
+                                          (item as any).variant_price || // Variant price
+                                          item.product?.price || // Product price
+                                          0; // Fallback
 
-                                      return (
-                                        <TableRow key={i}>
-                                          <TableCell>
-                                            <div className="flex items-center gap-2">
-                                              {item.product?.heroImage && (
-                                                <Image
-                                                  src={item.product.heroImage}
-                                                  alt={
-                                                    item.product?.title || ""
-                                                  }
-                                                  width={40}
-                                                  height={40}
-                                                  className="rounded-md object-cover"
-                                                />
-                                              )}
-                                              <div>
-                                                <p className="font-medium">
-                                                  {item.product?.title}
-                                                </p>
-                                                {(item as any).variant_name && (
-                                                  <p className="text-xs text-gray-500">
-                                                    {(item as any).variant_name}
-                                                  </p>
+                                        return (
+                                          <TableRow key={i}>
+                                            <TableCell>
+                                              <div className="flex items-center gap-2">
+                                                {item.product?.heroImage && (
+                                                  <Image
+                                                    src={item.product.heroImage}
+                                                    alt={
+                                                      item.product?.title || ""
+                                                    }
+                                                    width={40}
+                                                    height={40}
+                                                    className="rounded-md object-cover"
+                                                  />
                                                 )}
+                                                <div>
+                                                  <p className="font-medium">
+                                                    {item.product?.title}
+                                                  </p>
+                                                  {(item as any)
+                                                    .variant_name && (
+                                                    <p className="text-xs text-gray-500">
+                                                      {
+                                                        (item as any)
+                                                          .variant_name
+                                                      }
+                                                    </p>
+                                                  )}
+                                                </div>
                                               </div>
-                                            </div>
-                                          </TableCell>
-                                          <TableCell className="text-right">
-                                            {item.quantity}
-                                          </TableCell>
-                                          <TableCell className="text-right">
-                                            Rp{" "}
-                                            {itemPrice.toLocaleString("id-ID")}
-                                          </TableCell>
-                                        </TableRow>
-                                      );
-                                    })}
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                              {item.quantity}
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                              Rp{" "}
+                                              {itemPrice.toLocaleString(
+                                                "id-ID"
+                                              )}
+                                            </TableCell>
+                                          </TableRow>
+                                        );
+                                      }
+                                    )}
                                     <TableRow>
                                       <TableCell
                                         colSpan={2}
@@ -720,7 +728,7 @@ export default function PageComponent({
                                       <TableCell className="font-bold text-right">
                                         Rp{" "}
                                         {order.order_items
-                                          .reduce((sum, item) => {
+                                          .reduce((sum: number, item: any) => {
                                             const itemPrice =
                                               (item as any).price ||
                                               (item as any).variant_price ||

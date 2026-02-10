@@ -24,7 +24,7 @@ export default async function AuthLayout({
       return;
     }
 
-    if (data.type === ADMIN) return redirect("/admin");
+    if ((data as any).type === ADMIN) return redirect("/admin");
   }
 
   return <>{children}</>;
